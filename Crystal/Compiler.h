@@ -6,8 +6,10 @@
 
 #include "Crystal.h"
 #include "Clarity.h"
-#include "Machine.h"
 #include "Library.h"
+
+//Avalible Machines
+#include "Machines\x86_Machine.h"
 
 //Crystal Constants
 #define STACK_RESERVE 0xFF
@@ -69,7 +71,7 @@ public:
 class Crystal_Compiler 
 {
 public:
-  Crystal_Compiler();
+  Crystal_Compiler(AOT_Compiler* target);
   ~Crystal_Compiler();
   void Start_Encode(std::string name, unsigned locals_used, unsigned arguments = 0);
   void End_Encode();
@@ -101,7 +103,7 @@ private:
   //==========================
   // Machine Code
   //==========================
-  AOT_Compiler x86_Machine;
+  AOT_Compiler* Machine;
 
   //==========================
   // Optimization Management

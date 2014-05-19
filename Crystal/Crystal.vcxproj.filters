@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Machines">
+      <UniqueIdentifier>{bd95aa37-70f0-4c2e-8325-fccf3e26652f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Compiler.cpp">
@@ -24,9 +27,6 @@
     <ClCompile Include="Lexicon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Machine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Clarity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -35,6 +35,9 @@
     </ClCompile>
     <ClCompile Include="Library.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Machines\x86_Machine.cpp">
+      <Filter>Machines</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -47,9 +50,6 @@
     <ClInclude Include="Lexicon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Machine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Clarity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -58,6 +58,12 @@
     </ClInclude>
     <ClInclude Include="Library.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Machines\x86_Machine.h">
+      <Filter>Machines</Filter>
+    </ClInclude>
+    <ClInclude Include="Machines\Machine.h">
+      <Filter>Machines</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,68 +1,23 @@
-#ifndef CRYSTAL_MACHINE
-#define CRYSTAL_MACHINE
+#ifndef CRYSTAL_x86
+#define CRYSTAL_x86
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <vector>
+#include "Machine.h"
 
 #define COMPILER_VERSION "1.0.4"
 #define WORD_VARIANT 0x40
-#define DEBUG_PROGRAM -1
-#define NON_EXECUTABLE -2
-#define COMPILER_ERRORS -3
 #define STACK_SIZE 0xFF
 
-enum RETURN_TYPES { VOID_RETURN, CONST_RETURN, LOCAL_RETURN };
-enum REGISTERS : unsigned char { EAX = 0x85, EBX = 0x9D, ECX = 0x8D, EDX = 0x95 };
-enum LOAD_TYPES { LOCAL_LOAD, CONST_LOAD, REG_LOAD };
-enum ARG_TYPES { AOT_MEMORY, AOT_INT, AOT_BOOL, AOT_STRING, AOT_FLOAT, AOT_DOUBLE, AOT_CHAR, AOT_REG };
-enum VAR_TYPES { _INT, _FLOAT, _DOUBLE };
-enum FPU_REGISTERS { ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7 };
-
-typedef int (*FuncPtr)(void *);
-typedef unsigned char BYTE;
-
-
-struct LINKER_Data
-{
-  std::string name;
-  std::vector<BYTE*> refrence_list;
-};
-
-class ARG
-{
-public:
-  ARG(int num) : num_(num), type(AOT_INT){};
-  ARG(bool bol) : bol_(bol), type(AOT_BOOL){};
-  ARG(REGISTERS reg) : reg_(reg), type(AOT_REG){};
-  ARG(const char* str) : str_(str), type(AOT_STRING){};
-  ARG(float flt) : flt_(flt), type(AOT_FLOAT){};
-  ARG(double dec) : dec_(dec), type(AOT_DOUBLE){};
-  ARG(char chr) : chr_(chr), type(AOT_CHAR){};
-  ARG(void* mem) : mem_((unsigned)mem), type(AOT_MEMORY){};
-  union{
-    unsigned mem_;
-    int num_;
-    bool bol_;
-    float flt_;
-    double dec_;
-    double chr_;
-    REGISTERS reg_;
-    const char* str_;
-  };
-  ARG_TYPES type;
-private:
-  ARG();
-};
-
-class AOT_Compiler
+class x86_Machine : public AOT_Compiler
 {
 public:
   //==========================
   // Compiler Functionallity
   //==========================
-  AOT_Compiler();
+  x86_Machine();
   //Get the hooks
   void Setup(std::string name, BYTE* program);
   //Compiler info
@@ -116,7 +71,7 @@ public:
   void Jne(unsigned label);
   void Jle(unsigned label);
   void Jl(unsigned label);
-  void Jge(unsigned label);
+  //void Jge(unsigned label);
   void Jg(unsigned label);
   void Call(void* function);
   void Call(const char* function);
@@ -157,21 +112,6 @@ private:
   //==========================
   // Compiler Components
   //==========================
-  struct AOT_Var
-  {
-    //std::string name;
-    unsigned lab;
-    unsigned adr;
-    BYTE* loc;
-    VAR_TYPES type;
-  };
-  struct LINKER_Var
-  {
-    std::string name;
-    double dec;
-    float flt;
-    std::vector<BYTE*> refrence_list;
-  };
   //Simple x86 register helper functions
   unsigned char Reg_to_Reg(REGISTERS dest, REGISTERS source);
   void Move_Register(REGISTERS dest, REGISTERS source);  

@@ -147,7 +147,7 @@
     <ClCompile Include="Compiler.cpp" />
     <ClCompile Include="Lexicon.cpp" />
     <ClCompile Include="Library.cpp" />
-    <ClCompile Include="Machine.cpp" />
+    <ClCompile Include="Machines\x86_Machine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Syntax_Tree.cpp" />
   </ItemGroup>
@@ -157,7 +157,8 @@
     <ClInclude Include="Crystal.h" />
     <ClInclude Include="Lexicon.h" />
     <ClInclude Include="Library.h" />
-    <ClInclude Include="Machine.h" />
+    <ClInclude Include="Machines\Machine.h" />
+    <ClInclude Include="Machines\x86_Machine.h" />
     <ClInclude Include="Syntax_Tree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

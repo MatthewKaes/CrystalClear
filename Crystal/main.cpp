@@ -34,7 +34,7 @@ int __cdecl main(int argc, char **argv)
   const char* wor = "Hello world";
   const char* var = wor;
 
-  Crystal_Compiler comp;
+  Crystal_Compiler comp(new x86_Machine);
   //==========================
   // Main
   //==========================
