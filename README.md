@@ -1,5 +1,5 @@
-Crystal
-=======
+Crystal Clear
+=============
 
 Dynamic languages tend to be slow. This is a product of a number of factors associated with dynamic languages. 
 
