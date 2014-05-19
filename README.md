@@ -14,9 +14,9 @@ These are just some of the factors that make dynamic languages.
 
 Crystal aims to be a performance first language doing the best it can to preform operations as fast as possible. In order to bridge the performance gap between statically compiled languages like C/C++ and traditional high level dynamic languages a number of methods are used.
 
-###Ahead of Time Compiler
+###[Ahead of Time Compiler](https://github.com/MatthewKaes/DynamicCompiler)
 
-Crystal uses an AOT (Ahead of Time) Compiler to turn crystal code directly into native machine code to remove the overhead of bytecode. Rather than jumping in and out of bytecode, Crystal executes the operations directly similar to how C/C++ work. This also allows for low level optimizations in how the machine code is created giving instruction level control.
+The key feature of Crystal is its use of an AOT (Ahead of Time) Compiler to turn crystal code directly into native machine code to remove the overhead of bytecode. Rather than jumping in and out of bytecode, Crystal executes the operations directly similar to how C/C++ work. This also allows for low level optimizations in how the machine code is created giving instruction level control.
 
 ###Clarity Filters
 
