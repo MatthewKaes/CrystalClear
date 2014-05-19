@@ -10,7 +10,6 @@ Dynamic languages tend to be slow. This is a product of a number of factors asso
 These are just some of the factors that make dynamic languages.
 
 ##Performance First Language
-==========================
 
 Crystal aims to be a performance first language doing the best it can to preform operations as fast as possible. In order to bridge the performance gap between statically compiled languages like C/C++ and traditional high level dynamic languages a number of methods are used.
 
@@ -32,6 +31,5 @@ Variables have function scooping rather than standard scooping techniques making
 
 
 ##Useable and Fast
-================
 
 Crystal is built in the hopes to merge the abilities of high level languages like Ruby without making any sacrifices in speed. In the end Crystal uses a combination of features to put performance first and usability in a close second.
