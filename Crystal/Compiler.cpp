@@ -30,6 +30,7 @@ void Crystal_Compiler::End_Encode()
   pack.links = Machine->Get_Links();
   pack.program = program;
   packages.push_back(pack);
+  package_lookup[pack.name] = pack.program;
 }
 void Crystal_Compiler::Linker()
 {
@@ -37,32 +38,23 @@ void Crystal_Compiler::Linker()
   {
     for(unsigned j = 0; j < packages[i].links.size(); j++)
     {
-      for(unsigned k = 0; k < packages.size(); k++)
+      BYTE* call = package_lookup[packages[i].links[j].name].load;
+      for(unsigned w = 0; w < packages[i].links[j].refrence_list.size(); w++)
       {
-        if(!packages[i].links[j].name.compare(packages[k].name))
-        {
-          for(unsigned w = 0; w < packages[i].links[j].refrence_list.size(); w++)
-          {
-            int* adder = (int*)packages[i].links[j].refrence_list[w];
-            int result = (int)packages[k].program.load;
-            *adder = result;
-          }
-          break;
-        }
+        int* adder = (int*)packages[i].links[j].refrence_list[w];
+        *adder = (int)call;
       }
     }
   }
 }
 int Crystal_Compiler::Execute(Crystal_Symbol* ret)
 {
-  for(unsigned i = 0; i < packages.size(); i++)
+  if(package_lookup.find("main") == package_lookup.end())
   {
-    if(!packages[i].name.compare("main"))
-    {
-      return packages[i].program.call(ret);
-    }
+    //Error
+    return -1;
   }
-  return -1;
+  return package_lookup["main"].call(ret);
 }
 void Crystal_Compiler::Print(unsigned var)
 {

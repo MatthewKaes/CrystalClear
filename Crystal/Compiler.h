@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include <vector>
+#include <unordered_map>
 
 #include "Crystal.h"
 #include "Clarity.h"
@@ -117,6 +118,7 @@ private:
   unsigned locals_count;
   unsigned stack_size;
   std::vector<CryPackage> packages;
+  std::unordered_map<std::string, CryProg> package_lookup;
 };
 
 #endif
