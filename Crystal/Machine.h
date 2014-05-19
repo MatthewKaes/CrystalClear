@@ -1,0 +1,227 @@
+#ifndef CRYSTAL_MACHINE
+#define CRYSTAL_MACHINE
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <vector>
+
+#define COMPILER_VERSION "1.0.4"
+#define WORD_VARIANT 0x40
+#define DEBUG_PROGRAM -1
+#define NON_EXECUTABLE -2
+#define COMPILER_ERRORS -3
+#define STACK_SIZE 0xFF
+
+enum RETURN_TYPES { VOID_RETURN, CONST_RETURN, LOCAL_RETURN };
+enum REGISTERS : unsigned char { EAX = 0x85, EBX = 0x9D, ECX = 0x8D, EDX = 0x95 };
+enum LOAD_TYPES { LOCAL_LOAD, CONST_LOAD, REG_LOAD };
+enum ARG_TYPES { AOT_MEMORY, AOT_INT, AOT_BOOL, AOT_STRING, AOT_FLOAT, AOT_DOUBLE, AOT_CHAR, AOT_REG };
+enum VAR_TYPES { _INT, _FLOAT, _DOUBLE };
+enum FPU_REGISTERS { ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7 };
+
+typedef int (*FuncPtr)(void *);
+typedef unsigned char BYTE;
+
+
+struct LINKER_Data
+{
+  std::string name;
+  std::vector<BYTE*> refrence_list;
+};
+
+class ARG
+{
+public:
+  ARG(int num) : num_(num), type(AOT_INT){};
+  ARG(bool bol) : bol_(bol), type(AOT_BOOL){};
+  ARG(REGISTERS reg) : reg_(reg), type(AOT_REG){};
+  ARG(const char* str) : str_(str), type(AOT_STRING){};
+  ARG(float flt) : flt_(flt), type(AOT_FLOAT){};
+  ARG(double dec) : dec_(dec), type(AOT_DOUBLE){};
+  ARG(char chr) : chr_(chr), type(AOT_CHAR){};
+  ARG(void* mem) : mem_((unsigned)mem), type(AOT_MEMORY){};
+  union{
+    unsigned mem_;
+    int num_;
+    bool bol_;
+    float flt_;
+    double dec_;
+    double chr_;
+    REGISTERS reg_;
+    const char* str_;
+  };
+  ARG_TYPES type;
+private:
+  ARG();
+};
+
+class AOT_Compiler
+{
+public:
+  //==========================
+  // Compiler Functionallity
+  //==========================
+  AOT_Compiler();
+  //Get the hooks
+  void Setup(std::string name, BYTE* program);
+  //Compiler info
+  const char* Get_Version();
+  const char* Get_Name();
+  std::vector<LINKER_Data> Get_Links();
+
+  //==========================
+  // Assembler Functionallity
+  //==========================
+
+  //--------------------------
+  // Abstract x86 
+  //--------------------------
+  //System Functions
+  void Allocate_Stack(unsigned bytes);
+  void Make_Label(unsigned label);
+  unsigned New_Label();
+  //System calls
+  void Print(ARG argument);
+  //Stack Operations
+  void Push(ARG argument);
+  void Push_Adr(unsigned address);
+  void Pop(unsigned bytes = 0);
+  //By name addressing
+  void Load_Mem(unsigned address, ARG argument);
+  //Register Addressing
+  void Load_Register(REGISTERS reg, ARG argument);
+  //Memory Addressing
+  void Load_Ptr(unsigned ptr);
+  void MovP(unsigned addr, unsigned offset = 0, bool byte = false);
+  //Instructions
+  void Mov(REGISTERS dest, unsigned address, bool byte = false);
+  void Mov(unsigned address, REGISTERS source, bool byte = false);
+  void Lea(REGISTERS dest, unsigned address);
+  void Xchg_Register(REGISTERS dest, REGISTERS source);
+  void Add(REGISTERS dest, REGISTERS source);
+  void Add(unsigned address, REGISTERS source);
+  void Sub(REGISTERS dest, REGISTERS source);
+  void Sub(unsigned address, REGISTERS source);
+  void Mul(REGISTERS dest, REGISTERS source);
+  void Imul(unsigned address);
+  void Dec(REGISTERS dest);
+  void Inc(REGISTERS dest);
+  void Or(unsigned address, REGISTERS source);
+  void And(unsigned address, REGISTERS source);
+  void Cmp(unsigned address, ARG argument);
+  void CmpF(unsigned address, ARG argument);
+  void Jmp(unsigned label);
+  void Je(unsigned label);
+  void Jne(unsigned label);
+  void Jle(unsigned label);
+  void Jl(unsigned label);
+  void Jge(unsigned label);
+  void Jg(unsigned label);
+  void Call(void* function);
+  void Call(const char* function);
+  void Return(ARG argument = 0);
+
+  //--------------------------
+  // Abstract x87
+  //--------------------------
+  //Stack Operations
+  void FPU_Load(ARG argument);
+  void FPU_Loadf(unsigned address);
+  void FPU_Loadd(unsigned address);
+  void FPU_Loadi(unsigned address);
+  void FPU_Store(unsigned address);
+  //Pop instructions
+  void FPU_Add(FPU_REGISTERS reg = ST1);
+  void FPU_Sub(FPU_REGISTERS reg = ST1);
+  void FPU_Mul(FPU_REGISTERS reg = ST1);
+  void FPU_Div(FPU_REGISTERS reg = ST1);
+  //Non Pop ST(0) Instructions
+  void FPU_Sqr();
+  void FPU_Abs();
+  void FPU_Root();
+  //Special x86 extensions
+  void FPU_Xchg();
+  void FPU_Invert();
+  void FPU_Neg();
+  void FPU_Round();
+  //Special Constants
+  void FPU_PI();
+  void FPU_Zero();
+  void FPU_One();
+  //Trig Functions
+  void FPU_Sin();
+  void FPU_Cos();
+
+private:
+  //==========================
+  // Compiler Components
+  //==========================
+  struct AOT_Var
+  {
+    //std::string name;
+    unsigned lab;
+    unsigned adr;
+    BYTE* loc;
+    VAR_TYPES type;
+  };
+  struct LINKER_Var
+  {
+    std::string name;
+    double dec;
+    float flt;
+    std::vector<BYTE*> refrence_list;
+  };
+  //Simple x86 register helper functions
+  unsigned char Reg_to_Reg(REGISTERS dest, REGISTERS source);
+  void Move_Register(REGISTERS dest, REGISTERS source);  
+  unsigned char two_complement_8(unsigned char id);
+  unsigned two_complement_32(unsigned id);
+  //Addressing functions used for AOT execution mode.
+  int String_Address(std::string& str);
+  int Double_Address(double dec);
+  int Float_Address(float dec);
+  //Linker functions
+  void Label_Management(unsigned label);
+  int Add_Double(double dec);
+  int Add_Float(float dec);
+  int Add_String(std::string&  str);
+
+  //Compiler Information Crawl
+  //Compiler lable set
+  std::vector<AOT_Var> cls;
+  //Compiler jump set
+  std::vector<AOT_Var> cjs;
+  
+  //==========================
+  // Linker Components
+  //==========================
+  //Linker Information Crawl
+  //Executable string pool
+  std::vector<LINKER_Var> esp;
+  //Executable float pool
+  std::vector<LINKER_Var> efp;
+  //Executable double pool
+  std::vector<LINKER_Var> edp;
+  //DATA Section mapping
+  unsigned d_section_adr;
+
+  //==========================
+  // Crystal Components
+  //==========================
+  //function links
+  std::vector<LINKER_Data> call_links;
+
+  //==========================
+  // State Management
+  //==========================
+  BYTE* p;
+  unsigned stack_size;
+  unsigned pushed_bytes;
+  const char* name_;
+  bool stack_allocated;
+  bool compiler_error;
+  std::string prg_id;
+};
+
+#endif
