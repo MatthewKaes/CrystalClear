@@ -16,7 +16,7 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   program.load = (byte*)VirtualAllocEx( GetCurrentProcess(), 0, 1<<10, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
   Machine->Setup(name, program.load);
   locals_count = locals_used;
-  stack_size = (locals_count + CRY_NA) * VAR_SIZE + BYTES_4;
+  stack_size = (locals_count + CRY_NA) * VAR_SIZE + 4;
   Machine->Allocate_Stack(stack_size);
   states.resize(locals_count + CRY_NA);
 }
@@ -182,7 +182,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source)
     Clarity_Filter except(CRY_TEXT);
     except.Dilute(CRY_STRING);
     except.Dilute(CRY_ARRAY);
-    if(Null_Op(states[dest], states[source], offset_dest, except))
+    if(Null_Op(states[dest], states[source], dest, except))
       return;
 
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
@@ -222,7 +222,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source)
     NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);
     }
-    Runtime_Resovle(offset_dest, resolve);
+    Runtime_Resovle(dest, resolve);
   }
   //Clarity Handling
   else
@@ -241,7 +241,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_)
     Clarity_Filter except(CRY_TEXT);
     except.Dilute(CRY_STRING);
     except.Dilute(CRY_ARRAY);
-    if(Null_Op(states[dest], const_.filt, offset_dest, except))
+    if(Null_Op(states[dest], const_.filt, dest, except))
       return;
 
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
@@ -281,7 +281,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_)
     NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);
     }
-    Runtime_Resovle(offset_dest, resolve);
+    Runtime_Resovle(dest, resolve);
   }
   //Clarity Handling
   else
@@ -298,7 +298,7 @@ void Crystal_Compiler::Sub(unsigned dest, unsigned source)
   if(states[dest].Size() == 1 && states[source].Size() == 1)
   {
     //null operation 
-    if(Null_Op(states[dest], states[source], offset_dest))
+    if(Null_Op(states[dest], states[source], dest))
       return;
 
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
@@ -338,7 +338,7 @@ void Crystal_Compiler::Sub(unsigned dest, unsigned source)
     NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);
     }
-    Runtime_Resovle(offset_dest, resolve);
+    Runtime_Resovle(dest, resolve);
   }
   //Clarity Handling
   else
@@ -354,7 +354,7 @@ void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
   if(states[dest].Size() == 1 && const_.filt.Size() == 1)
   {
     //null operation 
-    if(Null_Op(states[dest], const_.filt, offset_dest))
+    if(Null_Op(states[dest], const_.filt, dest))
       return;
    
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
@@ -426,7 +426,7 @@ void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
     NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);
     }
-    Runtime_Resovle(offset_dest, resolve);
+    Runtime_Resovle(dest, resolve);
   }
   //Clarity Handling
   else
@@ -443,7 +443,7 @@ void Crystal_Compiler::Mul(unsigned dest, unsigned source)
   if(states[dest].Size() == 1 && states[source].Size() == 1)
   {
     //null operation
-    if(Null_Op(states[dest], states[source], offset_dest))
+    if(Null_Op(states[dest], states[source], dest))
       return;
 
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
@@ -484,7 +484,7 @@ void Crystal_Compiler::Mul(unsigned dest, unsigned source)
     NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);
     }
-    Runtime_Resovle(offset_dest, resolve);
+    Runtime_Resovle(dest, resolve);
   }
   //Clarity Handling
   else
@@ -500,7 +500,7 @@ void Crystal_Compiler::MulC(unsigned dest, CRY_ARG const_)
   if(states[dest].Size() == 1 && const_.filt.Size() == 1)
   {
     //null operation
-    if(Null_Op(states[dest], const_.filt, offset_dest))
+    if(Null_Op(states[dest], const_.filt, dest))
       return;
 
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
@@ -541,7 +541,7 @@ void Crystal_Compiler::MulC(unsigned dest, CRY_ARG const_)
     NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);
     }
-    Runtime_Resovle(offset_dest, resolve);
+    Runtime_Resovle(dest, resolve);
   }
   //Clarity Handling
   else
@@ -560,6 +560,9 @@ unsigned Crystal_Compiler::Addr_Reg(CRY_REGISTER reg)
 //==========================
 bool Crystal_Compiler::Null_Op(Clarity_Filter& l, Clarity_Filter& r, unsigned dest, Clarity_Filter Exceptions)
 {
+  if(!l.Test(CRY_NIL) && !r.Test(CRY_NIL))
+    return false;
+
   for(unsigned type = CRY_NIL + 1; type < CRY_SYMS; type++)
   {
     Symbol_Type test_type = static_cast<Symbol_Type>(type);
@@ -572,7 +575,7 @@ bool Crystal_Compiler::Null_Op(Clarity_Filter& l, Clarity_Filter& r, unsigned de
       return false;
     }
   }
-  Machine->Load_Mem(dest - DATA_TYPE, static_cast<char>(CRY_NIL));
+  Machine->Load_Mem(stack_size - VAR_SIZE * dest - DATA_TYPE, static_cast<char>(CRY_NIL));
   l.Set(CRY_NIL);
   return true;
 }
@@ -580,7 +583,7 @@ void Crystal_Compiler::Runtime_Resovle(unsigned dest, Symbol_Type resolve)
 {
   if(!states[dest].Test(resolve))
   {
-    Machine->Load_Mem(dest - DATA_TYPE, static_cast<char>(resolve));
+    Machine->Load_Mem(stack_size - VAR_SIZE * dest - DATA_TYPE, static_cast<char>(resolve));
     states[dest].Set(resolve);
   }
 }
