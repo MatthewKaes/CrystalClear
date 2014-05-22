@@ -3,6 +3,9 @@
 #include "Compiler.h"
 #include "Lexicon.h"
 
+//Avalible Machines
+#include "Machines\x86_Machine.h"
+
 Crystal_Symbol create()
 {
   Crystal_Symbol x;
@@ -23,6 +26,7 @@ int __cdecl main(int argc, char **argv)
   //do{
   //  read = Create_Symbol(&text);
   //}while(read.str.size());
+
   
   Crystal_Symbol x = Crystal_Symbol();
   //Crystal_Symbol z;

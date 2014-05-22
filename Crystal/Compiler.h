@@ -8,12 +8,11 @@
 #include "Crystal.h"
 #include "Clarity.h"
 #include "Library.h"
-
-//Avalible Machines
-#include "Machines\x86_Machine.h"
+#include "Machines\Machine.h"
 
 //Crystal Constants
 #define STACK_RESERVE 0xFF
+#define RETURN_ADDRESS 0x12
 #define CRY_NULL static_cast<unsigned>(-1)
 
 //Memory layouts
@@ -101,6 +100,12 @@ public:
 
   unsigned Addr_Reg(CRY_REGISTER reg);
 private:
+  //==========================
+  // Helper Functions
+  //==========================
+  bool Null_Op(Clarity_Filter& l, Clarity_Filter& r, unsigned dest, Clarity_Filter Exceptions = Clarity_Filter(CRY_NIL));
+  void Runtime_Resovle(unsigned dest, Symbol_Type resolve);
+
   //==========================
   // Machine Code
   //==========================
