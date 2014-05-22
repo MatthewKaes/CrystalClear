@@ -158,6 +158,8 @@
     <ClInclude Include="Lexicon.h" />
     <ClInclude Include="Library.h" />
     <ClInclude Include="Machines\Machine.h" />
+    <ClInclude Include="Machines\Machine_Code.h" />
+    <ClInclude Include="Machines\x86_Codes.h" />
     <ClInclude Include="Machines\x86_Machine.h" />
     <ClInclude Include="Syntax_Tree.h" />
   </ItemGroup>

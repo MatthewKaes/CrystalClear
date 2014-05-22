@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <vector>
+
 #include "Machine.h"
+#include "x86_Codes.h"
 
 #define COMPILER_VERSION "1.0.4"
 #define WORD_VARIANT 0x40
@@ -114,7 +116,9 @@ private:
   //==========================
   //Simple x86 register helper functions
   unsigned char Reg_to_Reg(REGISTERS dest, REGISTERS source);
-  void Move_Register(REGISTERS dest, REGISTERS source);  
+  unsigned Reg_Id(REGISTERS reg);
+  void Move_Register(REGISTERS dest, REGISTERS source); 
+  void Put_Addr(unsigned addr, int op_offset = BYT_ADR); 
   unsigned char two_complement_8(unsigned char id);
   unsigned two_complement_32(unsigned id);
   //Addressing functions used for AOT execution mode.

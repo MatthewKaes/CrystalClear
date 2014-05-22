@@ -65,5 +65,11 @@
     <ClInclude Include="Machines\Machine.h">
       <Filter>Machines</Filter>
     </ClInclude>
+    <ClInclude Include="Machines\x86_Codes.h">
+      <Filter>Machines</Filter>
+    </ClInclude>
+    <ClInclude Include="Machines\Machine_Code.h">
+      <Filter>Machines</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

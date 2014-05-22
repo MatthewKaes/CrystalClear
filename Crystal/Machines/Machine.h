@@ -9,7 +9,6 @@
 #define DEBUG_PROGRAM -1
 #define NON_EXECUTABLE -2
 #define COMPILER_ERRORS -3
-#define STACK_SIZE 0xFF
 
 enum RETURN_TYPES { VOID_RETURN, CONST_RETURN, LOCAL_RETURN };
 enum REGISTERS : unsigned char { EAX = 0x85, EBX = 0x9D, ECX = 0x8D, EDX = 0x95 };
