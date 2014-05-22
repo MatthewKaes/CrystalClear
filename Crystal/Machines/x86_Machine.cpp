@@ -38,7 +38,7 @@ void x86_Machine::Make_Label(unsigned label)
   {
     if(walker->lab == label)
     {
-      unsigned distance = l.adr - walker->adr - 1;
+      unsigned distance = l.adr - walker->adr - BYTES_1;
       (walker->loc)[0] = distance;
     }
     walker++;
@@ -55,14 +55,14 @@ void x86_Machine::Cmp(unsigned address, ARG argument)
   //case AOT_INT:
   //  if(argument.num_ > 0x7F)
   //  {
-  //    *p++ = 0x83;
+  //    *p++ = CMP_BYTE;
   //    *p++ = 0x7D;
   //    *p++ = two_complement_8(address);
   //    *p++ = (unsigned char)argument.num_;
   //  }
   //  else
   //  {
-  //    *p++ = 0x81;
+  //    *p++ = CMP_WORD;
   //    *p++ = 0x7D;
   //    *p++ = two_complement_8(address);
   //    (int&)p[0] = argument.num_; p+= sizeof(int);
@@ -77,15 +77,15 @@ void x86_Machine::CmpF(unsigned address, ARG argument)
   case AOT_INT:
     if(argument.num_ > ADDER_S)
     {
-      *p++ = STK_POP;
-      *p++ = 0x7D;
+      *p++ = CMP_BYTE;
+      *p++ = CMP_MEM;
       *p++ = static_cast<char>(address);
       *p++ = (unsigned char)argument.num_;
     }
     else
     {
-      *p++ = 0x81;
-      *p++ = 0x7D;
+      *p++ = CMP_WORD;
+      *p++ = CMP_MEM;
       *p++ = static_cast<char>(address);
       (int&)p[0] = argument.num_; p+= sizeof(int);
     }
@@ -138,7 +138,7 @@ void x86_Machine::Allocate_Stack(unsigned bytes)
     *p++ = STK_POP;
     *p++ = SUB_ESP;
     *p++ = (unsigned char)(stack_size);
-    *p++ = 0x6A;
+    *p++ = PSH_INT_B;
     *p++ = (unsigned char)(stack_size);
   }
   else
@@ -146,7 +146,7 @@ void x86_Machine::Allocate_Stack(unsigned bytes)
     *p++ = STK_PP4;
     *p++ = SUB_ESP; //sub esp
     (int&)p[0] = stack_size; p+= sizeof(int);
-    *p++ = 0x68;
+    *p++ = PSH_INT_W;
     (int&)p[0] = stack_size; p+= sizeof(int);
   }
 
@@ -155,10 +155,10 @@ void x86_Machine::Allocate_Stack(unsigned bytes)
   *p++ = LEA_EAX; //EAX
   *p++ = BYTES_4; // 4 bytes pushed already
   //Clear it up
-  *p++ = 0x6A;
+  *p++ = PSH_INT_B;
   *p++ = MC_ZERO;
   //Push the address last
-  *p++ = 0x50;
+  *p++ = REG_PSH;
   //Construct the symbols
   Call(memset);
   //Restore stack frame
@@ -175,7 +175,7 @@ void x86_Machine::Print(ARG argument)
   {
     Push(argument);
   }
-  *p++ = 0x68;
+  *p++ = PSH_INT_W;
   switch(argument.type)
   {
   case AOT_FLOAT:
@@ -192,35 +192,21 @@ void x86_Machine::Print(ARG argument)
 }
 void x86_Machine::Push(ARG argument)
 {
-  pushed_bytes += 4;
+  pushed_bytes += BYTES_4;
   switch(argument.type)
   {
   case AOT_REG:
-    switch(argument.reg_)
-    {
-    case EAX:
-      *p++ = 0x50;
-      return;
-    case EBX:
-      *p++ = 0x53;
-      return;
-    case ECX:
-      *p++ = 0x51;
-      return;
-    case EDX:
-      *p++ = 0x52;
-      return;
-    }
-    break;
+    *p++ = REG_PSH + Reg_Id(argument.reg_);
+    return;
   case AOT_INT:
     if(abs(argument.num_) < ADDER_S)
     {
-      *p++ = 0x6A;
+      *p++ = PSH_INT_B;
       *p++ = (unsigned char)(argument.num_);
     }
     else
     {
-      *p++ = 0x68;
+      *p++ = PSH_INT_W;
       (int&)p[0] = (unsigned)(argument.num_); p+= sizeof(int);
     }
     return;
@@ -239,7 +225,7 @@ void x86_Machine::Push(ARG argument)
     //store on stack
     //double
     *p++ = FPU_DOUBLE_OP;
-    *p++ = 0x1C;
+    *p++ = FPU_ADR;
     *p++ = LEA_EAX;
     pushed_bytes += BYTES_4;
     return;
@@ -257,8 +243,8 @@ void x86_Machine::Push(ARG argument)
     //store on stack
     //Float
     *p++ = FPU_FLOAT_OP;
-    *p++ = 0x1C;
-    *p++ = 0x24;
+    *p++ = FPU_ADR;
+    *p++ = LEA_EAX;
 
     pushed_bytes += BYTES_4;
     return;
@@ -266,8 +252,8 @@ void x86_Machine::Push(ARG argument)
 }
 void x86_Machine::Push_Adr(unsigned address)
 {
-  *p++ = 0x8D;
-  if(address < 0x7F)
+  *p++ = REG_ADR;
+  if(address < ADDER_S)
   {
     *p++ = EAX - WORD_VARIANT;
     *p++ = two_complement_8(address);
@@ -277,8 +263,8 @@ void x86_Machine::Push_Adr(unsigned address)
     *p++ = EAX;
     (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
   }
-  *p++ = 0x50; 
-  pushed_bytes += 4;   
+  *p++ = REG_PSH; 
+  pushed_bytes += BYTES_4;   
 }
 void x86_Machine::Pop(unsigned bytes)
 {
@@ -289,7 +275,7 @@ void x86_Machine::Pop(unsigned bytes)
   else
   {
     *p++ = STK_POP;
-    *p++ = 0xC4;
+    *p++ = ADD_ESP;
     *p++ = (unsigned char)(bytes);
     pushed_bytes -= bytes;
   }
@@ -299,18 +285,18 @@ void x86_Machine::Load_Mem(unsigned address, ARG argument)
   switch(argument.type)
   {
   case AOT_INT:
-    *p++ = 0xC7;
+    *p++ = ESP_WORD;
     Put_Addr(address);
     (int&)p[0] = argument.num_; p+= sizeof(int);
     return;
   case AOT_STRING:
-    *p++ = 0xC7;
+    *p++ = ESP_WORD;
     Put_Addr(address);
     (int&)p[0] = (int)argument.str_; p+= sizeof(int);
     return;
   case AOT_BOOL:
   case AOT_CHAR:
-    *p++ = 0xC6;
+    *p++ = ESP_BYTE;
     Put_Addr(address);
     *p++ = static_cast<BYTE>(argument.chr_);
     return;
@@ -456,16 +442,7 @@ void x86_Machine::Mul(REGISTERS dest, REGISTERS source)
 void x86_Machine::Imul(unsigned address)
 {
   *p++ = REG_IMUL;
-  if(address < ADDER_S)
-  {
-    *p++ = 0x6D;
-    *p++ = two_complement_8(address);
-  }
-  else
-  {
-    *p++ = 0xAD;
-    (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
-  }
+  Put_Addr(address, WID_ADR);
 }
 void x86_Machine::Inc(REGISTERS dest)
 {
@@ -565,7 +542,7 @@ std::vector<LINKER_Data> x86_Machine::Get_Links()
 }
 unsigned char x86_Machine::Reg_to_Reg(REGISTERS dest, REGISTERS source)
 {
-  return 0xC0 + 0x08 * Reg_Id(source) + Reg_Id(source);
+  return 0xC0 + BYTES_8 * Reg_Id(source) + Reg_Id(source);
 }
 unsigned x86_Machine::Reg_Id(REGISTERS reg)
 {
@@ -693,138 +670,83 @@ void x86_Machine::FPU_Load(ARG argument)
 }
 void x86_Machine::FPU_Loadf(unsigned address)
 {
-  *p++ = FPU_FLOAT_OP;  
-  if(address < ADDER_S)
-  {
-    *p++ = 0x45;
-    *p++ = two_complement_8(address);
-  }
-  else
-  {
-    *p++ = 0x85;
-    (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
-  }
+  *p++ = FPU_FLOAT_OP; 
+  Put_Addr(address);
 }
 void x86_Machine::FPU_Loadd(unsigned address)
 {
-  *p++ = 0xDD;
-  if(address < ADDER_S)
-  {
-    *p++ = 0x45;
-    *p++ = two_complement_8(address);
-  }
-  else
-  {
-    *p++ = 0x85;
-    (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
-  }
+  *p++ = FPU_DOUBLE_OP;
+  Put_Addr(address);
 }
 void x86_Machine::FPU_Loadi(unsigned address)
 {
-  *p++ = 0xDB;
-  if(address < ADDER_S)
-  {
-    *p++ = 0x45;
-    *p++ = two_complement_8(address);
-  }
-  else
-  {
-    *p++ = 0x85;
-    (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
-  }
+  *p++ = FPU_INT_OP;
+  Put_Addr(address);
 }
 void x86_Machine::FPU_Store(unsigned address)
 {
-  *p++ = 0xDD;
-  if(address < ADDER_S)
-  {
-    *p++ = 0x55;
-    *p++ = two_complement_8(address);
-  }
-  else
-  {
-    *p++ = 0x95;
-    (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
-  }
-  //AOT_Var* var = Local_Direct(name);
-  //switch(var->type)
-  //{
-  //case _FLOAT:
-  //  *p++ = 0xD9;
-  //  *p++ = 0x5D;
-  //  *p++ = two_complement_8(Local_Address(name) + 4);
-  //  return;
-  //case _INT:
-  //  *p++ = 0xDB;
-  //  *p++ = 0x5D;
-  //  *p++ = two_complement_8(Local_Address(name) + 4);
-  //  return;
-  //case _DOUBLE:
-  //  *p++ = 0xDD;
-  //  *p++ = 0x5D;
-  //  *p++ = two_complement_8(Local_Address(name) + 4);
-  //  return;
-  //}
+  *p++ = FPU_DOUBLE_OP;
+  Put_Addr(address, FPU_STORE);
 }
 void x86_Machine::FPU_Add(FPU_REGISTERS reg)
 {
-  *p++ = 0xDE;
-  *p++ = 0xC0 + (unsigned)reg;
+  *p++ = FPU_MATH;
+  *p++ = FPU_ADD + (unsigned)reg;
 }
 void x86_Machine::FPU_Sub(FPU_REGISTERS reg)
 {
-  *p++ = 0xDE;
-  *p++ = 0xE8 + (unsigned)reg;
+  *p++ = FPU_MATH;
+  *p++ = FPU_SUB + (unsigned)reg;
 }
 void x86_Machine::FPU_Mul(FPU_REGISTERS reg)
 {
-  *p++ = 0xDE;
-  *p++ = 0xC8 + (unsigned)reg;
+  *p++ = FPU_MATH;
+  *p++ = FPU_MUL + (unsigned)reg;
 }
 void x86_Machine::FPU_Div(FPU_REGISTERS reg)
 {
-  *p++ = 0xDE;
-  *p++ = 0xF8 + (unsigned)reg;
+  *p++ = FPU_MATH;
+  *p++ = FPU_DIV + (unsigned)reg;
 }
 void x86_Machine::FPU_Sqr()
 {
-  *p++ = 0xDC;
-  *p++ = 0xC8;
+  *p++ = FPU_80P_OP;
+  *p++ = FPU_SQRT;
 }
 void x86_Machine::FPU_Abs()
 {
-  *p++ = 0xD9;
-  *p++ = 0xE1;
+  *p++ = FPU_FLOAT_OP;
+  *p++ = FPU_ABS;
 }
 void x86_Machine::FPU_Root()
 {
-  *p++ = 0xD9;
-  *p++ = 0xFA;
+  *p++ = FPU_FLOAT_OP;
+  *p++ = FPU_ROOT;
 }
 void x86_Machine::FPU_One()
 {
-  *p++ = 0xD9;
-  *p++ = 0xE8;
+  *p++ = FPU_FLOAT_OP;
+  *p++ = FPU_PUSH_ONE;
 }
 void x86_Machine::FPU_Zero()
 {
-  *p++ = 0xD9;
-  *p++ = 0xEE;
+  *p++ = FPU_FLOAT_OP;
+  *p++ = FPU_PUSH_ZERO;
 }
 void x86_Machine::FPU_PI()
 {
-  *p++ = 0xD9;
-  *p++ = 0xEB;
+  *p++ = FPU_FLOAT_OP;
+  *p++ = FPU_PUSH_PI;
 }
 void x86_Machine::FPU_Xchg()
 {
-  *p++ = 0xD9;
-  *p++ = 0xC9;
+  *p++ = FPU_FLOAT_OP;
+  *p++ = FPU_XCHNG;
 }
 void x86_Machine::FPU_Invert()
 {
-  *p++ = 0xD9;
-  *p++ = 0xE0;
+  *p++ = FPU_FLOAT_OP;
+  *p++ = FPU_INVERT;
 }
 void x86_Machine::FPU_Neg()
 {
@@ -833,16 +755,16 @@ void x86_Machine::FPU_Neg()
 }
 void x86_Machine::FPU_Round()
 {
-  *p++ = 0xD9;
-  *p++ = 0xFC;
+  *p++ = FPU_FLOAT_OP;
+  *p++ = FPU_ROUND;
 }
 void x86_Machine::FPU_Sin()
 {
-  *p++ = 0xD9;
-  *p++ = 0xFE;
+  *p++ = FPU_FLOAT_OP;
+  *p++ = FPU_SIN;
 }
 void x86_Machine::FPU_Cos()
 {
-  *p++ = 0xD9;
-  *p++ = 0xFF;
+  *p++ = FPU_FLOAT_OP;
+  *p++ = FPU_COS;
 }
