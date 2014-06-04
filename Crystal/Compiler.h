@@ -92,7 +92,7 @@ public:
   void Load(unsigned var, CRY_ARG val = CRY_ARG());
   void Copy(unsigned dest, unsigned source);
   void Add(unsigned dest, unsigned source);
-  void AddC(unsigned dest, CRY_ARG const_);
+  void AddC(unsigned dest, CRY_ARG const_, bool left = true);
   void Sub(unsigned dest, unsigned source);
   void SubC(unsigned dest, CRY_ARG const_, bool left = true);
   void Mul(unsigned dest, unsigned source);
@@ -105,6 +105,8 @@ private:
   //==========================
   bool Null_Op(Clarity_Filter& l, Clarity_Filter& r, unsigned dest, Clarity_Filter Exceptions = Clarity_Filter(CRY_NIL));
   void Runtime_Resovle(unsigned dest, Symbol_Type resolve);
+  void Safe_Set_Pointer(unsigned var, CRY_ARG val);
+  void Garbage_Collection(unsigned var);
 
   //==========================
   // Machine Code

@@ -13,7 +13,7 @@ Crystal_Compiler::~Crystal_Compiler()
 
 void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsigned arguments)
 {
-  program.load = (byte*)VirtualAllocEx( GetCurrentProcess(), 0, 1<<10, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
+  program.load = (byte*)VirtualAllocEx( GetCurrentProcess(), 0, 1<<10, MEM_COMMIT | MEM_RESERVE , PAGE_EXECUTE_READWRITE);
   Machine->Setup(name, program.load);
   locals_count = locals_used;
   stack_size = (locals_count + CRY_NA) * VAR_SIZE + 4;
@@ -105,12 +105,14 @@ void Crystal_Compiler::Return(unsigned var)
      states[var].Test(CRY_ARRAY))
   {
     Machine->MovP(offset - DATA_PNTR, DATA_PNTR);
+    states[var].Collected();
   }
   Machine->MovP(offset - DATA_LOWER, DATA_LOWER);
   Machine->MovP(offset - DATA_UPPER, DATA_UPPER);
   Machine->MovP(offset - DATA_TYPE, DATA_TYPE, true);
   //Finalize return
   Machine->Make_Label(label);
+
   Machine->Return();
 }
 void Crystal_Compiler::Return()
@@ -144,9 +146,10 @@ void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
     Machine->Load_Mem(offset - DATA_LOWER, val.dec_);
     break;
   case CRY_TEXT:
+    Garbage_Collection(var);
     Machine->Load_Mem(offset - DATA_PNTR, val.str_);
     Machine->Load_Mem(offset - DATA_LOWER, static_cast<int>(strlen(val.str_)));
-    Machine->Load_Mem(offset - DATA_UPPER, EAX);
+    //Machine->Load_Mem(offset - DATA_UPPER, EAX);
     break;
   }
   Machine->Load_Mem(offset - DATA_TYPE, static_cast<char>(val.type));
@@ -156,6 +159,7 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   unsigned offset_source = stack_size - source * VAR_SIZE;
+  Garbage_Collection(dest);
   if(!(states[source].Size() == 1 && states[source].Test(CRY_NIL)))
   {
     Machine->Mov(EAX, offset_source - DATA_LOWER);
@@ -216,8 +220,23 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source)
       Machine->FPU_Add();
       Machine->FPU_Store(offset_dest - DATA_LOWER);
       break;
-    //Lacking Support
-    NO_SUPPORT(CRY_TEXT);
+    case CRY_TEXT:
+      if(states[dest].Test(CRY_TEXT) && states[source].Test(CRY_TEXT))
+      {
+        Machine->Mov(EAX, offset_dest - DATA_LOWER);
+        Machine->Mov(EBX, offset_source - DATA_LOWER);
+        Machine->Add(EBX, EAX);
+        Machine->Inc(EBX);
+        Machine->Push(EBX);
+        Machine->Call(malloc);
+        Machine->Pop(4);
+        Machine->Strcpy(EAX, offset_dest - DATA_PNTR, offset_dest - DATA_LOWER);
+        Machine->Strcpy(EDI, offset_source - DATA_PNTR, offset_source - DATA_LOWER, true);
+        Machine->Mov(offset_dest - DATA_PNTR, EAX);
+        Machine->Mov(offset_dest - DATA_LOWER, EBX);
+        resolve = CRY_STRING;
+      }
+      break;
     NO_SUPPORT(CRY_STRING);
     NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);
@@ -230,7 +249,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source)
     //TO DO:
   }
 }
-void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_)
+void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 
@@ -585,5 +604,20 @@ void Crystal_Compiler::Runtime_Resovle(unsigned dest, Symbol_Type resolve)
   {
     Machine->Load_Mem(stack_size - VAR_SIZE * dest - DATA_TYPE, static_cast<char>(resolve));
     states[dest].Set(resolve);
+  }
+}
+void Crystal_Compiler::Garbage_Collection(unsigned var)
+{
+  if(states[var].Collection())
+  {
+    unsigned offset_dest = stack_size - var * VAR_SIZE;
+    unsigned label = Machine->New_Label();
+    Machine->Cmp(offset_dest - DATA_PNTR, 0);
+    Machine->Je(label);
+    Machine->Push_Adr(offset_dest - DATA_PNTR);
+    Call(free);
+    Machine->Pop(4);
+    Machine->Make_Label(label);
+    states[var].Collected();
   }
 }

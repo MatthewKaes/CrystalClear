@@ -10,7 +10,7 @@
 #include "x86_Codes.h"
 
 #define COMPILER_VERSION "1.0.4"
-#define WORD_VARIANT 0x40
+#define WORD_VARIANT WRD_OFF
 #define STACK_SIZE 0xFF
 
 class x86_Machine : public AOT_Compiler
@@ -109,6 +109,11 @@ public:
   //Trig Functions
   void FPU_Sin();
   void FPU_Cos();
+  
+  //--------------------------
+  // Special Functions
+  //--------------------------
+  void Strcpy(REGISTERS dest, unsigned address, int length, bool null = false);
 
 private:
   //==========================
@@ -117,6 +122,7 @@ private:
   //Simple x86 register helper functions
   unsigned char Reg_to_Reg(REGISTERS dest, REGISTERS source);
   unsigned Reg_Id(REGISTERS reg);
+  void Reg_Op(unsigned address, REGISTERS source);
   void Move_Register(REGISTERS dest, REGISTERS source); 
   void Put_Addr(unsigned addr, int op_offset = BYT_ADR); 
   unsigned char two_complement_8(unsigned char id);

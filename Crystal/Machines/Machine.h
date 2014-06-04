@@ -11,7 +11,7 @@
 #define COMPILER_ERRORS -3
 
 enum RETURN_TYPES { VOID_RETURN, CONST_RETURN, LOCAL_RETURN };
-enum REGISTERS : unsigned char { EAX = 0x85, EBX = 0x9D, ECX = 0x8D, EDX = 0x95 };
+enum REGISTERS : unsigned char { EAX = 0x85, EBX = 0x9D, ECX = 0x8D, EDX = 0x95, ESI = 0xB5, EDI = 0xBD };
 enum LOAD_TYPES { LOCAL_LOAD, CONST_LOAD, REG_LOAD };
 enum ARG_TYPES { AOT_MEMORY, AOT_INT, AOT_BOOL, AOT_STRING, AOT_FLOAT, AOT_DOUBLE, AOT_CHAR, AOT_REG };
 enum VAR_TYPES { _INT, _FLOAT, _DOUBLE };
@@ -146,6 +146,11 @@ public:
   //Trig Functions
   virtual void FPU_Sin() = 0;
   virtual void FPU_Cos() = 0;
+  
+  //--------------------------
+  // Special Functions
+  //--------------------------
+  virtual void Strcpy(REGISTERS dest, unsigned address, int length, bool null = false) = 0;
 
   //==========================
   // Compiler Components

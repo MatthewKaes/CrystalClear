@@ -50,25 +50,25 @@ unsigned x86_Machine::New_Label()
 }
 void x86_Machine::Cmp(unsigned address, ARG argument)
 {
-  //switch(argument.type)
-  //{
-  //case AOT_INT:
-  //  if(argument.num_ > 0x7F)
-  //  {
-  //    *p++ = CMP_BYTE;
-  //    *p++ = 0x7D;
-  //    *p++ = two_complement_8(address);
-  //    *p++ = (unsigned char)argument.num_;
-  //  }
-  //  else
-  //  {
-  //    *p++ = CMP_WORD;
-  //    *p++ = 0x7D;
-  //    *p++ = two_complement_8(address);
-  //    (int&)p[0] = argument.num_; p+= sizeof(int);
-  //  }
-  //  break;
-  //}
+  switch(argument.type)
+  {
+  case AOT_INT:
+    if(argument.num_ > ADDER_S)
+    {
+      *p++ = CMP_BYTE;
+      *p++ = CMP_MEM;
+      *p++ = two_complement_8(address);
+      *p++ = (unsigned char)argument.num_;
+    }
+    else
+    {
+      *p++ = CMP_WORD;
+      *p++ = CMP_MEM;
+      *p++ = two_complement_8(address);
+      (int&)p[0] = argument.num_; p+= sizeof(int);
+    }
+    break;
+  }
 }
 void x86_Machine::CmpF(unsigned address, ARG argument)
 {
@@ -252,17 +252,7 @@ void x86_Machine::Push(ARG argument)
 }
 void x86_Machine::Push_Adr(unsigned address)
 {
-  *p++ = REG_ADR;
-  if(address < ADDER_S)
-  {
-    *p++ = EAX - WORD_VARIANT;
-    *p++ = two_complement_8(address);
-  }
-  else
-  {
-    *p++ = EAX;
-    (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
-  }
+  Lea(EAX, address);
   *p++ = REG_PSH; 
   pushed_bytes += BYTES_4;   
 }
@@ -360,20 +350,22 @@ void x86_Machine::MovP(unsigned addr, unsigned offset, bool byte)
 void x86_Machine::Mov(REGISTERS dest, unsigned address, bool byte)
 {
   *p++ = MEM_MOV - byte;
-  Put_Addr(address);
+  Reg_Op(address, dest);
 }
 void x86_Machine::Mov(unsigned address, REGISTERS source, bool byte)
 {
   *p++ = MOV_TYP - byte;
-  Put_Addr(address);
+  Reg_Op(address, source);
 }
 void x86_Machine::Lea(REGISTERS dest, unsigned address)
 {
   *p++ = REG_ADR;
-  Put_Addr(address);
+  Reg_Op(address, dest);
 }
 void x86_Machine::Move_Register(REGISTERS dest, REGISTERS source)
 {
+  if(source == dest)
+    return;
   *p++ = MEM_MOV;
   *p++ = Reg_to_Reg(dest, source);
 }
@@ -403,16 +395,7 @@ void x86_Machine::Add(REGISTERS dest, REGISTERS source)
 void x86_Machine::Add(unsigned address, REGISTERS source)
 {
   *p++ = MEM_ADD;
-  if(address < ADDER_S)
-  {
-    *p++ = source - WORD_VARIANT;
-    *p++ = two_complement_8(address);
-  }
-  else
-  {
-    *p++ = source;
-    (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
-  }
+  Reg_Op(address, source);
 }
 void x86_Machine::Sub(REGISTERS dest, REGISTERS source)
 {
@@ -422,16 +405,7 @@ void x86_Machine::Sub(REGISTERS dest, REGISTERS source)
 void x86_Machine::Sub(unsigned address, REGISTERS source)
 {
   *p++ = REG_SUB;
-  if(address < ADDER_S)
-  {
-    *p++ = source - WORD_VARIANT;
-    *p++ = two_complement_8(address);
-  }
-  else
-  {
-    *p++ = source;
-    (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
-  }
+  Reg_Op(address, source);
 }
 void x86_Machine::Mul(REGISTERS dest, REGISTERS source)
 {
@@ -451,30 +425,12 @@ void x86_Machine::Inc(REGISTERS dest)
 void x86_Machine::Or(unsigned address, REGISTERS source)
 {
   *p++ = REG_OR;
-  if(address < ADDER_S)
-  {
-    *p++ = source - WORD_VARIANT;
-    *p++ = two_complement_8(address);
-  }
-  else
-  {
-    *p++ = source;
-    (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
-  }
+  Reg_Op(address, source);
 }
 void x86_Machine::And(unsigned address, REGISTERS source)
 {
   *p++ = REG_AND;
-  if(address < ADDER_S)
-  {
-    *p++ = source - WORD_VARIANT;
-    *p++ = two_complement_8(address);
-  }
-  else
-  {
-    *p++ = source;
-    (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
-  }
+  Reg_Op(address, source);
 }
 void x86_Machine::Dec(REGISTERS dest)
 {
@@ -542,7 +498,7 @@ std::vector<LINKER_Data> x86_Machine::Get_Links()
 }
 unsigned char x86_Machine::Reg_to_Reg(REGISTERS dest, REGISTERS source)
 {
-  return 0xC0 + BYTES_8 * Reg_Id(source) + Reg_Id(source);
+  return 0xC0 + BYTES_8 * Reg_Id(dest) + Reg_Id(source);
 }
 unsigned x86_Machine::Reg_Id(REGISTERS reg)
 {
@@ -552,9 +508,24 @@ unsigned x86_Machine::Reg_Id(REGISTERS reg)
   case EBX: return 0x03;
   case ECX: return 0x01;
   case EDX: return 0x02;
+  case ESI: return 0x06;
+  case EDI: return 0x07;
   }
   return 0;
 } 
+void x86_Machine::Reg_Op(unsigned address, REGISTERS source)
+{
+  if(address < ADDER_S)
+  {
+    *p++ = source - WORD_VARIANT;
+    *p++ = two_complement_8(address);
+  }
+  else
+  {
+    *p++ = source;
+    (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
+  }
+}
 void x86_Machine::Put_Addr(unsigned addr, int op_offset)
 {
   if(addr < ADDER_S)
@@ -767,4 +738,14 @@ void x86_Machine::FPU_Cos()
 {
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_COS;
+}
+void x86_Machine::Strcpy(REGISTERS dest, unsigned address, int length, bool null)
+{
+  Mov(ECX, length);
+  if(null)
+    Inc(ECX);
+  Mov(ESI, address);
+  Move_Register(EDI, dest);
+  *p++ = REP;
+  *p++ = MOVSB;
 }

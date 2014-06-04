@@ -13,12 +13,13 @@ enum Data_Type : char { DAT_NIL, DAT_INT, DAT_INT64, DAT_DOUBLE, DAT_BOOL,
 class Crystal_Symbol
 {
 public:
+  Symbol_Type type;
+  unsigned char ref_cnt;
+  unsigned short ex_dat;
   union {
     Crystal_Symbol* sym;
     char* str;
   } ptr;
-  Symbol_Type type;
-  unsigned short ex_dat;
   union {
     int i32;
     __int64 i64;

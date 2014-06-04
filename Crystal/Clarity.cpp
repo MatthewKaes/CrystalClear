@@ -3,17 +3,18 @@
 Clarity_Filter::Clarity_Filter(Symbol_Type flag)
 {
   Set(flag);
-  Dynamic(flag);
 }
 void Clarity_Filter::Set(Symbol_Type flag)
 {
   flags = (0x1 << (flag));
   dilution = 1;
+  Dynamic(flag);
 }
 void Clarity_Filter::Dilute(Symbol_Type flag)
 {
   flags |= (0x1 << (flag));
   dilution++;
+  Dynamic(flag);
 }
 void Clarity_Filter::Obscurity()
 {
@@ -31,6 +32,10 @@ bool Clarity_Filter::Test(Symbol_Type flag)
 bool Clarity_Filter::Collection()
 {
   return collection;
+}
+void Clarity_Filter::Collected()
+{
+  collection = false;
 }
 unsigned Clarity_Filter::Size()
 {

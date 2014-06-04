@@ -1,6 +1,7 @@
 #include "Machine_Code.h"
 
 //x86
+
 #define MOV_TYP 0x89
 #define PTR_MOV 0x48
 #define MEM_MOV 0x8B
@@ -15,6 +16,10 @@
 #define ESP_WORD 0xC7
 #define PSH_INT_B 0x6A
 #define PSH_INT_W 0x68
+
+//loops
+#define REP 0xF3
+#define MOVSB 0xA4
 
 //Stack
 #define STK_POP 0x83

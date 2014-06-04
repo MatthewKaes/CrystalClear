@@ -13,6 +13,7 @@ public:
   void Obscurity();
   bool Test(Symbol_Type flag);
   bool Collection();
+  void Collected();
   unsigned Size();
   static Symbol_Type Reduce(Clarity_Filter l, Clarity_Filter r);
   static void Combind(Clarity_Filter& l, Clarity_Filter& r);
