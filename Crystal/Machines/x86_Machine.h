@@ -113,7 +113,7 @@ public:
   //--------------------------
   // Special Functions
   //--------------------------
-  void Strcpy(REGISTERS dest, unsigned address, int length, bool null = false);
+  void Strcpy(REGISTERS dest, unsigned address, int length);
 
 private:
   //==========================

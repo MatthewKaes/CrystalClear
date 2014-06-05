@@ -150,7 +150,7 @@ public:
   //--------------------------
   // Special Functions
   //--------------------------
-  virtual void Strcpy(REGISTERS dest, unsigned address, int length, bool null = false) = 0;
+  virtual void Strcpy(REGISTERS dest, unsigned address, int length) = 0;
 
   //==========================
   // Compiler Components

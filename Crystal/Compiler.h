@@ -12,7 +12,7 @@
 
 //Crystal Constants
 #define STACK_RESERVE 0xFF
-#define RETURN_ADDRESS 0x0C
+#define RETURN_ADDRESS 0x10
 #define CRY_NULL static_cast<unsigned>(-1)
 
 //Memory layouts

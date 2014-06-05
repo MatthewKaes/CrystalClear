@@ -5,6 +5,8 @@ void Crystal_Print(Crystal_Symbol* sym)
 {
   if(sym->type == CRY_STRING || sym->type == CRY_TEXT)
   {
+    if(sym->type == CRY_STRING)
+      sym->ptr.str[sym->size - 1] = 0;
     printf("%s\n", sym->ptr.str);
     return;
   }

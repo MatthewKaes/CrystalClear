@@ -52,8 +52,8 @@ void x86_Machine::Cmp(unsigned address, ARG argument)
 {
   switch(argument.type)
   {
-  case AOT_INT:
-    if(argument.num_ > ADDER_S)
+  case AOT_CHAR:
+    if(address > ADDER_S)
     {
       *p++ = CMP_BYTE;
       *p++ = CMP_MEM;
@@ -62,9 +62,41 @@ void x86_Machine::Cmp(unsigned address, ARG argument)
     }
     else
     {
+      *p++ = CMP_WORDL;
+      *p++ = CMP_MEM + WORD_VARIANT;
+      (int&)p[0] = two_complement_32(address); p+= sizeof(int);
+      *p++ = (unsigned char)argument.num_;
+    }
+    break;
+  case AOT_INT:
+    if(argument.num_ > ADDER_S)
+    {
       *p++ = CMP_WORD;
-      *p++ = CMP_MEM;
-      *p++ = two_complement_8(address);
+      if(address > ADDER_S)
+      {
+        *p++ = CMP_MEM;
+        *p++ = two_complement_8(address);
+      }
+      else
+      {
+        *p++ = CMP_MEM + WORD_VARIANT;
+        (int&)p[0] = two_complement_32(address); p+= sizeof(int);
+      }
+      *p++ = (unsigned char)argument.num_;
+    }
+    else
+    {
+      *p++ = CMP_WORDL;
+      if(address > ADDER_S)
+      {
+        *p++ = CMP_MEM;
+        *p++ = two_complement_8(address);
+      }
+      else
+      {
+        *p++ = CMP_MEM + WORD_VARIANT;
+        (int&)p[0] = two_complement_32(address); p+= sizeof(int);
+      }
       (int&)p[0] = argument.num_; p+= sizeof(int);
     }
     break;
@@ -77,14 +109,14 @@ void x86_Machine::CmpF(unsigned address, ARG argument)
   case AOT_INT:
     if(argument.num_ > ADDER_S)
     {
-      *p++ = CMP_BYTE;
+      *p++ = CMP_WORD;
       *p++ = CMP_MEM;
       *p++ = static_cast<char>(address);
       *p++ = (unsigned char)argument.num_;
     }
     else
     {
-      *p++ = CMP_WORD;
+      *p++ = CMP_WORDL;
       *p++ = CMP_MEM;
       *p++ = static_cast<char>(address);
       (int&)p[0] = argument.num_; p+= sizeof(int);
@@ -125,6 +157,7 @@ void x86_Machine::Jg(unsigned label)
 void x86_Machine::Allocate_Stack(unsigned bytes)
 {
   //Strack preamble
+  Push(ESI);
   Push(EDX);
   *p++ = PSH_EBP; //push ebp
 
@@ -481,6 +514,7 @@ void x86_Machine::Return(ARG argument)
   *p++ = ESP_EBP; // mov esp,ebp 
   *p++ = POP_EBP; // pop ebp
   *p++ = POP_EDX; // pop edx
+  *p++ = POP_ESI;
   *p++ = FNC_RET; // ret
 }
 
@@ -739,11 +773,9 @@ void x86_Machine::FPU_Cos()
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_COS;
 }
-void x86_Machine::Strcpy(REGISTERS dest, unsigned address, int length, bool null)
+void x86_Machine::Strcpy(REGISTERS dest, unsigned address, int length)
 {
   Mov(ECX, length);
-  if(null)
-    Inc(ECX);
   Mov(ESI, address);
   Move_Register(EDI, dest);
   *p++ = REP;

@@ -58,8 +58,8 @@ void Clarity_Filter::Combind(Clarity_Filter& l, Clarity_Filter& r)
 }
 void Clarity_Filter::Dynamic(Symbol_Type flag)
 {
-  //Double is the highest non collected object.
-  if(flag > (0x1 << (flag)))
+  //Text is the highest non collected object.
+  if(flag > CRY_TEXT)
   {
     collection = true;
   }

@@ -101,6 +101,7 @@ void Crystal_Compiler::Return(unsigned var)
   Machine->Je(label);
   //Load the data into the ptr value
   Machine->Load_Ptr(RETURN_ADDRESS);
+  //Mark memory as collected and pass it back for use.
   if(states[var].Test(CRY_TEXT) || states[var].Test(CRY_STRING) || 
      states[var].Test(CRY_ARRAY))
   {
@@ -112,6 +113,11 @@ void Crystal_Compiler::Return(unsigned var)
   Machine->MovP(offset - DATA_TYPE, DATA_TYPE, true);
   //Finalize return
   Machine->Make_Label(label);
+  //cleanup 
+  for(int i = 0; i < (locals_count + CRY_NA); i++)
+  {
+    Garbage_Collection(i);
+  }
 
   Machine->Return();
 }
@@ -125,6 +131,11 @@ void Crystal_Compiler::Return()
   Machine->Load_Ptr(RETURN_ADDRESS);
   Machine->MovP(stack_size - VAR_SIZE * Addr_Reg(CRY_R0) - DATA_TYPE, DATA_TYPE, true);
   Machine->Make_Label(label);
+  //cleanup 
+  for(int i = 0; i < (locals_count + CRY_NA); i++)
+  {
+    Garbage_Collection(i);
+  }
   Machine->Return();
 }
 void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
@@ -145,6 +156,7 @@ void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
   case CRY_DOUBLE:
     Machine->Load_Mem(offset - DATA_LOWER, val.dec_);
     break;
+  //Text can be loaded as constanst since strings cant.
   case CRY_TEXT:
     Garbage_Collection(var);
     Machine->Load_Mem(offset - DATA_PNTR, val.str_);
@@ -168,6 +180,30 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
     {
       Machine->Mov(EAX, offset_source - DATA_UPPER);
       Machine->Mov(offset_dest - DATA_UPPER, EAX);
+    }
+  }
+  if(states[source].Test(CRY_STRING))
+  {
+    unsigned label = Machine->New_Label();
+    //If we can be more then just a string then we need to check
+    //our current state as a string.
+    if(states[source].Size() > 1)
+    {
+      Machine->Cmp(offset_source - DATA_TYPE, static_cast<char>(CRY_STRING));
+      Machine->Jne(label);
+    }
+    //Copy over if we are currently a string.
+    Machine->Mov(EBX, offset_source - DATA_LOWER);
+    Machine->Push(EBX);
+    Machine->Call(malloc);
+    Machine->Pop(4);
+    Machine->Strcpy(EAX, offset_source - DATA_PNTR, offset_source - DATA_LOWER);
+    Machine->Mov(offset_dest - DATA_PNTR, EAX);
+    Machine->Mov(offset_dest - DATA_LOWER, EBX);
+    //Create end label for jumping
+    if(states[source].Size() > 1)
+    {
+      Machine->Make_Label(label);
     }
   }
   Machine->Mov(EAX, offset_source - DATA_TYPE, true);
@@ -226,12 +262,13 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source)
         Machine->Mov(EAX, offset_dest - DATA_LOWER);
         Machine->Mov(EBX, offset_source - DATA_LOWER);
         Machine->Add(EBX, EAX);
+        //Make room for zero
         Machine->Inc(EBX);
         Machine->Push(EBX);
         Machine->Call(malloc);
         Machine->Pop(4);
         Machine->Strcpy(EAX, offset_dest - DATA_PNTR, offset_dest - DATA_LOWER);
-        Machine->Strcpy(EDI, offset_source - DATA_PNTR, offset_source - DATA_LOWER, true);
+        Machine->Strcpy(EDI, offset_source - DATA_PNTR, offset_source - DATA_LOWER);
         Machine->Mov(offset_dest - DATA_PNTR, EAX);
         Machine->Mov(offset_dest - DATA_LOWER, EBX);
         resolve = CRY_STRING;
@@ -614,7 +651,8 @@ void Crystal_Compiler::Garbage_Collection(unsigned var)
     unsigned label = Machine->New_Label();
     Machine->Cmp(offset_dest - DATA_PNTR, 0);
     Machine->Je(label);
-    Machine->Push_Adr(offset_dest - DATA_PNTR);
+    Machine->Mov(EAX, offset_dest - DATA_PNTR);
+    Machine->Push(EAX);
     Call(free);
     Machine->Pop(4);
     Machine->Make_Label(label);

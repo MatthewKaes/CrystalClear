@@ -30,16 +30,8 @@ int __cdecl main(int argc, char **argv)
   //char* memory = "Hello World";
   //char* memory2 = (char*)malloc(20);
   //
-  //__asm{ 
-  //  mov esi, memory
-  //  mov edi, memory2
-  //  mov ecx, 12
-  //  rep movsb
-  //}
-  //
-  __asm{
-    mov eax, edi
-  }
+  
+
   Crystal_Symbol x = Crystal_Symbol();
 
   Crystal_Compiler comp(new x86_Machine);
@@ -47,11 +39,13 @@ int __cdecl main(int argc, char **argv)
   // Main
   //==========================
   
+  //Testing Garbage Collection
   comp.Start_Encode("main", 1);
   comp.Load(0, "Hello World");
   comp.Load(comp.Addr_Reg(CRY_R0), " Crystal Clear!");
   comp.Add(0, comp.Addr_Reg(CRY_R0));
   comp.Print(0);
+  comp.Return(0);
   comp.End_Encode();
 
   //comp.Start_Encode("main", 5);
@@ -96,10 +90,6 @@ int __cdecl main(int argc, char **argv)
   comp.Execute(&x);
   printf("Huzzah! Variable 3 returned in x: \n");
   Crystal_Print(&x);
-  printf("%d, %x\n", sizeof(Crystal_Symbol), sizeof(Crystal_Symbol));
-  printf("%d, %x\n", sizeof(Crystal_Symbol*), sizeof(Crystal_Symbol*));
-  printf("%d, %x\n", sizeof(double), sizeof(double));
-  printf("%d, %x\n", 0x30, 0x30);
   getchar();
   return 0;
 }

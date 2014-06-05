@@ -48,6 +48,7 @@
 #define PSH_EDX 0x52
 #define PSH_EBP 0x55
 #define POP_EDX 0x5A
+#define POP_ESI 0x5E
 #define POP_EBP 0x5D
 #define REG_XCH 0x87
 #define REG_ADR 0x8D
@@ -59,8 +60,9 @@
 #define EBP_ESP 0xEC
 
 //Jump Codes
-#define CMP_BYTE 0x83
-#define CMP_WORD 0x81
+#define CMP_BYTE 0x80
+#define CMP_WORD 0x83
+#define CMP_WORDL 0x81
 #define CMP_MEM 0x7D
 #define CODE_JMP 0xEB
 #define CODE_JE 0x74
