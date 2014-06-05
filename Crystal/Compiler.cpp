@@ -114,7 +114,7 @@ void Crystal_Compiler::Return(unsigned var)
   //Finalize return
   Machine->Make_Label(label);
   //cleanup 
-  for(int i = 0; i < (locals_count + CRY_NA); i++)
+  for(unsigned i = 0; i < (locals_count + CRY_NA); i++)
   {
     Garbage_Collection(i);
   }
@@ -132,7 +132,7 @@ void Crystal_Compiler::Return()
   Machine->MovP(stack_size - VAR_SIZE * Addr_Reg(CRY_R0) - DATA_TYPE, DATA_TYPE, true);
   Machine->Make_Label(label);
   //cleanup 
-  for(int i = 0; i < (locals_count + CRY_NA); i++)
+  for(unsigned i = 0; i < (locals_count + CRY_NA); i++)
   {
     Garbage_Collection(i);
   }
@@ -257,6 +257,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source)
       Machine->FPU_Store(offset_dest - DATA_LOWER);
       break;
     case CRY_TEXT:
+      //Faster way of creating a string from two text objects
       if(states[dest].Test(CRY_TEXT) && states[source].Test(CRY_TEXT))
       {
         Machine->Mov(EAX, offset_dest - DATA_LOWER);
@@ -271,10 +272,24 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source)
         Machine->Strcpy(EDI, offset_source - DATA_PNTR, offset_source - DATA_LOWER);
         Machine->Mov(offset_dest - DATA_PNTR, EAX);
         Machine->Mov(offset_dest - DATA_LOWER, EBX);
-        resolve = CRY_STRING;
       }
+      //complex slower text handling:
+      else
+      {
+        Push(source);
+        Push(dest);
+        Call(Crystal_Text_Append);
+        Pop(2);
+      }
+      //we now have a string.
+      resolve = CRY_STRING;
       break;
-    NO_SUPPORT(CRY_STRING);
+    case CRY_STRING:
+      Push(source);
+      Push(dest);
+      Call(Crystal_Text_Append);
+      Pop(2);
+      break;
     NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);
     }
