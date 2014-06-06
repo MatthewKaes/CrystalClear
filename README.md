@@ -43,4 +43,4 @@ Crystal is built in the hopes to merge the abilities of high level languages lik
 
 ##Updates on development
 
-Updates on the development of Crystal Clear can currently be found on my blog [Crystal Clear Programming](http://crystalclearprogramming.blogspot.com/).
+Updates on the development of Crystal Clear can currently be found on my blog [Crystal Clear Programming](http://crystalclearprogramming.blogspot.com/search/label/Crystal%20Clear).
