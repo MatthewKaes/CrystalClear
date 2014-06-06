@@ -1,4 +1,5 @@
 #include "Compiler.h"
+#include "Lexicon.h"
 
 Crystal_Compiler::Crystal_Compiler(AOT_Compiler* target)
 {
@@ -81,7 +82,10 @@ void Crystal_Compiler::Call(const char* cry_function, unsigned var)
   //Call Crystal function
   Machine->Call(cry_function);
   Machine->Pop(4);
-  states[var].Obscurity();
+  if(var != CRY_NULL)
+  {
+    states[var].Obscurity();
+  }
 }
 void Crystal_Compiler::Push(unsigned var)
 {
@@ -459,9 +463,100 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
       Machine->FPU_Add();
       Machine->FPU_Store(offset_dest - DATA_LOWER);
       break;
+     case CRY_TEXT:
+      //Faster way of creating a string from two text objects
+      if(states[dest].Test(CRY_TEXT))
+      {
+        std::string converted;
+        if(const_.filt.Test(CRY_BOOL))
+        {
+          if(const_.bol_)
+          {
+            converted.assign("true");
+          }
+          else
+          {
+            converted.assign("false");
+          }
+        }
+        else if(const_.filt.Test(CRY_INT))
+        {
+          i_to_str(const_.num_, &converted);
+        }
+        else if(const_.filt.Test(CRY_DOUBLE))
+        {
+          d_to_str(const_.dec_, &converted);
+        }
+        else if(const_.filt.Test(CRY_TEXT))
+        {
+          converted.assign(const_.str_);
+        }
+        else
+        {
+          converted.assign("nil");
+        }
+        Machine->Mov(EBX, offset_dest - DATA_LOWER);
+        Machine->Mov(EBX, converted.length() + 1);
+        Machine->Add(EBX, EAX);
+        Machine->Push(EBX);
+        Machine->Call(malloc);
+        Machine->Pop(4);
+        Machine->Strcpy(EAX, offset_dest - DATA_PNTR, offset_dest - DATA_LOWER);
+        Machine->Strcpy(EDI, static_cast<unsigned>(Machine->String_Address(converted.c_str())), converted.length() + 1, true);
+        Machine->Mov(offset_dest - DATA_PNTR, EAX);
+        Machine->Mov(offset_dest - DATA_LOWER, EBX);
+      }
+      else
+      {
+        Machine->Push(static_cast<int>(strlen(const_.str_)));
+        Machine->Push(Machine->String_Address(const_.str_));
+        Push(dest);
+        Call(Crystal_Const_Append_T);
+        Pop(3);
+      }
+      //we now have a string.
+      resolve = CRY_STRING;
+      break;
+    case CRY_STRING:
+      //Empty scope
+      {
+        //Preprocess so we don't have to do it at runtime.
+        std::string converted;
+        if(const_.filt.Test(CRY_BOOL))
+        {
+          if(const_.bol_)
+          {
+            converted.assign("true");
+          }
+          else
+          {
+            converted.assign("false");
+          }
+        }
+        else if(const_.filt.Test(CRY_INT))
+        {
+          i_to_str(const_.num_, &converted);
+        }
+        else if(const_.filt.Test(CRY_DOUBLE))
+        {
+          d_to_str(const_.dec_, &converted);
+        }
+        else if(const_.filt.Test(CRY_TEXT))
+        {
+          converted.assign(const_.str_);
+        }
+        else
+        {
+          converted.assign("nil");
+        }
+        Machine->Push(static_cast<int>(converted.length()));
+        Machine->Push(Machine->String_Address(converted.c_str()));
+      }
+      Push(dest);
+      Call(Crystal_Text_Append_C);
+      Pop(3);
+      break;
     //Lacking Support
-    NO_SUPPORT(CRY_TEXT);
-    NO_SUPPORT(CRY_STRING);
     NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);
     }
@@ -754,7 +849,7 @@ bool Crystal_Compiler::Null_Op(Clarity_Filter& l, Clarity_Filter& r, unsigned de
     {
       continue;
     }
-    if(l.Test(test_type) || l.Test(test_type))
+    if(l.Test(test_type) || r.Test(test_type))
     {
       return false;
     }

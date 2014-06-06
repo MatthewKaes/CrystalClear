@@ -115,8 +115,14 @@ public:
   //--------------------------
   // Special Functions
   //--------------------------
-  void Strcpy(REGISTERS dest, unsigned address, int length);
+  void Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address = false);
 
+  //--------------------------
+  // Memory Functions
+  //--------------------------
+  int String_Address(const char* str);
+  int Double_Address(double dec);
+  int Float_Address(float dec);
 private:
   //==========================
   // Compiler Components
@@ -130,14 +136,11 @@ private:
   unsigned char two_complement_8(unsigned char id);
   unsigned two_complement_32(unsigned id);
   //Addressing functions used for AOT execution mode.
-  int String_Address(std::string& str);
-  int Double_Address(double dec);
-  int Float_Address(float dec);
   //Linker functions
   void Label_Management(unsigned label);
   int Add_Double(double dec);
   int Add_Float(float dec);
-  int Add_String(std::string&  str);
+  int Add_String(const char* str);
 
   //Compiler Information Crawl
   //Compiler lable set

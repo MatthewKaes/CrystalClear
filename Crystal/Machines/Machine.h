@@ -152,7 +152,14 @@ public:
   //--------------------------
   // Special Functions
   //--------------------------
-  virtual void Strcpy(REGISTERS dest, unsigned address, int length) = 0;
+  virtual void Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address = false) = 0;
+  
+  //--------------------------
+  // Memory Functions
+  //--------------------------
+  virtual int String_Address(const char* str) = 0;
+  virtual int Double_Address(double dec) = 0;
+  virtual int Float_Address(float dec) = 0;
 
   //==========================
   // Compiler Components

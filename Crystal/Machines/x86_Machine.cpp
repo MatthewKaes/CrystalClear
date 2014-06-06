@@ -32,19 +32,20 @@ void x86_Machine::Make_Label(unsigned label)
   l.lab = label;
   l.adr = (unsigned)p;
   std::vector<AOT_Var>::iterator walker = cls.begin();
-  while(walker != cjs.end())
+  while(walker != cls.end())
   {
     if(walker->lab == label)
     {
       walker->adr = 0;
     }
+    walker++;
   }
   if(walker == cls.end())
   {
     cls.push_back(l);
   }
 
-  std::vector<AOT_Var>::iterator walker = cjs.begin();
+  walker = cjs.begin();
   //search backwards for foward jumps
   while(walker != cjs.end())
   {
@@ -597,7 +598,7 @@ void x86_Machine::Put_Addr(unsigned addr, int op_offset)
     (int&)p[0] = (int)two_complement_32(addr); p+= sizeof(int);
   }
 }
-int x86_Machine::String_Address(std::string& str)
+int x86_Machine::String_Address(const char* str)
 {
   int address;
   for(unsigned i = 0; i < esp.size(); i++)
@@ -610,7 +611,7 @@ int x86_Machine::String_Address(std::string& str)
   }
   return Add_String(str);
 }
-int x86_Machine::Add_String(std::string& str)
+int x86_Machine::Add_String(const char* str)
 {
   LINKER_Var var;
   var.name.assign(str);
@@ -799,10 +800,18 @@ void x86_Machine::FPU_Cos()
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_COS;
 }
-void x86_Machine::Strcpy(REGISTERS dest, unsigned address, int length)
+void x86_Machine::Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address)
 {
-  Mov(ECX, length);
-  Mov(ESI, address);
+  if(raw_address)
+    Load_Register(ECX, length);
+  else
+    Mov(ECX, length);
+
+  if(raw_address)
+    Load_Register(ESI, static_cast<int>(address));
+  else
+    Mov(ESI, address);
+
   Move_Register(EDI, dest);
   *p++ = REP;
   *p++ = MOVSB;
