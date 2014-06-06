@@ -31,7 +31,19 @@ void x86_Machine::Make_Label(unsigned label)
   AOT_Var l;
   l.lab = label;
   l.adr = (unsigned)p;
-  cls.push_back(l);
+  std::vector<AOT_Var>::iterator walker = cls.begin();
+  while(walker != cjs.end())
+  {
+    if(walker->lab == label)
+    {
+      walker->adr = 0;
+    }
+  }
+  if(walker == cls.end())
+  {
+    cls.push_back(l);
+  }
+
   std::vector<AOT_Var>::iterator walker = cjs.begin();
   //search backwards for foward jumps
   while(walker != cjs.end())
@@ -47,6 +59,18 @@ void x86_Machine::Make_Label(unsigned label)
 unsigned x86_Machine::New_Label()
 {
   return cls.size();
+}
+unsigned x86_Machine::Reserve_Label()
+{
+  AOT_Var new_lab;
+  new_lab.adr = 0;
+  new_lab.lab = cls.size();
+  cls.push_back(new_lab);
+  return new_lab.lab;
+}
+unsigned x86_Machine::Last_Label()
+{
+  return cls.size() - 1;
 }
 void x86_Machine::Cmp(unsigned address, ARG argument)
 {
@@ -601,6 +625,8 @@ void x86_Machine::Label_Management(unsigned label)
   {
     if(walker->lab == label)
     {
+      if(walker->adr == 0)
+        break;
       *p++ = two_complement_8((unsigned)p - walker->adr + 1);
       return;
     }

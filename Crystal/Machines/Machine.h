@@ -75,6 +75,8 @@ public:
   virtual void Allocate_Stack(unsigned bytes) = 0;
   virtual void Make_Label(unsigned label) = 0;
   virtual unsigned New_Label() = 0;
+  virtual unsigned Reserve_Label() = 0;
+  virtual unsigned Last_Label() = 0;
   //System calls
   virtual void Print(ARG argument) = 0;
   //Stack Operations

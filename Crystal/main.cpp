@@ -29,6 +29,7 @@ int __cdecl main(int argc, char **argv)
 
   //char* memory = "Hello World";
   //char* memory2 = (char*)malloc(20);
+  
 
   Crystal_Symbol x = Crystal_Symbol();
 
@@ -69,6 +70,7 @@ int __cdecl main(int argc, char **argv)
   //String Testing
   comp.Load(comp.Addr_Reg(CRY_R0), "Str Test: ");
   comp.Add(comp.Addr_Reg(CRY_R0), 3);
+  comp.AddC(comp.Addr_Reg(CRY_R0), " ");
   comp.Add(comp.Addr_Reg(CRY_R0), comp.Addr_Reg(CRY_R1));
   comp.Print(comp.Addr_Reg(CRY_R0));
   //Manual Print call.

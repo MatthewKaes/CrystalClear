@@ -298,7 +298,120 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source)
   //Clarity Handling
   else
   {
-    //TO DO:
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
+
+    unsigned end_lable = Machine->Reserve_Label();
+
+    //null handling    
+    unsigned code_label;
+    unsigned code_label2;
+    switch(resolve)
+    {
+    case CRY_BOOL:
+    case CRY_INT:
+    case CRY_DOUBLE:
+      code_label = Machine->New_Label();
+      if(states[dest].Test(CRY_NIL))
+      {
+        Machine->Cmp(offset_dest - DATA_TYPE, static_cast<char>(CRY_NIL));
+        Machine->Jne(code_label);
+        Runtime_Resovle(dest, CRY_NIL);
+        Machine->Jmp(end_lable);
+      }
+      if(states[source].Test(CRY_NIL))
+      {
+        Machine->Cmp(offset_source - DATA_TYPE, static_cast<char>(CRY_NIL));
+        Machine->Jne(code_label);
+        Runtime_Resovle(dest, CRY_NIL);
+        Machine->Jmp(end_lable);
+      }
+      Machine->Make_Label(code_label);
+      break;
+    default:
+      break;
+    }
+    //Max Handling
+    //The possible type take cares of all sub handels      
+
+    switch(resolve)
+    {
+    case CRY_BOOL:
+    case CRY_INT:
+      Machine->Mov(EAX, offset_source - DATA_LOWER);
+      Machine->Add(offset_dest - DATA_LOWER, EAX);
+      Runtime_Resovle(dest, resolve);
+      break;
+    case CRY_DOUBLE:
+      code_label = Machine->New_Label();
+      //Need to check for raw int on int action
+      if((states[source].Test(CRY_INT) || states[source].Test(CRY_BOOL)) &&
+          (states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL)))
+      {
+        
+        Machine->Cmp(offset_source - DATA_TYPE, static_cast<char>(CRY_INT));
+        Machine->Jg(code_label);
+        Machine->Mov(EAX, offset_source - DATA_LOWER);
+        Machine->Add(offset_dest - DATA_LOWER, EAX);
+        Runtime_Resovle(dest, resolve);
+        Machine->Jmp(end_lable);
+      }
+      //Source Clarity
+      Machine->Make_Label(code_label);
+      code_label = Machine->New_Label();
+      if(states[source].Test(CRY_INT) || states[source].Test(CRY_BOOL))
+      {
+        if(states[source].Test(CRY_DOUBLE))
+        {
+          Machine->Cmp(offset_source - DATA_TYPE, static_cast<char>(CRY_NIL));
+          Machine->Jne(code_label2);
+        }
+        Runtime_Resovle(dest, CRY_NIL);
+        Machine->FPU_Loadi(offset_source - DATA_LOWER);
+        if(states[source].Test(CRY_DOUBLE))
+        {
+          Machine->Jmp(code_label);
+        }
+      }
+      if(states[source].Test(CRY_DOUBLE))
+      {
+        Machine->FPU_Loadd(offset_source - DATA_LOWER);
+      }
+      Machine->Make_Label(code_label);
+      //Destination Clarity
+      code_label = Machine->New_Label();
+      if(states[source].Test(CRY_INT) || states[source].Test(CRY_BOOL))
+      {
+        if(states[source].Test(CRY_DOUBLE))
+        {
+          Machine->Cmp(offset_source - DATA_TYPE, static_cast<char>(CRY_NIL));
+          Machine->Jne(code_label2);
+        }
+        Runtime_Resovle(dest, CRY_NIL);
+        Machine->FPU_Loadi(offset_source - DATA_LOWER);
+        if(states[source].Test(CRY_DOUBLE))
+        {
+          Machine->Jmp(code_label);
+        }
+      }
+      if(states[source].Test(CRY_DOUBLE))
+      {
+        Machine->FPU_Loadd(offset_source - DATA_LOWER);
+      }
+      Machine->Make_Label(code_label);
+      //Actual function
+      Machine->FPU_Add();
+      Machine->FPU_Store(offset_dest - DATA_LOWER);
+      Runtime_Resovle(dest, resolve);
+      break;
+    case CRY_TEXT:
+      break;
+    case CRY_STRING:
+      break;
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    
+    Machine->Make_Label(end_lable);
   }
 }
 void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)

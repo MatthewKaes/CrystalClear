@@ -38,6 +38,8 @@ public:
   void Allocate_Stack(unsigned bytes);
   void Make_Label(unsigned label);
   unsigned New_Label();
+  unsigned Reserve_Label();
+  unsigned Last_Label();
   //System calls
   void Print(ARG argument);
   //Stack Operations
