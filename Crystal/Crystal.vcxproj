@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="Clarity.cpp" />
     <ClCompile Include="Compiler.cpp" />
+    <ClCompile Include="Generator.cpp" />
     <ClCompile Include="Lexicon.cpp" />
     <ClCompile Include="Library.cpp" />
     <ClCompile Include="Machines\x86_Machine.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Machines\Machine_Code.h" />
     <ClInclude Include="Machines\x86_Codes.h" />
     <ClInclude Include="Machines\x86_Machine.h" />
+    <ClInclude Include="Generator.h" />
     <ClInclude Include="Syntax_Tree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

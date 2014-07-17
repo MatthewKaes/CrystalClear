@@ -48,9 +48,9 @@ bool is_number(char object)
     return false;
 }
 
-Crystal_Data Create_Symbol(const char** stream)
+void Create_Symbol(const char** stream, Crystal_Data* sym)
 {
-  Crystal_Data new_sym;
+  sym->str.clear();
   while(**stream == '\n' || **stream == ' ')
   {
     (*stream)++;
@@ -59,23 +59,22 @@ Crystal_Data Create_Symbol(const char** stream)
   {
     while(**stream != '\n' && **stream != ' ' && **stream != 0)
     {
-      new_sym.str.push_back(**stream);
+      sym->str.push_back(**stream);
       (*stream)++;
     }
   }
   else
   {
-    new_sym.str.push_back(**stream);
+    sym->str.push_back(**stream);
     (*stream)++;
-    while(**stream != '\n' && **stream != '\"' && **stream != 0)
+    while(**stream != '\"' && **stream != 0)
     {
-      new_sym.str.push_back(**stream);
+      sym->str.push_back(**stream);
       (*stream)++;
     }
     (*stream)++;
   }
-  Resolve_Type(&new_sym);
-  return new_sym;
+  Resolve_Type(sym);
 }
 
 void Resolve_Type(Crystal_Data* sym)

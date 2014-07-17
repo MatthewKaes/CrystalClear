@@ -16,6 +16,15 @@
     <Filter Include="Machines">
       <UniqueIdentifier>{bd95aa37-70f0-4c2e-8325-fccf3e26652f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Syntax">
+      <UniqueIdentifier>{d0f66a0c-de73-4940-991b-618038b14dcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Machines\Headers">
+      <UniqueIdentifier>{6ecfb309-f963-4016-9a4a-736de12a863a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Syntax\Headers">
+      <UniqueIdentifier>{da491e23-26bb-4395-b9ef-44a046a548fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Compiler.cpp">
@@ -30,14 +39,17 @@
     <ClCompile Include="Clarity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Syntax_Tree.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Library.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Machines\x86_Machine.cpp">
       <Filter>Machines</Filter>
+    </ClCompile>
+    <ClCompile Include="Syntax_Tree.cpp">
+      <Filter>Syntax</Filter>
+    </ClCompile>
+    <ClCompile Include="Generator.cpp">
+      <Filter>Syntax</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -53,23 +65,26 @@
     <ClInclude Include="Clarity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Syntax_Tree.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Library.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Machines\x86_Machine.h">
-      <Filter>Machines</Filter>
-    </ClInclude>
     <ClInclude Include="Machines\Machine.h">
-      <Filter>Machines</Filter>
-    </ClInclude>
-    <ClInclude Include="Machines\x86_Codes.h">
-      <Filter>Machines</Filter>
+      <Filter>Machines\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Machines\Machine_Code.h">
-      <Filter>Machines</Filter>
+      <Filter>Machines\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Machines\x86_Codes.h">
+      <Filter>Machines\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Machines\x86_Machine.h">
+      <Filter>Machines\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Syntax_Tree.h">
+      <Filter>Syntax\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Generator.h">
+      <Filter>Syntax\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

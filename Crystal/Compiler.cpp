@@ -362,6 +362,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source)
       //Source Clarity
       Machine->Make_Label(code_label);
       code_label = Machine->New_Label();
+      code_label2 = Machine->New_Label();
       if(states[source].Test(CRY_INT) || states[source].Test(CRY_BOOL))
       {
         if(states[source].Test(CRY_DOUBLE))
@@ -405,6 +406,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source)
       //Actual function
       Machine->FPU_Add();
       Machine->FPU_Store(offset_dest - DATA_LOWER);
+      Machine->Make_Label(code_label2);
       Runtime_Resovle(dest, resolve);
       break;
     case CRY_TEXT:
