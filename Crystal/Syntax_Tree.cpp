@@ -38,7 +38,6 @@ bool Syntax_Node::Evaluate()
   if(!code_gen(compiler_))
     return false;
 
-  Remove();
   return true;
 }
 void Syntax_Node::Remove()
@@ -111,5 +110,8 @@ bool Syntax_Tree::Evaluate()
   if(!root)
     return false;
 
-  return root->Evaluate();
+  bool result = root->Evaluate();
+  root->Remove();
+  root = NULL;
+  return result;
 }
