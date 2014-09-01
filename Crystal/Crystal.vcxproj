@@ -146,6 +146,7 @@
     <ClCompile Include="Clarity.cpp" />
     <ClCompile Include="Compiler.cpp" />
     <ClCompile Include="Generator.cpp" />
+    <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="Lexicon.cpp" />
     <ClCompile Include="Library.cpp" />
     <ClCompile Include="Machines\x86_Machine.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Clarity.h" />
     <ClInclude Include="Compiler.h" />
     <ClInclude Include="Crystal.h" />
+    <ClInclude Include="Interpreter.h" />
     <ClInclude Include="Lexicon.h" />
     <ClInclude Include="Library.h" />
     <ClInclude Include="Machines\Machine.h" />

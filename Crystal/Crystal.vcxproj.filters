@@ -1,18 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Machines">
       <UniqueIdentifier>{bd95aa37-70f0-4c2e-8325-fccf3e26652f}</UniqueIdentifier>
     </Filter>
@@ -25,22 +13,37 @@
     <Filter Include="Syntax\Headers">
       <UniqueIdentifier>{da491e23-26bb-4395-b9ef-44a046a548fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Front End">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Core Headers">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Core Sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Interpreter">
+      <UniqueIdentifier>{0bae55d8-d878-4499-af00-9a83ed54dc97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interpreter\Headers">
+      <UniqueIdentifier>{f33681ac-8bd2-4606-bd53-13b2a8d1162d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Compiler.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Core Sources</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Lexicon.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Front End</Filter>
     </ClCompile>
     <ClCompile Include="Clarity.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Core Sources</Filter>
     </ClCompile>
     <ClCompile Include="Library.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Core Sources</Filter>
     </ClCompile>
     <ClCompile Include="Machines\x86_Machine.cpp">
       <Filter>Machines</Filter>
@@ -51,22 +54,25 @@
     <ClCompile Include="Generator.cpp">
       <Filter>Syntax</Filter>
     </ClCompile>
+    <ClCompile Include="Interpreter.cpp">
+      <Filter>Interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="Lexicon.cpp">
+      <Filter>Interpreter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Crystal.h">
-      <Filter>Header Files</Filter>
+      <Filter>Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Compiler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Lexicon.h">
-      <Filter>Header Files</Filter>
+      <Filter>Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Clarity.h">
-      <Filter>Header Files</Filter>
+      <Filter>Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Library.h">
-      <Filter>Header Files</Filter>
+      <Filter>Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Machines\Machine.h">
       <Filter>Machines\Headers</Filter>
@@ -85,6 +91,12 @@
     </ClInclude>
     <ClInclude Include="Generator.h">
       <Filter>Syntax\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpreter.h">
+      <Filter>Interpreter\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Lexicon.h">
+      <Filter>Interpreter\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
