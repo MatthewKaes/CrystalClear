@@ -208,7 +208,6 @@ void Crystal_Interpreter::Process_Package(const char* code)
     Create_Symbol(&package_code, &sym);
   }
   //Evaluating the contents of the package.
-  Create_Symbol(&package_code, &sym);
   while(scope)
   {
     Create_Symbol(&package_code, &sym);
@@ -224,10 +223,16 @@ void Crystal_Interpreter::Process_Package(const char* code)
       continue;
     }
     if(sym.str[0] == '(' || sym.str[0] == '[')
-      precedence += 1;
+    {
+      precedence++;
+      continue;
+    }
 
     if(sym.str[0] == ')' || sym.str[0] == ']')
-      precedence -= 1;
+    {
+      precedence--;
+      continue;
+    }
 
     Syntax_Node* new_node = syntax.Acquire_Node();
     *new_node->Acquire() = sym;

@@ -30,10 +30,20 @@ void Syntax_Node::Process(Syntax_Node* node)
 }
 bool Syntax_Node::Evaluate()
 {  
+  bool evaluation;
   for(int i = 0; i < MAX_ARGS; i++)
+  {
     if(params[i])
+    {
+      evaluation = true;
       if(!params[i]->Evaluate())
+      {
         return false;
+      }
+    }
+  }
+  if(!evaluation)
+    return true;
 
   Bytecode new_code;
   new_code.code_gen = Resolve_Genorator(&sym);
