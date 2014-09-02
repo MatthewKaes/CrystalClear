@@ -35,6 +35,8 @@ bool is_symbol(char object)
   case '7':
   case '8':
   case '9':
+  case '\n':
+  case ' ':
     return true;
   default:
     return false;
