@@ -15,18 +15,23 @@ public:
   void Interpret();
 
 private:
+
+  enum PACKAGE_TYPE { PGK_EXE, PGK_OBJ };
   //Hidden constructor
   Crystal_Interpreter();
 
   //Interpret Process under the hood
   void Format_Code();
+  void Lookup_Packages();
   void Process_Code();
   void Process_Package();
 
   //Private members
   Crystal_Compiler* comp;
   std::string code_cache;
+  std::string code_out;
   Syntax_Tree stree;
+  std::unordered_map<std::string, PACKAGE_TYPE> packages;
 };
 
 #endif

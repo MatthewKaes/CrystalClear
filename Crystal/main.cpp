@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <boost\filesystem.hpp>
 
 #include "Compiler.h"
 #include "Interpreter.h"
@@ -10,33 +11,33 @@
 int Process_Root(Crystal_Compiler* comp, const char* rootdir)
 {
     Crystal_Interpreter interpreter(comp);
-    HANDLE dirhand;
-    WIN32_FIND_DATAA data;
-     
-    SecureZeroMemory(&dirhand, sizeof(HANDLE));
-    SecureZeroMemory(&data, sizeof(WIN32_FIND_DATA));
-     
+    boost::filesystem::path root(rootdir);
     int Files_Read = 0;
-     
-    dirhand = FindFirstFileA(rootdir, &data);
-    bool processing = (dirhand != INVALID_HANDLE_VALUE);
-     
-    while(processing)
+
+    if(!boost::filesystem::exists(root) || !boost::filesystem::is_directory(root))
     {
-		  ++Files_Read;
-		  if(strcmp((char*)data.cFileName, ".") && strcmp((char*)data.cFileName, ".."))
-		  {
-        interpreter.Cache_Code((char*)data.cFileName);
-		  }
-     
-		  int cont = FindNextFileA(dirhand, &data);
-		  processing = (cont != 0);
+      printf("CRYSTAL ERROR: Root path is not a directory. Crystal must be pointed to a directory to run. \n\n");
+      return 1;
     }
+
+    for (boost::filesystem::directory_iterator it(root); it != boost::filesystem::directory_iterator(); ++it)
+    {
+      if(boost::filesystem::is_regular_file(it->path()))
+      {
+        if(!it->path().extension().compare(std::string(".cry")))
+        {
+          Files_Read++;
+          interpreter.Cache_Code(it->path().generic_string().c_str());
+        }
+      }
+    }
+    
     if(!Files_Read)
     {
       printf("CRYSTAL ERROR: Root project empty. The Root project must contain one or more files. \n\n");
       return 1;
     }
+
     interpreter.Interpret();
     return 0;
  }
