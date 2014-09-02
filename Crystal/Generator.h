@@ -3,10 +3,10 @@
 
 #include "Compiler.h"
 
-typedef bool (*GENERATOR_CODE)(Crystal_Compiler*);
+typedef bool (*GENERATOR_CODE)(Crystal_Compiler*, std::vector<Crystal_Data>*);
 
-GENERATOR_CODE Resolve_Genorator(Data_Type type);
+GENERATOR_CODE Resolve_Genorator(Crystal_Data* sym);
 
-bool Null_Gen(Crystal_Compiler* target);
+bool Null_Gen(Crystal_Compiler* target, std::vector<Crystal_Data>* syms);
 
 #endif

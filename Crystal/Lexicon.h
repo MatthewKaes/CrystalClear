@@ -14,7 +14,6 @@ bool is_number(char object);
 //int arithmetic_priority(const char* object);
 
 void Create_Symbol(const char** stream, Crystal_Data* sym);
-void Create_Symbol(const char** stream, Crystal_Data* sym);
 void Resolve_Type(Crystal_Data* sym);
 
 //bool sym_to_b(const Crystal_Symbol* object);

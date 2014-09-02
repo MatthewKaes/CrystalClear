@@ -12,14 +12,20 @@ Crystal_Compiler::~Crystal_Compiler()
   delete Machine;
 }
 
-void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsigned arguments)
+void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsigned stack_size, unsigned arguments)
 {
   program.load = (byte*)VirtualAllocEx( GetCurrentProcess(), 0, 1<<10, MEM_COMMIT | MEM_RESERVE , PAGE_EXECUTE_READWRITE);
   Machine->Setup(name, program.load);
+
+  //Local and stack depth.
   locals_count = locals_used;
-  stack_size = (locals_count + CRY_NA) * VAR_SIZE + 4;
+  stack_depth = stack_size;
+  if(stack_depth == 0)
+    stack_depth = 1;
+
+  stack_size = (locals_count + stack_depth) * VAR_SIZE + 4;
   Machine->Allocate_Stack(stack_size);
-  states.resize(locals_count + CRY_NA);
+  states.resize(locals_count + stack_depth);
 }
 void Crystal_Compiler::End_Encode()
 {
@@ -118,7 +124,7 @@ void Crystal_Compiler::Return(unsigned var)
   //Finalize return
   Machine->Make_Label(label);
   //cleanup 
-  for(unsigned i = 0; i < (locals_count + CRY_NA); i++)
+  for(unsigned i = 0; i < (locals_count + stack_depth); i++)
   {
     Garbage_Collection(i);
   }
@@ -131,12 +137,12 @@ void Crystal_Compiler::Return()
   //Check to see if eax was loaded with something
   Machine->CmpF(RETURN_ADDRESS, 0);
   Machine->Je(label);
-  Load(Addr_Reg(CRY_R0));
+  Load(Addr_Reg(0));
   Machine->Load_Ptr(RETURN_ADDRESS);
-  Machine->MovP(stack_size - VAR_SIZE * Addr_Reg(CRY_R0) - DATA_TYPE, DATA_TYPE, true);
+  Machine->MovP(stack_size - VAR_SIZE * Addr_Reg(0) - DATA_TYPE, DATA_TYPE, true);
   Machine->Make_Label(label);
   //cleanup 
-  for(unsigned i = 0; i < (locals_count + CRY_NA); i++)
+  for(unsigned i = 0; i < (locals_count + stack_depth); i++)
   {
     Garbage_Collection(i);
   }
@@ -830,7 +836,7 @@ void Crystal_Compiler::MulC(unsigned dest, CRY_ARG const_)
     //TO DO:
   }
 }
-unsigned Crystal_Compiler::Addr_Reg(CRY_REGISTER reg)
+unsigned Crystal_Compiler::Addr_Reg(unsigned reg)
 {
   return locals_count + reg;
 }

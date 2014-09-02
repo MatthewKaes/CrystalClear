@@ -53,13 +53,13 @@ bool is_number(char object)
 void Create_Symbol(const char** stream, Crystal_Data* sym)
 {
   sym->str.clear();
-  while(**stream == '\n' || **stream == ' ')
+  while(**stream == ' ')
   {
     (*stream)++;
   }
   if(**stream != '\"')
   {
-    while(**stream != '\n' && **stream != ' ' && **stream != 0)
+    while(**stream != ' ' && **stream != 0)
     {
       sym->str.push_back(**stream);
       (*stream)++;
@@ -67,7 +67,6 @@ void Create_Symbol(const char** stream, Crystal_Data* sym)
   }
   else
   {
-    sym->str.push_back(**stream);
     (*stream)++;
     while(**stream != '\"' && **stream != 0)
     {
@@ -75,6 +74,8 @@ void Create_Symbol(const char** stream, Crystal_Data* sym)
       (*stream)++;
     }
     (*stream)++;
+    sym->type = DAT_STRING;
+    return;
   }
   Resolve_Type(sym);
 }
@@ -97,6 +98,10 @@ void Resolve_Type(Crystal_Data* sym)
   {
     sym->type = DAT_BOOL;
   }
+  else if(!sym->str.compare("nil"))
+  {
+    sym->type = DAT_NIL;
+  }
   else if(is_symbol(sym->str[0]))
   {
     if(is_number(sym->str[0]))
@@ -108,7 +113,7 @@ void Resolve_Type(Crystal_Data* sym)
       sym->type = DAT_OP;
     }
   }
-
+  sym->type = DAT_LOOKUP;
 }
 
 void i_to_str(int object, std::string* value)

@@ -60,6 +60,9 @@
     <ClCompile Include="Lexicon.cpp">
       <Filter>Interpreter</Filter>
     </ClCompile>
+    <ClCompile Include="Bytecode.cpp">
+      <Filter>Syntax</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Crystal.h">
@@ -97,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="Lexicon.h">
       <Filter>Interpreter\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Bytecode.h">
+      <Filter>Syntax\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

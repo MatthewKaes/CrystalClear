@@ -50,6 +50,7 @@ int main(int argc, const char **argv)
 
     if(Process_Root(&comp, argv[1]))
     {
+      printf("CRYSTAL ERROR: Unable to process the project root directory.\n");
       return 1;
     }
     
@@ -65,7 +66,8 @@ int main(int argc, const char **argv)
     Crystal_Symbol exit_sym;
     if(comp.Execute(&exit_sym))
     {
-      printf("CRYSTAL ERROR: could not file entry point.\nAt least one file needs to include a \"main\" package.\n");
+      printf("CRYSTAL ERROR: could not file entry point.\nA file needs to include a \"main\" package.\n");
+      return 1;
     }
 
     //Print the exit sym

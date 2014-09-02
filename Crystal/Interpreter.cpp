@@ -3,7 +3,7 @@
 
 #define BUFFER_SIZE 0x8000
 
-Crystal_Interpreter::Crystal_Interpreter(Crystal_Compiler* compiler) : stree(compiler)
+Crystal_Interpreter::Crystal_Interpreter(Crystal_Compiler* compiler)
 {
   comp = compiler;
   code_cache.assign(" ");
@@ -56,11 +56,14 @@ void Crystal_Interpreter::Format_Code()
     switch(*code_ptr)
     {
     case '\n':
-      if(code_out[code_out.size() - 1] == '\n')
+      if(code_out[code_out.size() - 2] == '\n')
+      {
         code_ptr++;
+        continue;
+      }
       else
         code_out.push_back(*code_ptr++);
-     continue;
+      break;
     case ' ':
       code_ptr++;
       continue;
@@ -172,9 +175,127 @@ void Crystal_Interpreter::Lookup_Packages()
 }
 void Crystal_Interpreter::Process_Code()
 {
-
+  const char* package_code = code_out.c_str();
+  Crystal_Data sym;
+  while(*package_code)
+  {
+    Create_Symbol(&package_code, &sym);
+    if(!sym.str.compare("def"))
+      Process_Package(package_code);
+  }
 }
-void Crystal_Interpreter::Process_Package()
+void Crystal_Interpreter::Process_Package(const char* code)
 {
+  Syntax_Tree syntax;
+  Crystal_Data entry, sym;
+  std::unordered_map<std::string, unsigned> local_map;
+  const char* package_code = code;
+  unsigned scope = 1;
+  unsigned precedence = 0;
+  unsigned arguments = 0;
+  
+  //Get the function signature data.
+  Create_Symbol(&package_code, &entry);
+  Create_Symbol(&package_code, &sym);
+  while(sym.str[0] != '\n')
+  {
+    if(sym.str[0] != '(' && sym.str[0] != ')')
+    {
+      unsigned index = local_map.size();
+      local_map[sym.str] = index;
+      arguments++;
+    }
+    Create_Symbol(&package_code, &sym);
+  }
+  //Evaluating the contents of the package.
+  Create_Symbol(&package_code, &sym);
+  while(scope)
+  {
+    Create_Symbol(&package_code, &sym);
+    if(!sym.str.compare("end"))
+    {
+      scope -= 1;
+      continue;
+    }
+    if(sym.str[0] == '\n')
+    {
+      precedence = 0;
+      syntax.Evaluate();
+      continue;
+    }
+    if(sym.str[0] == '(' || sym.str[0] == '[')
+      precedence += 1;
 
+    if(sym.str[0] == ')' || sym.str[0] == ']')
+      precedence -= 1;
+
+    Syntax_Node* new_node = syntax.Acquire_Node();
+    *new_node->Acquire() = sym;
+    new_node->priority = Get_Precedence(sym.str.c_str()) + Get_Precedence(NULL) * precedence;
+    syntax.Process(new_node);
+  }
+
+  //Start the encoding
+  comp->Start_Encode(entry.str.c_str(), local_map.size(), syntax.Get_Depth(), arguments);
+  std::vector<Bytecode>* codes = syntax.Get_Bytecodes();
+  for(unsigned i = 0; i < codes->size(); i++)
+  {
+    (*codes)[i].Execute(comp);
+  }
+  comp->End_Encode();
+  syntax.Reset();
+}
+unsigned Crystal_Interpreter::Get_Precedence(const char* sym)
+{
+  if(!sym)
+  {
+    return 13;
+  }
+  switch(sym[0])
+  {
+  case '(':
+    return -1;
+  case ')':
+    return -2;
+  case 'f':
+  case '[':
+    return 11;
+  case ':':
+    return 9;
+  case '^':
+    return 8;
+  case '*':
+  case '/':
+    return 7;
+  case '+':
+  case '-':
+    return 6;
+  case '%':
+    return 5;
+  case '.':
+    if(sym[1] == '.' && sym[2] == '.')
+    {
+      return 5;
+    }
+    else if(sym[1] == '\0')
+    {
+      return 10;
+    }
+  case '|':
+  case '&':
+    return 3;
+  case '<':
+  case '>':
+    return 4;
+  case '=':
+    if(sym[1] == '=')
+      return 4;
+    else
+      return 2;
+  case 'k':
+  case ',':
+    return 1;
+  default:
+    return 13;
+  }
 }

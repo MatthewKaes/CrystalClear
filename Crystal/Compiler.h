@@ -28,9 +28,6 @@
       resolve = CRY_NIL; \
       break;
 
-
-enum CRY_REGISTER { CRY_R0, CRY_R1, CRY_R2, CRY_R3, CRY_NA};
-
 union funcptr {
   FuncPtr call;
   BYTE* load;
@@ -73,7 +70,7 @@ class Crystal_Compiler
 public:
   Crystal_Compiler(AOT_Compiler* target);
   ~Crystal_Compiler();
-  void Start_Encode(std::string name, unsigned locals_used, unsigned arguments = 0);
+  void Start_Encode(std::string name, unsigned locals_used, unsigned stack_size, unsigned arguments = 0);
   void End_Encode();
   void Linker();
   int Execute(Crystal_Symbol* ret = 0);
@@ -98,7 +95,7 @@ public:
   void Mul(unsigned dest, unsigned source);
   void MulC(unsigned dest, CRY_ARG const_);
 
-  unsigned Addr_Reg(CRY_REGISTER reg);
+  unsigned Addr_Reg(unsigned reg);
 private:
   //==========================
   // Helper Functions
@@ -124,6 +121,7 @@ private:
   CryProg program;
   unsigned locals_count;
   unsigned stack_size;
+  unsigned stack_depth;
   std::vector<CryPackage> packages;
   std::unordered_map<std::string, CryProg> package_lookup;
 };

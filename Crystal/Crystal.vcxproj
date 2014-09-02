@@ -71,7 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bytecode.cpp" />
     <ClCompile Include="Clarity.cpp" />
     <ClCompile Include="Compiler.cpp" />
     <ClCompile Include="Generator.cpp" />
@@ -156,6 +157,7 @@
     <ClCompile Include="Syntax_Tree.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bytecode.h" />
     <ClInclude Include="Clarity.h" />
     <ClInclude Include="Compiler.h" />
     <ClInclude Include="Crystal.h" />

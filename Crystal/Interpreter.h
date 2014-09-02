@@ -24,7 +24,8 @@ private:
   void Format_Code();
   void Lookup_Packages();
   void Process_Code();
-  void Process_Package();
+  void Process_Package(const char* code);
+  unsigned Get_Precedence(const char*  sym);
 
   //Private members
   Crystal_Compiler* comp;

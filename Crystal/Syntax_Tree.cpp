@@ -1,9 +1,9 @@
 #include "Syntax_Tree.h"
 
-Syntax_Node::Syntax_Node(std::vector<Syntax_Node*>* pool, Crystal_Compiler* compiler)
+Syntax_Node::Syntax_Node(std::vector<Syntax_Node*>* pool, Syntax_Tree* tree)
 {
+  tree_ = tree;
   pool_ = pool;
-  compiler_ = compiler;
 }
 void Syntax_Node::Process(Syntax_Node* node)
 {
@@ -35,9 +35,36 @@ bool Syntax_Node::Evaluate()
       if(!params[i]->Evaluate())
         return false;
 
-  if(!code_gen(compiler_))
-    return false;
+  Bytecode new_code;
+  new_code.code_gen = Resolve_Genorator(&sym);
 
+  std::vector<bool>* regptr = tree_->Get_Registers();
+  for(int i = 0; i < MAX_ARGS; i++)
+  {
+    if(params[i])
+    {
+      new_code.elements.push_back(*params[i]->Acquire());
+      if(params[i]->Acquire()->type == DAT_REGISTRY)
+        (*regptr)[i] = false;
+    }
+  }
+
+  sym.type = DAT_REGISTRY;
+  sym.i32 = -1;
+  for(unsigned i = 0; i < regptr->size(); i++)
+  {
+    if(!(*regptr)[i])
+    {
+      sym.i32 = static_cast<unsigned>(i);
+      (*regptr)[i] = true;
+      break;
+    }
+  }
+  if(sym.i32 == -1)
+  {
+    sym.i32 = regptr->size();
+    regptr->push_back(true);
+  }
   return true;
 }
 void Syntax_Node::Remove()
@@ -66,13 +93,10 @@ void Syntax_Node::Finalize()
     index = 0;
   else
     index = 1;
-
-  code_gen = Resolve_Genorator(sym.type);
 }
-Syntax_Tree::Syntax_Tree(Crystal_Compiler* compiler)
+Syntax_Tree::Syntax_Tree()
 {
-  compiler_ = compiler;
-  root = NULL;
+  Reset();
 }
 Syntax_Tree::~Syntax_Tree()
 {
@@ -88,7 +112,7 @@ Syntax_Node* Syntax_Tree::Acquire_Node()
 {
   if(nodepool.empty())
   {
-    return new Syntax_Node(&nodepool, compiler_);
+    return new Syntax_Node(&nodepool, this);
   }
   Syntax_Node* node = nodepool.back();
   nodepool.pop_back();
@@ -113,5 +137,27 @@ bool Syntax_Tree::Evaluate()
   bool result = root->Evaluate();
   root->Remove();
   root = NULL;
+  for(unsigned i = 0; i < registers.size(); i++)
+  {
+    registers[i] = false;
+  }
   return result;
+}
+void Syntax_Tree::Reset()
+{
+  package_depth = 0;
+  root = NULL;
+  bytecodes.clear();
+}
+std::vector<Bytecode>* Syntax_Tree::Get_Bytecodes()
+{
+  return &bytecodes;
+}
+std::vector<bool>* Syntax_Tree::Get_Registers()
+{
+  return &registers;
+}
+unsigned Syntax_Tree::Get_Depth()
+{
+  return package_depth;
 }
