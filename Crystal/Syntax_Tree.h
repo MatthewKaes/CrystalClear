@@ -45,7 +45,6 @@ public:
   unsigned Get_Depth();
 
 private:
-  unsigned package_depth;
   std::vector<Syntax_Node*> nodepool;
   Syntax_Node* root;
   std::vector<bool> registers;

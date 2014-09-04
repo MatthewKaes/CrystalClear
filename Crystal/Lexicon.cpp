@@ -113,7 +113,10 @@ void Resolve_Type(Crystal_Data* sym)
       sym->type = DAT_OP;
     }
   }
-  sym->type = DAT_LOOKUP;
+  else
+  {
+    sym->type = DAT_LOOKUP;
+  }
 }
 
 void i_to_str(int object, std::string* value)

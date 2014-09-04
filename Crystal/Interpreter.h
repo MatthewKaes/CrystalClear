@@ -17,9 +17,22 @@ public:
 private:
 
   enum PACKAGE_TYPE { PGK_EXE, PGK_OBJ };
+
+  struct Package_Info {
+    PACKAGE_TYPE pt;
+    union{
+      unsigned attributes;
+      unsigned arguments;
+    } info;
+    void* function;
+  };
+
   //Hidden constructor
   Crystal_Interpreter();
 
+  //Populate the data for built in packages.
+  void Populate_BIP();
+  
   //Interpret Process under the hood
   void Format_Code();
   void Lookup_Packages();
@@ -32,7 +45,8 @@ private:
   std::string code_cache;
   std::string code_out;
   Syntax_Tree stree;
-  std::unordered_map<std::string, PACKAGE_TYPE> packages;
+  std::unordered_map<std::string, Package_Info> packages;
+  std::unordered_map<std::string, Package_Info> built_in;
 };
 
 #endif

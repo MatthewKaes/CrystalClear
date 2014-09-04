@@ -1,4 +1,5 @@
 #include "Interpreter.h"
+#include "Library.h"
 #include <stdio.h>
 
 #define BUFFER_SIZE 0x8000
@@ -7,10 +8,19 @@ Crystal_Interpreter::Crystal_Interpreter(Crystal_Compiler* compiler)
 {
   comp = compiler;
   code_cache.assign(" ");
+  Populate_BIP();
 }
-Crystal_Interpreter::~Crystal_Interpreter()
+Crystal_Interpreter::~Crystal_Interpreter(){}
+void Crystal_Interpreter::Populate_BIP()
 {
+  //Define all executable packages
+  Package_Info new_package;
+  new_package.pt = PGK_EXE;
 
+  //print
+  new_package.function = Crystal_Print;
+  new_package.info.arguments = 1;
+  built_in["print"] = new_package;
 }
 void Crystal_Interpreter::Cache_Code(const char* filename)
 {
@@ -154,21 +164,37 @@ void Crystal_Interpreter::Format_Code()
 }
 void Crystal_Interpreter::Lookup_Packages()
 {
+  Crystal_Data pkg, sym;
   unsigned offset = 0;
   offset = code_out.find("def ", offset);
   while(offset != std::string::npos)
   {
     offset += strlen("def ");
-    Crystal_Data pkg;
     const char* ptr = code_out.c_str() + offset;
     Create_Symbol(&ptr, &pkg);
-    if(packages.find(pkg.str) != packages.end())
+    if(packages.find(pkg.str.c_str()) != packages.end())
     {
       printf("CRYSTAL ERROR: package %s is defined multiple times.", pkg.str.c_str());
     }
     else
     {
-      packages[pkg.str] = PGK_EXE;
+      //Define a new package
+      Package_Info new_package;
+      new_package.pt = PGK_EXE;
+      new_package.info.arguments = 0;
+      
+      //Get the arguments
+      Create_Symbol(&ptr, &sym); 
+      while(sym.str[0] != '\n')
+      {
+        if(sym.str[0] != '(' && sym.str[0] != ')')
+        {
+          new_package.info.arguments++;
+        }
+        Create_Symbol(&ptr, &sym);
+      }
+
+      packages[pkg.str.c_str()] = new_package; 
     }
     offset = code_out.find("def ", offset);
   }
@@ -211,32 +237,72 @@ void Crystal_Interpreter::Process_Package(const char* code)
   while(scope)
   {
     Create_Symbol(&package_code, &sym);
-    if(!sym.str.compare("end"))
+
+    if(sym.type == DAT_LOOKUP)
     {
-      scope -= 1;
-      continue;
+      //Crystal package call
+      if(packages.find(sym.str.c_str()) != packages.end())
+      {
+        if(packages[sym.str.c_str()].pt == PGK_EXE)
+        {
+          sym.type = DAT_FUNCTION;
+          sym.i32 = packages[sym.str.c_str()].info.arguments;
+        }
+      }
+      else if(built_in.find(sym.str.c_str()) != built_in.end())
+      {
+        if(built_in[sym.str.c_str()].pt == PGK_EXE)
+        {
+          sym.type = DAT_BIFUNCTION;
+          sym.i32 = built_in[sym.str.c_str()].info.arguments;
+          sym.external = built_in[sym.str.c_str()].function;
+        }
+      }
+      else if(local_map.find(sym.str.c_str()) != local_map.end())
+      {
+        sym.type = DAT_LOCAL;
+        sym.i32 = local_map[sym.str.c_str()];
+      }
+      else
+      {
+        sym.type = DAT_LOCAL;
+        sym.i32 = local_map.size();
+        local_map[sym.str.c_str()] = sym.i32;
+      }
     }
+
     if(sym.str[0] == '\n')
     {
       precedence = 0;
       syntax.Evaluate();
       continue;
     }
-    if(sym.str[0] == '(' || sym.str[0] == '[')
+    else if(sym.str[0] == '(' || sym.str[0] == '[')
     {
       precedence++;
       continue;
     }
-
-    if(sym.str[0] == ')' || sym.str[0] == ']')
+    else if(sym.str[0] == ')' || sym.str[0] == ']')
     {
       precedence--;
       continue;
     }
+    else if(!sym.str.compare("end"))
+    {
+      scope -= 1;
+      continue;
+    }
 
+    //Creating the node
     Syntax_Node* new_node = syntax.Acquire_Node();
     *new_node->Acquire() = sym;
-    new_node->priority = Get_Precedence(sym.str.c_str()) + Get_Precedence(NULL) * precedence;
+
+    //Precedence
+    if(sym.type == DAT_OP)
+      new_node->priority = Get_Precedence(sym.str.c_str()) + Get_Precedence(NULL) * precedence;
+    else
+      new_node->priority = Get_Precedence(NULL) * (precedence + 1);
+    //Process node
     syntax.Process(new_node);
   }
 
