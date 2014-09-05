@@ -12,14 +12,14 @@ Crystal_Compiler::~Crystal_Compiler()
   delete Machine;
 }
 
-void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsigned stack_size, unsigned arguments)
+void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsigned stack_count, unsigned arguments)
 {
   program.load = (byte*)VirtualAllocEx( GetCurrentProcess(), 0, 1<<10, MEM_COMMIT | MEM_RESERVE , PAGE_EXECUTE_READWRITE);
   Machine->Setup(name, program.load);
 
   //Local and stack depth.
   locals_count = locals_used;
-  stack_depth = stack_size;
+  stack_depth = stack_count;
   if(stack_depth == 0)
     stack_depth = 1;
 
@@ -137,6 +137,7 @@ void Crystal_Compiler::Return()
   //Check to see if eax was loaded with something
   Machine->CmpF(RETURN_ADDRESS, 0);
   Machine->Je(label);
+  CRY_ARG reg;
   Load(Addr_Reg(0));
   Machine->Load_Ptr(RETURN_ADDRESS);
   Machine->MovP(stack_size - VAR_SIZE * Addr_Reg(0) - DATA_TYPE, DATA_TYPE, true);
