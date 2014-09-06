@@ -59,10 +59,12 @@ bool Syntax_Node::Evaluate()
     return true;
 
   new_code.code_gen = Resolve_Genorator(&sym);
-
-  if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION) && index < sym.i32)
-  {
-    printf("ERROR: \"%s\" requires %d argument%s.", sym.str.c_str(), sym.i32, sym.i32 == 1 ? "" : "s");
+  new_code.base = sym;
+  if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION))
+  { 
+    if(index != sym.i32 - 1)
+      printf("ERROR: \"%s\" requires %d argument%s.", sym.str.c_str(), sym.i32, sym.i32 == 1 ? "" : "s");
+    Force_Memory(&new_code);
   }
 
   std::vector<bool>* regptr = tree_->Get_Registers();
@@ -76,25 +78,19 @@ bool Syntax_Node::Evaluate()
     }
   }
 
-  sym.type = DAT_REGISTRY;
-  sym.i32 = -1;
-  for(unsigned i = 0; i < regptr->size(); i++)
+  if(parent != NULL)
   {
-    if(!(*regptr)[i])
+    sym.type = DAT_REGISTRY;
+    sym.i32 = tree_->Get_Open_Reg();
+    if(sym.i32 == -1)
     {
-      sym.i32 = static_cast<unsigned>(i);
-      (*regptr)[i] = true;
-      break;
+      sym.i32 = regptr->size();
+      regptr->push_back(true);
     }
-  }
-  if(sym.i32 == -1)
-  {
-    sym.i32 = regptr->size();
-    regptr->push_back(true);
+    new_code.result = sym;
   }
   
   //Finalize Bytecode
-  new_code.result = sym;
   tree_->Get_Bytecodes()->push_back(new_code);
 
   return true;
@@ -125,6 +121,28 @@ void Syntax_Node::Finalize()
     index = 0;
   else
     index = 1;
+}
+void Syntax_Node::Force_Memory(Bytecode* code)
+{
+  for(int i = 0; i < MAX_ARGS; i++)
+  {
+    if(params[i])
+    {
+      Data_Type t = params[i]->Acquire()->type;
+      if(t != DAT_LOCAL && t != DAT_REGISTRY)
+      {
+        code->elements.push_back(sym);
+        sym.type = DAT_REGISTRY;
+        int index = tree_->Get_Open_Reg();
+        if(index == -1)
+        {
+          index = tree_->Get_Registers()->size();
+          tree_->Get_Registers()->push_back(true);
+        }
+        sym.i32 = index;
+      }
+    }
+  }
 }
 Syntax_Tree::Syntax_Tree()
 {
@@ -191,4 +209,16 @@ std::vector<bool>* Syntax_Tree::Get_Registers()
 unsigned Syntax_Tree::Get_Depth()
 {
   return Get_Registers()->size();
+}
+int Syntax_Tree::Get_Open_Reg()
+{
+  for(unsigned i = 0; i < registers.size(); i++)
+  {
+    if(!registers[i])
+    {
+      registers[i] = true;
+      return i;
+    }
+  }
+  return -1;
 }

@@ -1,6 +1,46 @@
 #include "Compiler.h"
 #include "Lexicon.h"
 
+int CRY_ARG::poolindex = 0;
+char CRY_ARG::strpool[STRING_POOL] = {0};
+
+CRY_ARG::CRY_ARG(const char* str) : type(CRY_TEXT), filt(CRY_TEXT)
+{
+  str_ = strpool + poolindex;
+  strcpy(str_, str);
+  poolindex += strlen(str) + 2;
+  strpool[poolindex - 1] = '\0';
+}
+CRY_ARG::CRY_ARG(Crystal_Data* sym)
+{
+  switch(sym->type)
+  {
+  case DAT_NIL:
+    type = CRY_NIL;
+    break;
+  case DAT_INT:
+    type = CRY_INT;
+    num_ = sym->i32;
+    break;
+  case DAT_BOOL:
+    type = CRY_BOOL;
+    bol_ = sym->b;
+    break;
+  case DAT_DOUBLE:
+    type = CRY_DOUBLE;
+    dec_ = sym->d;
+    break;
+  case DAT_STRING:
+    type = CRY_TEXT;
+    str_ = strpool + poolindex;
+    strcpy(str_, sym->str.c_str());
+    poolindex += sym->str.size() + 2;
+    strpool[poolindex - 1] = '\0';
+    break;
+  }
+  filt.Set(type);
+}
+
 Crystal_Compiler::Crystal_Compiler(AOT_Compiler* target)
 {
   Machine = target;

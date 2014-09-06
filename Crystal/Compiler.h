@@ -11,6 +11,7 @@
 #include "Machines\Machine.h"
 
 //Crystal Constants
+#define STRING_POOL 0xFFFF
 #define STACK_RESERVE 0xFF
 #define RETURN_ADDRESS 0x10
 #define CRY_NULL static_cast<unsigned>(-1)
@@ -53,16 +54,20 @@ public:
   CRY_ARG(__int64 lrg) : lrg_(lrg), type(CRY_INT64), filt(CRY_INT64){};
   CRY_ARG(bool bol) : bol_(bol), type(CRY_BOOL), filt(CRY_BOOL){};
   CRY_ARG(double dec) : dec_(dec), type(CRY_DOUBLE), filt(CRY_DOUBLE){};
-  CRY_ARG(const char* str) : str_(str), type(CRY_TEXT), filt(CRY_TEXT){};
+  CRY_ARG(const char* str);
+  CRY_ARG(Crystal_Data* sym);
   union{
     int num_;
     __int64 lrg_;
     bool bol_;
     double dec_;
-    const char* str_;
+    char* str_;
   };
   Symbol_Type type;
   Clarity_Filter filt;
+
+  static char strpool[STRING_POOL];
+  static int poolindex;
 };
 
 class Crystal_Compiler 

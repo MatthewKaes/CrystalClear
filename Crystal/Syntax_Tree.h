@@ -20,6 +20,8 @@ public:
   Crystal_Data* Acquire();
   void Finalize();
 
+  void Force_Memory(Bytecode* code);
+
   int priority;
 
 private:
@@ -43,6 +45,7 @@ public:
   std::vector<Bytecode>* Get_Bytecodes();
   std::vector<bool>* Get_Registers();
   unsigned Get_Depth();
+  int Get_Open_Reg();
 
 private:
   std::vector<Syntax_Node*> nodepool;

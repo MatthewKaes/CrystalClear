@@ -1,13 +1,16 @@
 #Simple crystal code for testing
 
 def main()
-  stuff = stuff+1.0^   6
 
-  if(stuff == nil)
+  print("We are in main!")
+  
+  #stuff = stuff+1.0^   6
 
-  end
+  #if(stuff == nil)
+
+  #end
   #string functionallity
-  str = "String example of \\parsing text and escape codes like \n for new line."
+  #str = "String example of \\parsing text and escape codes like \n for new line."
 
-  print(#inline comments#str)
+  #print(#inline comments#str)
 end
