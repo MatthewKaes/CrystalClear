@@ -148,7 +148,7 @@ void Crystal_Interpreter::Format_Code()
       }
       else if(!is_symbol(*code_ptr))
       {
-        while(!is_symbol(*code_ptr) && *code_ptr != '\0' && *code_ptr != '#')
+        while(is_number(*code_ptr) || (!is_symbol(*code_ptr) && *code_ptr != '\0' && *code_ptr != '#'))
         {
           code_out.push_back(*code_ptr++);
         }
@@ -238,6 +238,30 @@ void Crystal_Interpreter::Process_Package(const char* code)
   {
     Create_Symbol(&package_code, &sym);
 
+    //Special symbol handling
+    if(sym.str[0] == '\n')
+    {
+      precedence = 0;
+      syntax.Evaluate();
+      continue;
+    }
+    else if(sym.str[0] == '(' || sym.str[0] == '[')
+    {
+      precedence++;
+      continue;
+    }
+    else if(sym.str[0] == ')' || sym.str[0] == ']')
+    {
+      precedence--;
+      continue;
+    }
+    else if(!sym.str.compare("end"))
+    {
+      scope -= 1;
+      continue;
+    }
+    
+    //Look up nodes that need are unknown
     if(sym.type == DAT_LOOKUP)
     {
       //Crystal package call
@@ -270,29 +294,6 @@ void Crystal_Interpreter::Process_Package(const char* code)
         local_map[sym.str.c_str()] = sym.i32;
       }
     }
-
-    if(sym.str[0] == '\n')
-    {
-      precedence = 0;
-      syntax.Evaluate();
-      continue;
-    }
-    else if(sym.str[0] == '(' || sym.str[0] == '[')
-    {
-      precedence++;
-      continue;
-    }
-    else if(sym.str[0] == ')' || sym.str[0] == ']')
-    {
-      precedence--;
-      continue;
-    }
-    else if(!sym.str.compare("end"))
-    {
-      scope -= 1;
-      continue;
-    }
-
     //Creating the node
     Syntax_Node* new_node = syntax.Acquire_Node();
     *new_node->Acquire() = sym;

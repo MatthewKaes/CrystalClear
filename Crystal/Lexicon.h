@@ -16,9 +16,9 @@ bool is_number(char object);
 void Create_Symbol(const char** stream, Crystal_Data* sym);
 void Resolve_Type(Crystal_Data* sym);
 
-//bool sym_to_b(const Crystal_Symbol* object);
-//double sym_to_d(const Crystal_Symbol* object);
-//__int64 sym_to_i(const Crystal_Symbol* object);
+bool str_to_b(const std::string* object);
+double str_to_d(const std::string* object);
+int str_to_i(const std::string* object);
 
 void i_to_str(int object, std::string* value);
 void l_to_str(__int64 object, std::string* value);

@@ -232,6 +232,11 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
       Machine->Mov(EAX, offset_source - DATA_UPPER);
       Machine->Mov(offset_dest - DATA_UPPER, EAX);
     }
+    if(states[source].Test(CRY_TEXT))
+    {
+      Machine->Mov(EAX, offset_source - DATA_PNTR);
+      Machine->Mov(offset_dest - DATA_PNTR, EAX);
+    }
   }
   if(states[source].Test(CRY_STRING))
   {

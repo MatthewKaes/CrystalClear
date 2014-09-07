@@ -97,6 +97,7 @@ void Resolve_Type(Crystal_Data* sym)
   else if(!sym->str.compare("true") || !sym->str.compare("false"))
   {
     sym->type = DAT_BOOL;
+    sym->b = str_to_b;
   }
   else if(!sym->str.compare("nil"))
   {
@@ -107,6 +108,7 @@ void Resolve_Type(Crystal_Data* sym)
     if(is_number(sym->str[0]))
     {
       sym->type = DAT_INT;
+      sym->i32 = str_to_i(&sym->str);
     }
     else
     {
@@ -117,6 +119,39 @@ void Resolve_Type(Crystal_Data* sym)
   {
     sym->type = DAT_LOOKUP;
   }
+}
+
+bool str_to_b(const std::string* object)
+{
+  if(!object->compare("true"))
+    return true;
+  return false;
+}
+double str_to_d(const std::string* object)
+{
+  return 0.0;
+}
+int str_to_i(const std::string* object)
+{
+  int convert = 0;
+  if((*object)[0] == '-')
+  {
+    for(unsigned i = 1; i < object->size(); i++)
+    {
+      convert *= 10;
+      convert += (*object)[i] - '0';
+    }
+    convert *= -1;
+  }
+  else
+  {
+    for(unsigned i = 0; i < object->size(); i++)
+    {
+      convert *= 10;
+      convert += (*object)[i] - '0';
+    }
+  }
+  return convert;
 }
 
 void i_to_str(int object, std::string* value)

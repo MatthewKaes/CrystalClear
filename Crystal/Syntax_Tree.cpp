@@ -53,7 +53,6 @@ bool Syntax_Node::Evaluate()
     if(params[i])
     {
       evaluation = true;
-      new_code.elements.push_back(*params[i]->Acquire());
       if(!params[i]->Evaluate())
       {
         return false;
@@ -142,18 +141,18 @@ void Syntax_Node::Force_Memory(Bytecode* code)
   {
     if(params[i])
     {
+      code->elements.push_back(*params[i]->Acquire());
       Data_Type t = params[i]->Acquire()->type;
       if(t != DAT_LOCAL && t != DAT_REGISTRY)
       {
-        code->elements.push_back(sym);
-        sym.type = DAT_REGISTRY;
+        params[i]->Acquire()->type = DAT_REGISTRY;
         int index = tree_->Get_Open_Reg();
         if(index == -1)
         {
           index = tree_->Get_Registers()->size();
           tree_->Get_Registers()->push_back(true);
         }
-        sym.i32 = index;
+        params[i]->Acquire()->i32 = index;
       }
     }
   }
