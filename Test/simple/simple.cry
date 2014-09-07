@@ -1,6 +1,15 @@
 #Simple crystal code for testing
 
 def main()
+  #base type test
+  print("Hello world!")
+  print(42)
+  print(true)
+  print(1.54)
+  
+  print("\n")
+  
+  #assignment operator test
   str = "We are in main!"
   str3 = str2 = str
   print(str)

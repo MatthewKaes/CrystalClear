@@ -239,26 +239,29 @@ void Crystal_Interpreter::Process_Package(const char* code)
     Create_Symbol(&package_code, &sym);
 
     //Special symbol handling
-    if(sym.str[0] == '\n')
+    if(sym.type != DAT_STRING)
     {
-      precedence = 0;
-      syntax.Evaluate();
-      continue;
-    }
-    else if(sym.str[0] == '(' || sym.str[0] == '[')
-    {
-      precedence++;
-      continue;
-    }
-    else if(sym.str[0] == ')' || sym.str[0] == ']')
-    {
-      precedence--;
-      continue;
-    }
-    else if(!sym.str.compare("end"))
-    {
-      scope -= 1;
-      continue;
+      if(sym.str[0] == '\n')
+      {
+        precedence = 0;
+        syntax.Evaluate();
+        continue;
+      }
+      else if(sym.str[0] == '(' || sym.str[0] == '[')
+      {
+        precedence++;
+        continue;
+      }
+      else if(sym.str[0] == ')' || sym.str[0] == ']')
+      {
+        precedence--;
+        continue;
+      }
+      else if(!sym.str.compare("end"))
+      {
+        scope -= 1;
+        continue;
+      }
     }
     
     //Look up nodes that need are unknown
