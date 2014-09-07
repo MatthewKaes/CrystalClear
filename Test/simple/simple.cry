@@ -2,8 +2,10 @@
 
 def main()
   str = "We are in main!"
-  str2 = str
+  str3 = str2 = str
+  print(str)
   print(str2)
+  print(str3)
   x = 4
   y = x
   print(x)

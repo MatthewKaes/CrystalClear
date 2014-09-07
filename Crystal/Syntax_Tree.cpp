@@ -18,7 +18,7 @@ void Syntax_Node::Process(Syntax_Node* node)
     }
     return;
   }
-  if(node->priority > priority)
+  if((!node->R_Assoc && node->priority > priority) || (node->R_Assoc && node->priority >= priority))
   {
     if(RIGHT_CHILD)
     {
@@ -88,7 +88,7 @@ bool Syntax_Node::Evaluate()
     //uneccesary registers.
     if(sym.type == DAT_OP && !sym.str.compare("="))
     {
-      new_code.result = *params[0]->Acquire();
+      sym = new_code.result = *params[0]->Acquire();
     }
     else
     {
@@ -124,6 +124,7 @@ Crystal_Data* Syntax_Node::Acquire()
 }
 void Syntax_Node::Finalize()
 {  
+  R_Assoc = false;
   parent = NULL;
   for(int i = 0; i < MAX_ARGS; i++)
   {
@@ -134,6 +135,14 @@ void Syntax_Node::Finalize()
     index = 0;
   else
     index = 1;
+
+  if(sym.type == DAT_OP)
+  {
+    if(!sym.str.compare("="))
+    {
+      R_Assoc = true;
+    }
+  }
 }
 void Syntax_Node::Force_Memory(Bytecode* code)
 {

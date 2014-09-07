@@ -32,6 +32,7 @@ private:
   Syntax_Tree* tree_;
   Crystal_Data sym;
   int index;
+  bool R_Assoc;
 };
 
 class Syntax_Tree {
