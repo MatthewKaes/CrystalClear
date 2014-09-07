@@ -6,6 +6,22 @@ GENERATOR_CODE Resolve_Genorator(Crystal_Data* sym)
   {
   case DAT_BIFUNCTION:
     return Library_Gen;
+  case DAT_OP:
+    return Resolve_Operator(sym);
+  }
+  return Null_Gen;
+}
+GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
+{
+  switch(sym->str.c_str()[0])
+  {
+  case '=':
+    switch(sym->str.c_str()[1])
+    {
+    case '\0':
+      return Assignment_Gen;
+    }
+    return Null_Gen;
   }
   return Null_Gen;
 }

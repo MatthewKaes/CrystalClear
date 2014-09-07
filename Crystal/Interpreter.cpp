@@ -66,7 +66,7 @@ void Crystal_Interpreter::Format_Code()
     switch(*code_ptr)
     {
     case '\n':
-      if(code_out[code_out.size() - 2] == '\n')
+      if(code_out.size() > 1 && code_out[code_out.size() - 2] == '\n')
       {
         code_ptr++;
         continue;

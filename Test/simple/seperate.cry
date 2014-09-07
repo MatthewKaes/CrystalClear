@@ -1,6 +1,6 @@
-def package()
+#def package()
   #preforms operations in a seperate package.
 
-  print("We are in a second package!")
+#  print("We are in a second package!")
 
-end
+#end

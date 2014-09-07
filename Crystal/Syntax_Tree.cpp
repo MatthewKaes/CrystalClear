@@ -35,8 +35,13 @@ void Syntax_Node::Process(Syntax_Node* node)
     node->LEFT_CHILD = this;
     node->parent = parent;
     if(parent)
-      parent->RIGHT_CHILD = node;
+      parent->params[parent->index] = node;
     parent = node;
+
+    if(tree_->Get_Root() == this)
+    {
+      tree_->Set_Root(node);
+    }
   }
 }
 bool Syntax_Node::Evaluate()
@@ -80,14 +85,23 @@ bool Syntax_Node::Evaluate()
 
   if(parent != NULL)
   {
-    sym.type = DAT_REGISTRY;
-    sym.i32 = tree_->Get_Open_Reg();
-    if(sym.i32 == -1)
+    //Stacking assignment operator without using
+    //uneccesary registers.
+    if(sym.type == DAT_OP && !sym.str.compare("="))
     {
-      sym.i32 = regptr->size();
-      regptr->push_back(true);
+      new_code.result = *params[0]->Acquire();
     }
-    new_code.result = sym;
+    else
+    {
+      sym.type = DAT_REGISTRY;
+      sym.i32 = tree_->Get_Open_Reg();
+      if(sym.i32 == -1)
+      {
+        sym.i32 = regptr->size();
+        regptr->push_back(true);
+      }
+      new_code.result = sym;
+    }
   }
   
   //Finalize Bytecode
@@ -198,6 +212,10 @@ void Syntax_Tree::Reset()
   root = NULL;
   bytecodes.clear();
 }
+void Syntax_Tree::Set_Root(Syntax_Node* new_root)
+{
+  root = new_root;
+}
 std::vector<Bytecode>* Syntax_Tree::Get_Bytecodes()
 {
   return &bytecodes;
@@ -209,6 +227,10 @@ std::vector<bool>* Syntax_Tree::Get_Registers()
 unsigned Syntax_Tree::Get_Depth()
 {
   return Get_Registers()->size();
+}
+Syntax_Node* Syntax_Tree::Get_Root()
+{
+  return root;
 }
 int Syntax_Tree::Get_Open_Reg()
 {

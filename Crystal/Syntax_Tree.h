@@ -42,9 +42,13 @@ public:
   void Process(Syntax_Node* node);
   bool Evaluate();
   void Reset();
+
+  void Set_Root(Syntax_Node* new_root);
+
   std::vector<Bytecode>* Get_Bytecodes();
   std::vector<bool>* Get_Registers();
   unsigned Get_Depth();
+  Syntax_Node* Get_Root();
   int Get_Open_Reg();
 
 private:
