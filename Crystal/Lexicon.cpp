@@ -93,11 +93,12 @@ void Resolve_Type(Crystal_Data* sym)
   else if(sym->str.find('.', 1) != std::string::npos)
   {
     sym->type = DAT_DOUBLE;
+    sym->d = str_to_d(&sym->str);
   }
   else if(!sym->str.compare("true") || !sym->str.compare("false"))
   {
     sym->type = DAT_BOOL;
-    sym->b = str_to_b;
+    sym->b = str_to_b(&sym->str);
   }
   else if(!sym->str.compare("nil"))
   {
@@ -128,8 +129,40 @@ bool str_to_b(const std::string* object)
   return false;
 }
 double str_to_d(const std::string* object)
-{
-  return 0.0;
+{  
+  double convert = 0.0;
+  unsigned i;
+  if((*object)[0] == '-')
+  {
+    for(i = 1; i < object->size(); i++)
+    {
+      if((*object)[i] == '.')
+        break;
+      convert *= 10;
+      convert += (*object)[i] - '0';
+    }
+    convert *= -1;
+  }
+  else
+  {
+    for(i = 0; i < object->size(); i++)
+    {
+      if((*object)[i] == '.')
+        break;
+      convert *= 10;
+      convert += (*object)[i] - '0';
+    }
+  }
+  double convert_dec = 0.0;
+  unsigned j = 0;
+  for(; i + j + 1 < object->size(); j++)
+  {
+    convert_dec *= 10;
+    convert_dec += (*object)[i + j + 1] - '0';
+  }
+  convert_dec /= pow(10.0, static_cast<int>(j));
+
+  return convert + convert_dec;
 }
 int str_to_i(const std::string* object)
 {
