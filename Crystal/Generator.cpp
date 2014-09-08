@@ -24,6 +24,8 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
       return Assignment_Gen;
     }
     return Null_Gen;
+  case '+':
+    return Addition_Gen;
   }
   return Null_Gen;
 }

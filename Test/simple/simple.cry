@@ -20,5 +20,13 @@ def main()
   print(x)
   print(y)
 
+  print("\nOperator Test:")
+  x = x + 8
+  print(x)
+  x = 12.789
+  x = x + 8
+  print(x)
+
+
   return "Exit success!"
 end
