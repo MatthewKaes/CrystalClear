@@ -8,10 +8,12 @@ typedef bool (*GENERATOR_CODE)(Crystal_Compiler*, Crystal_Data*, std::vector<Cry
 
 GENERATOR_CODE Resolve_Genorator(Crystal_Data* sym);
 GENERATOR_CODE Resolve_Operator(Crystal_Data* sym);
+GENERATOR_CODE Resolve_Statement(Crystal_Data* sym);
 
 bool Null_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result);
 
 //System Generators
 bool Library_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result);
+bool Return_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result);
 
 #endif

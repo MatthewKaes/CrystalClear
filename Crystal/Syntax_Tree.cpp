@@ -64,11 +64,16 @@ bool Syntax_Node::Evaluate()
 
   new_code.code_gen = Resolve_Genorator(&sym);
   new_code.base = sym;
-  if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION))
+  if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
   { 
     if(index != sym.i32 - 1)
       printf("ERROR: \"%s\" requires %d argument%s.", sym.str.c_str(), sym.i32, sym.i32 == 1 ? "" : "s");
     Force_Memory(&new_code);
+  }
+  if(sym.type == DAT_STATEMENT)
+  {
+    if(!sym.str.compare("return"))
+      Force_Memory(&new_code);
   }
 
   std::vector<bool>* regptr = tree_->Get_Registers();
@@ -131,7 +136,7 @@ void Syntax_Node::Finalize()
     params[i] = NULL;
   }
 
-  if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
+  if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.type == DAT_STATEMENT)
     index = 0;
   else
     index = 1;

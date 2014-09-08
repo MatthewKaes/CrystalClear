@@ -8,6 +8,8 @@ GENERATOR_CODE Resolve_Genorator(Crystal_Data* sym)
     return Library_Gen;
   case DAT_OP:
     return Resolve_Operator(sym);
+  case DAT_STATEMENT:
+    return Resolve_Statement(sym);
   }
   return Null_Gen;
 }
@@ -25,7 +27,15 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
   }
   return Null_Gen;
 }
-
+GENERATOR_CODE Resolve_Statement(Crystal_Data* sym)
+{
+  switch(sym->str.c_str()[0])
+  {
+  case 'r':
+    return Return_Gen;
+  }
+  return Null_Gen;
+}
 bool Null_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 { 
   return false; 
@@ -41,5 +51,13 @@ bool Library_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cryst
 
   target->Call(base->external);
   
+  return true;
+}
+bool Return_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{    
+  if((*syms)[0].type != DAT_LOCAL && (*syms)[0].type != DAT_REGISTRY)
+    target->Load((*syms)[1].i32, &(*syms)[0]);
+  target->Return((*syms)[1].i32);
+
   return true;
 }

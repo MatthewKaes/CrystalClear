@@ -262,6 +262,11 @@ void Crystal_Interpreter::Process_Package(const char* code)
         scope -= 1;
         continue;
       }
+      //Statments
+      else if(!sym.str.compare("return"))
+      {
+        sym.type = DAT_STATEMENT;
+      }
     }
     
     //Look up nodes that need are unknown
@@ -304,6 +309,8 @@ void Crystal_Interpreter::Process_Package(const char* code)
     //Precedence
     if(sym.type == DAT_OP)
       new_node->priority = Get_Precedence(sym.str.c_str()) + Get_Precedence(NULL) * precedence;
+    else if(sym.type == DAT_STATEMENT)
+      new_node->priority = Get_Precedence("k") + Get_Precedence(NULL) * precedence;
     else
       new_node->priority = Get_Precedence(NULL) * (precedence + 1);
     //Process node

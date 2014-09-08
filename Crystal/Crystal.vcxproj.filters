@@ -31,6 +31,12 @@
     <Filter Include="Interpreter\Headers">
       <UniqueIdentifier>{f33681ac-8bd2-4606-bd53-13b2a8d1162d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Extensions">
+      <UniqueIdentifier>{9fb83401-6cfb-4bcc-9344-35afc1ebcfae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Extensions\Headers">
+      <UniqueIdentifier>{1b66b38a-867d-4d82-b88c-862aef5ab506}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Compiler.cpp">
@@ -40,9 +46,6 @@
       <Filter>Front End</Filter>
     </ClCompile>
     <ClCompile Include="Clarity.cpp">
-      <Filter>Core Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Library.cpp">
       <Filter>Core Sources</Filter>
     </ClCompile>
     <ClCompile Include="Machines\x86_Machine.cpp">
@@ -66,6 +69,12 @@
     <ClCompile Include="Operations.cpp">
       <Filter>Syntax</Filter>
     </ClCompile>
+    <ClCompile Include="Library.cpp">
+      <Filter>Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper.cpp">
+      <Filter>Extensions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Crystal.h">
@@ -75,9 +84,6 @@
       <Filter>Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Clarity.h">
-      <Filter>Core Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Library.h">
       <Filter>Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Machines\Machine.h">
@@ -109,6 +115,12 @@
     </ClInclude>
     <ClInclude Include="Operations.h">
       <Filter>Syntax\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Library.h">
+      <Filter>Extensions\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>Extensions\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -19,4 +19,6 @@ def main()
   y = x
   print(x)
   print(y)
+
+  return "Exit success!"
 end
