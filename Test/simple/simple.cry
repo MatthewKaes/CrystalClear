@@ -24,7 +24,7 @@ def main()
   x = x + 8
   print(x)
   x = 12.789
-  x = x + 8
+  x = x + 8.4 + 4.5
   print(x)
 
 

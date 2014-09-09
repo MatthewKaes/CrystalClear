@@ -23,7 +23,7 @@ bool Addition_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
     else
     {
       target->Copy(result->i32, (*syms)[0].i32);
-      target->AddC(result->i32, (*syms)[1].i32);
+      target->AddC(result->i32, &(*syms)[1]);
     }
     return true;
   }
@@ -32,7 +32,7 @@ bool Addition_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
   else
   {
     target->Copy(result->i32, (*syms)[1].i32);
-    target->AddC(result->i32, (*syms)[0].i32, false);
+    target->AddC(result->i32, &(*syms)[1], false);
   }
 
   return true;
