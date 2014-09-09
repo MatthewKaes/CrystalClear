@@ -248,6 +248,11 @@ void l_to_str(__int64 object, std::string* value)
 void d_to_str(double object, std::string* value)
 {
   value->clear();  
+  if(object < 0.000000001 && object > -0.000000001)
+  {
+    value->assign("0.0");
+    return;
+  }
   int integer_val = object;
   if(object > 0)
   {    

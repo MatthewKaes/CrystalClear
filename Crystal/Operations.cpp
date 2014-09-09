@@ -37,6 +37,41 @@ bool Addition_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
 
   return true;
 }
+bool Subtraction_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  if(((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY) &&
+    ((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY))
+  {
+    if((*syms)[1].i32 == result->i32)
+      target->Sub((*syms)[1].i32, (*syms)[0].i32);
+    else
+    {
+      target->Copy(result->i32, (*syms)[0].i32);
+      target->Sub(result->i32, (*syms)[1].i32);
+    }
+    return true;
+  }
+  if((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY)
+  {
+    if((*syms)[0].i32 == result->i32)
+      target->SubC((*syms)[0].i32, &(*syms)[1], false);
+    else
+    {
+      target->Copy(result->i32, (*syms)[0].i32);
+      target->SubC(result->i32, &(*syms)[1], false);
+    }
+    return true;
+  }
+  if((*syms)[1].i32 == result->i32)
+    target->SubC((*syms)[1].i32, &(*syms)[0]);
+  else
+  {
+    target->Copy(result->i32, (*syms)[1].i32);
+    target->SubC(result->i32, &(*syms)[1]);
+  }
+
+  return true;
+}
 bool Assignment_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   if((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY)
