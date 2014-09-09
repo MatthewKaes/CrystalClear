@@ -1,11 +1,12 @@
 #include "Library.h"
 #include "Helper.h"
 
-void Crystal_Print(Crystal_Symbol* sym)
+void Crystal_Print(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   std::string val;
   Parse_String(sym, &val);
-  printf("%s\n", val.c_str());
+  ret_sym->i32 = printf("%s\n", val.c_str()) - 1;
+  ret_sym->type = CRY_INT;
 }
 
 void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)

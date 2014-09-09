@@ -69,6 +69,8 @@ bool Syntax_Node::Evaluate()
     if(index != sym.i32 - 1)
       printf("ERROR: \"%s\" requires %d argument%s.", sym.str.c_str(), sym.i32, sym.i32 == 1 ? "" : "s");
     Force_Memory(&new_code);
+    new_code.result.type = DAT_REGISTRY;
+    new_code.result.i32 = 0;
   }
   if(sym.type == DAT_STATEMENT)
   {

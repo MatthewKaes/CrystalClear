@@ -40,6 +40,7 @@ GENERATOR_CODE Resolve_Statement(Crystal_Data* sym)
   }
   return Null_Gen;
 }
+
 bool Null_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 { 
   return false; 
@@ -52,7 +53,7 @@ bool Library_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cryst
       target->Load((*syms)[i + 1].i32, &(*syms)[i]);
     target->Push((*syms)[i + 1].i32);
   }
-
+  target->Push(result->i32);
   target->Call(base->external);
   
   return true;

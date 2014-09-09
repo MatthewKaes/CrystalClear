@@ -4,7 +4,7 @@
 #include "Crystal.h"
 
 //BIP (built in package) functions.
-void Crystal_Print(Crystal_Symbol* sym);
+void Crystal_Print(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
 
 //No BIP (built in package) functions.
 void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms);

@@ -26,7 +26,7 @@ def main()
   x = 12.789
   x = (x + 8.4) - x
   print(x)
-  print(x - x)
+  print( print(x - x) )
 
 
   return "Exit success!"
