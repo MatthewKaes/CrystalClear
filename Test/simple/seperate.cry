@@ -1,4 +1,5 @@
 def package()
   #preforms operations in a seperate package.
   print("We are in a second package!")
+  return 10.5
 end

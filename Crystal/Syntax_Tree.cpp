@@ -44,6 +44,7 @@ void Syntax_Node::Process(Syntax_Node* node)
     }
   }
 }
+
 bool Syntax_Node::Evaluate()
 {  
   bool evaluation = false;
@@ -59,18 +60,24 @@ bool Syntax_Node::Evaluate()
       }
     }
   }
-  if(!evaluation)
+  
+  if(sym.type != DAT_FUNCTION && sym.type != DAT_BIFUNCTION && !evaluation)
     return true;
 
   new_code.code_gen = Resolve_Genorator(&sym);
   new_code.base = sym;
+  new_code.result.type = DAT_NIL;
   if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
   { 
-    if(index != sym.i32 - 1)
-      printf("ERROR: \"%s\" requires %d argument%s.", sym.str.c_str(), sym.i32, sym.i32 == 1 ? "" : "s");
+    if((index != sym.i32 && sym.i32 == 0) || (index != sym.i32 - 1 && sym.i32 > 0))
+      printf("ERROR: \"%s\" requires %d argument%s.\n", sym.str.c_str(), sym.i32, sym.i32 == 1 ? "" : "s");
+   
     Force_Memory(&new_code);
-    new_code.result.type = DAT_REGISTRY;
-    new_code.result.i32 = 0;
+    if(sym.type == DAT_BIFUNCTION)
+    {
+      new_code.result.type = DAT_REGISTRY;
+      new_code.result.i32 = 0;
+    }
   }
   if(sym.type == DAT_STATEMENT)
   {

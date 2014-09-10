@@ -4,6 +4,8 @@ GENERATOR_CODE Resolve_Genorator(Crystal_Data* sym)
 {
   switch(sym->type)
   {
+  case DAT_FUNCTION:
+    return Function_Gen;
   case DAT_BIFUNCTION:
     return Library_Gen;
   case DAT_OP:
@@ -45,15 +47,30 @@ bool Null_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_
 { 
   return false; 
 }
+bool Function_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  for(int i = static_cast<int>(syms->size() / 2) - 1; i >= 0; i--)
+  {
+    if((*syms)[i].type != DAT_LOCAL && (*syms)[i].type != DAT_REGISTRY)
+      target->Load(Mem_Conv(target, &(*syms)[i + syms->size() / 2]), &(*syms)[i]);
+    target->Push(Mem_Conv(target, &(*syms)[i + syms->size() / 2]));
+  }
+  if(result->type == DAT_NIL)
+    target->Call(base->str.c_str());
+  else
+    target->Call(base->str.c_str(), Mem_Conv(target, result));
+
+  return true;
+}
 bool Library_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   for(int i = static_cast<int>(syms->size() / 2) - 1; i >= 0; i--)
   {
     if((*syms)[i].type != DAT_LOCAL && (*syms)[i].type != DAT_REGISTRY)
-      target->Load((*syms)[i + syms->size() / 2].i32, &(*syms)[i]);
-    target->Push((*syms)[i + syms->size() / 2].i32);
+      target->Load(Mem_Conv(target, &(*syms)[i + syms->size() / 2]), &(*syms)[i]);
+    target->Push(Mem_Conv(target, &(*syms)[i + syms->size() / 2]));
   }
-  target->Push(result->i32);
+  target->Push(MEMR(result));
   target->Call(base->external);
   
   return true;
@@ -61,8 +78,8 @@ bool Library_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cryst
 bool Return_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {    
   if((*syms)[0].type != DAT_LOCAL && (*syms)[0].type != DAT_REGISTRY)
-    target->Load((*syms)[1].i32, &(*syms)[0]);
-  target->Return((*syms)[1].i32);
+    target->Load(Mem_Conv(target, &(*syms)[1]), &(*syms)[0]);
+  target->Return(Mem_Conv(target, &(*syms)[1]));
 
   return true;
 }
