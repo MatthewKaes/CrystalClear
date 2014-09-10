@@ -47,11 +47,11 @@ bool Null_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_
 }
 bool Library_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  for(unsigned i = 0; i < syms->size() - 1; i += 2)
+  for(int i = static_cast<int>(syms->size() / 2) - 1; i >= 0; i--)
   {
     if((*syms)[i].type != DAT_LOCAL && (*syms)[i].type != DAT_REGISTRY)
-      target->Load((*syms)[i + 1].i32, &(*syms)[i]);
-    target->Push((*syms)[i + 1].i32);
+      target->Load((*syms)[i + syms->size() / 2].i32, &(*syms)[i]);
+    target->Push((*syms)[i + syms->size() / 2].i32);
   }
   target->Push(result->i32);
   target->Call(base->external);

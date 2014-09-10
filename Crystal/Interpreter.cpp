@@ -4,6 +4,13 @@
 
 #define BUFFER_SIZE 0x8000
 
+#define REGISTER_FUNCTION(Name, Func, Args) \
+  { Package_Info new_package; \
+  new_package.pt = PGK_EXE; \
+  new_package.info.arguments = Args; \
+  new_package.function = Func; \
+  built_in[#Name] = new_package; } 
+
 Crystal_Interpreter::Crystal_Interpreter(Crystal_Compiler* compiler)
 {
   comp = compiler;
@@ -14,13 +21,8 @@ Crystal_Interpreter::~Crystal_Interpreter(){}
 void Crystal_Interpreter::Populate_BIP()
 {
   //Define all executable packages
-  Package_Info new_package;
-  new_package.pt = PGK_EXE;
-
-  //print
-  new_package.function = Crystal_Print;
-  new_package.info.arguments = 1;
-  built_in["print"] = new_package;
+  REGISTER_FUNCTION(print, Crystal_Print, 1)
+  REGISTER_FUNCTION(print_color, Crystal_PrintColor, 2);
 }
 void Crystal_Interpreter::Cache_Code(const char* filename)
 {

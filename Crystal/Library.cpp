@@ -1,5 +1,6 @@
 #include "Library.h"
 #include "Helper.h"
+#include <windows.h>
 
 void Crystal_Print(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
@@ -7,6 +8,13 @@ void Crystal_Print(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   Parse_String(sym, &val);
   ret_sym->i32 = printf("%s\n", val.c_str()) - 1;
   ret_sym->type = CRY_INT;
+}
+
+void Crystal_PrintColor(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbol* color)
+{  
+  SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), Parse_Int(color));
+  Crystal_Print(ret_sym, sym);
+  SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
 
 void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)

@@ -2,7 +2,7 @@
 
 def main()
   #base type test
-  print("Hello world!")
+  print_color("Hello world!", 5)
   print(42)
   print(true)
   print(1.54)
@@ -20,7 +20,7 @@ def main()
   print(x)
   print(y)
 
-  print("\nOperator Test:")
+  print_color("\nOperator Test:", 10)
   x = x + 8
   print(x)
   x = 12.789
