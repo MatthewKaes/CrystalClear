@@ -8,7 +8,7 @@ def main()
   print(1.54)
   
   print_color("\nTesting package call:", 11)
-  package
+  x = package
   print(x)
   
   print("\n")

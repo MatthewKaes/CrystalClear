@@ -58,7 +58,7 @@ bool Function_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
   if(result->type == DAT_NIL)
     target->Call(base->str.c_str());
   else
-    target->Call(base->str.c_str(), Mem_Conv(target, result));
+    target->Call(base->str.c_str(), MEM(*result));
 
   return true;
 }

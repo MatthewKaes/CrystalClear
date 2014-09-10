@@ -130,7 +130,8 @@ void Crystal_Compiler::Call(const char* cry_function, unsigned var)
   Machine->Pop(4);
   if(var != CRY_NULL)
   {
-    states[var].Obscurity();
+    //states[var].Obscurity();
+    states[var].Set(CRY_DOUBLE);
   }
 }
 void Crystal_Compiler::Push(unsigned var)
