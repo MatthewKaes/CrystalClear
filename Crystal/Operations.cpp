@@ -34,13 +34,9 @@ bool Addition_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
     }
     return true;
   }
-  if(MEM((*syms)[0]) == MEMR(result))
-    target->AddC(MEM((*syms)[0]), &(*syms)[0], false);
-  else
-  {
-    target->Copy(MEMR(result), MEM((*syms)[0]));
-    target->AddC(MEMR(result), &(*syms)[1], false);
-  }
+
+  target->Copy(MEMR(result), MEM((*syms)[1]));
+  target->AddC(MEMR(result), &(*syms)[0], false);
 
   return true;
 }
@@ -61,21 +57,17 @@ bool Subtraction_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<C
   if((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY)
   {
     if(MEM((*syms)[0]) == MEMR(result))
-      target->SubC(MEM((*syms)[0]), &(*syms)[1], false);
+      target->SubC(MEM((*syms)[0]), &(*syms)[1]);
     else
     {
       target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->SubC(MEMR(result), &(*syms)[1], false);
+      target->SubC(MEMR(result), &(*syms)[1]);
     }
     return true;
   }
-  if(MEM((*syms)[0]) == MEMR(result))
-    target->SubC(MEM((*syms)[0]), &(*syms)[1]);
-  else
-  {
-    target->Copy(MEMR(result), MEM((*syms)[0]));
-    target->SubC(MEMR(result), &(*syms)[1]);
-  }
+
+  target->Copy(MEMR(result), MEM((*syms)[1]));
+  target->SubC(MEMR(result), &(*syms)[0], false);
 
   return true;
 }

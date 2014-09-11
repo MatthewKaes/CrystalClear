@@ -60,3 +60,15 @@ void Crystal_Const_Append_T(Crystal_Symbol* symd, const char* str, unsigned leng
   symd->ptr.str = new_buffer;
   symd->size = val_left.size() + length + 1;
 }
+void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned length)
+{  
+  std::string val_left;
+  Parse_String(symd, &val_left);
+
+  char* new_buffer = static_cast<char*>(malloc(val_left.size() + length + 1));
+  strcpy(new_buffer, str);
+  strcpy(new_buffer + length, val_left.c_str());
+
+  symd->ptr.str = new_buffer;
+  symd->size = val_left.size() + length + 1;
+}

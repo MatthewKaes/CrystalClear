@@ -566,7 +566,10 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
         Machine->Push(static_cast<int>(strlen(const_.str_)));
         Machine->Push(Machine->String_Address(const_.str_));
         Push(dest);
-        Call(Crystal_Const_Append_T);
+        if(left == true)
+          Call(Crystal_Const_Append_T);
+        else
+          Call(Crystal_Const_Append_TL);
         Pop(3);
       }
       //we now have a string.
