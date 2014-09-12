@@ -15,6 +15,7 @@ class Syntax_Node {
 public:
   Syntax_Node(std::vector<Syntax_Node*>* pool, Syntax_Tree* tree);
   void Process(Syntax_Node* node);
+  void Reduce();
   bool Evaluate();
   void Remove();
   Crystal_Data* Acquire();

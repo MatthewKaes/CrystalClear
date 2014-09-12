@@ -23,6 +23,10 @@ double Parse_Double(Crystal_Symbol* sym)
   {
     return sym->d;
   }
+  if(sym->type == CRY_INT)
+  {
+    return sym->i32;
+  }
   return 0.0;
 }
 void Parse_String(Crystal_Symbol* sym, std::string* str)

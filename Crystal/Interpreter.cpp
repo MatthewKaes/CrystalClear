@@ -44,7 +44,8 @@ void Crystal_Interpreter::Cache_Code(const char* filename)
     buffer[bytes_read] = 0;
     code_cache.append(buffer);
   } while (bytes_read == BUFFER_SIZE);
-
+  
+  code_cache.push_back('\n');
   //close the file
   fclose(source);
 }

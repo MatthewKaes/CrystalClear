@@ -156,6 +156,7 @@
     <ClCompile Include="Machines\x86_Machine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Operations.cpp" />
+    <ClCompile Include="Reductions.cpp" />
     <ClCompile Include="Syntax_Tree.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +174,7 @@
     <ClInclude Include="Machines\x86_Machine.h" />
     <ClInclude Include="Generator.h" />
     <ClInclude Include="Operations.h" />
+    <ClInclude Include="Reductions.h" />
     <ClInclude Include="Syntax_Tree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

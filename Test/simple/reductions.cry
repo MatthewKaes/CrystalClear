@@ -1,0 +1,9 @@
+#Simple crystal code for testing
+
+def reductions()
+  print_color("Reduction Test:", 11)
+  print("Reduction value: " + (2.45 - (10 + 3)))
+  print("Reduction value: " + "Hello " + "World")
+  print("Reduction value: " + 10100045.42 + 14000 + " val")
+  print("Reduction value: " + (10100045.42 + 14000) + " val")
+end
