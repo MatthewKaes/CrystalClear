@@ -155,6 +155,7 @@
     <ClCompile Include="Library.cpp" />
     <ClCompile Include="Machines\x86_Machine.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Obscure.cpp" />
     <ClCompile Include="Operations.cpp" />
     <ClCompile Include="Reductions.cpp" />
     <ClCompile Include="Syntax_Tree.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="Machines\x86_Codes.h" />
     <ClInclude Include="Machines\x86_Machine.h" />
     <ClInclude Include="Generator.h" />
+    <ClInclude Include="Obscure.h" />
     <ClInclude Include="Operations.h" />
     <ClInclude Include="Reductions.h" />
     <ClInclude Include="Syntax_Tree.h" />

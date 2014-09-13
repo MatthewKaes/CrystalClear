@@ -78,26 +78,26 @@ void x86_Machine::Cmp(unsigned address, ARG argument)
   switch(argument.type)
   {
   case AOT_CHAR:
-    if(address > ADDER_S)
+    if(address < ADDER_S)
     {
       *p++ = CMP_BYTE;
       *p++ = CMP_MEM;
       *p++ = two_complement_8(address);
-      *p++ = (unsigned char)argument.num_;
+      *p++ = (unsigned char)argument.chr_;
     }
     else
     {
       *p++ = CMP_WORDL;
       *p++ = CMP_MEM + WORD_VARIANT;
       (int&)p[0] = two_complement_32(address); p+= sizeof(int);
-      *p++ = (unsigned char)argument.num_;
+      *p++ = (unsigned char)argument.chr_;
     }
     break;
   case AOT_INT:
     if(argument.num_ > ADDER_S)
     {
       *p++ = CMP_WORD;
-      if(address > ADDER_S)
+      if(address < ADDER_S)
       {
         *p++ = CMP_MEM;
         *p++ = two_complement_8(address);
@@ -112,7 +112,7 @@ void x86_Machine::Cmp(unsigned address, ARG argument)
     else
     {
       *p++ = CMP_WORDL;
-      if(address > ADDER_S)
+      if(address < ADDER_S)
       {
         *p++ = CMP_MEM;
         *p++ = two_complement_8(address);
@@ -132,7 +132,7 @@ void x86_Machine::CmpF(unsigned address, ARG argument)
   switch(argument.type)
   {
   case AOT_INT:
-    if(argument.num_ > ADDER_S)
+    if(argument.num_ < ADDER_S)
     {
       *p++ = CMP_WORD;
       *p++ = CMP_MEM;

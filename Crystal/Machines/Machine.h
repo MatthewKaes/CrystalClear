@@ -44,7 +44,7 @@ public:
     bool bol_;
     float flt_;
     double dec_;
-    double chr_;
+    char chr_;
     REGISTERS reg_;
     const char* str_;
   };
