@@ -40,6 +40,9 @@ Sometimes the code you are looking to write already exist or you want more contr
 
 Crystal is built in the hopes to merge the abilities of high level languages like Ruby without making any sacrifices in speed. In the end Crystal uses a combination of features to put performance first and usability in a close second.
 
+##Requirements
+
+Crystal Clear requires [Boost 1.56 or newer to build](http://sourceforge.net/projects/boost/files/boost/1.56.0/). If you choose to use the visual studio 2010 solution then make sure to set up boost in C:\Program Files\boost\boost_1_56_0\. You can find out more about building boost [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html). Crystal Clear currently has several dependencies on Windows but in the future Crystal will be made to run on any operating system. The only machine currently implemented for Crystal is the x86 machine. Other Archetectures are not supported at this time.
 
 ##Updates on development
 
