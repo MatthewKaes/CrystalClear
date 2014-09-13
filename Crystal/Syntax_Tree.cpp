@@ -48,11 +48,16 @@ void Syntax_Node::Process(Syntax_Node* node)
 
 void Syntax_Node::Reduce()
 {
-  if(params[0])
-    params[0]->Reduce();
-  if(params[1])
-    params[1]->Reduce();
-  if(!params[0] || !params[1])
+  bool eval = false;
+  for(int i = 0; i < MAX_ARGS; i++)
+  {
+    if(params[i])
+    {
+      params[i]->Reduce();
+      eval = true;
+    }
+  }
+  if(!eval)
     return;
 
   if(Reduction(&sym, params[0]->Acquire(), params[1]->Acquire()))

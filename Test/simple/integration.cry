@@ -1,6 +1,7 @@
 #Simple crystal code for testing
 
 def main()
+  print(x)
   #base type test
   print_color("Hello world!", 13)
   print(42)

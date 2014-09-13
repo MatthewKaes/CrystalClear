@@ -1,14 +1,25 @@
 #include "Reductions.h"
 #include "Lexicon.h"
+#include <unordered_map>
 
 bool Can_Reduce(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
 {
+  static std::unordered_map<Data_Type, bool> reduceable;
+  if(!reduceable.size())
+  {
+    reduceable[DAT_NIL] = true;
+    reduceable[DAT_BOOL] = true;
+    reduceable[DAT_INT] = true;
+    reduceable[DAT_DOUBLE] = true;
+    reduceable[DAT_STRING] = true;
+  }
+
   if(sym->type != DAT_OP)
     return false;
 
-  if(left->type == DAT_LOCAL || left->type == DAT_REGISTRY)
+  if(reduceable.find(left->type) == reduceable.end())
     return false;
-  if(right->type == DAT_LOCAL || right->type == DAT_REGISTRY)
+  if(reduceable.find(right->type) == reduceable.end())
     return false;
 
   return true;
