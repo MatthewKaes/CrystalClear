@@ -3,7 +3,7 @@
 
 #include "Crystal.h"
 
-void Obscure_Addition(Crystal_Symbol* ret_sym, Crystal_Symbol* l, Crystal_Symbol* r);
-void Obscure_Subtraction(Crystal_Symbol* ret_sym, Crystal_Symbol* l, Crystal_Symbol* r);
+void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source);
+void Obscure_Subtraction(Crystal_Symbol* dest, Crystal_Symbol* source);
 
 #endif

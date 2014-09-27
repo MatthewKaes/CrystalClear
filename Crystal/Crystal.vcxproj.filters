@@ -45,9 +45,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Front End</Filter>
     </ClCompile>
-    <ClCompile Include="Clarity.cpp">
-      <Filter>Core Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Machines\x86_Machine.cpp">
       <Filter>Machines</Filter>
     </ClCompile>
@@ -81,15 +78,15 @@
     <ClCompile Include="Obscure.cpp">
       <Filter>Extensions</Filter>
     </ClCompile>
+    <ClCompile Include="Clarity_Filter.cpp">
+      <Filter>Core Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Crystal.h">
       <Filter>Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Compiler.h">
-      <Filter>Core Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Clarity.h">
       <Filter>Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Machines\Machine.h">
@@ -133,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="Obscure.h">
       <Filter>Extensions\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Clarity_Filter.h">
+      <Filter>Core Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

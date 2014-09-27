@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 #include "Crystal.h"
-#include "Clarity.h"
+#include "Clarity_Filter.h"
 #include "Library.h"
 #include "Machines\Machine.h"
 

@@ -1,0 +1,19 @@
+#Simple crystal code for testing
+
+def obscure()
+  print_color("Testing Obscurity", 12)
+  print(int_obscure + double_obscure)
+  print(string_obscure + int_obscure)
+  print(double_obscure - int_obscure)
+  print("")
+end
+
+def int_obscure()
+  return 5
+end
+def double_obscure()
+  return 40.2
+end
+def string_obscure()
+  return "str"
+end

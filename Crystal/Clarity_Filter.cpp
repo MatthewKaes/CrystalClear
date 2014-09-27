@@ -1,4 +1,4 @@
-#include "Clarity.h"
+#include "Clarity_Filter.h"
 
 Clarity_Filter::Clarity_Filter(Symbol_Type flag)
 {
@@ -18,7 +18,8 @@ void Clarity_Filter::Dilute(Symbol_Type flag)
 }
 void Clarity_Filter::Obscurity()
 {
-  flags = 0xffffffff;
+  static unsigned int flags_v = (1 << CRY_SYMS) - 1;
+  flags = flags_v;
   dilution = static_cast<unsigned>(-1);
 }
 bool Clarity_Filter::Test(Symbol_Type flag)

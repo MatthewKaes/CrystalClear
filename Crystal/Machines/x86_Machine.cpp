@@ -509,7 +509,7 @@ void x86_Machine::Call(const char* function)
     if(!call_links[i].name.compare(function))
     {
       found = true;
-      call_links[i].refrence_list.push_back(p);
+      call_links[i].refrence_list.push_back(p - BYTES_4);
       break;
     }
   }

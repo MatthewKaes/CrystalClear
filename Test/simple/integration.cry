@@ -9,11 +9,14 @@ def main()
   
   print_color("\nTesting package call:", 11)
   x = package
-  print(x)
+  y = "Returned: "
+  print_color("Value Check:", 11)
+  print(y + x)
   
   print("\n")
   
   #List of test
+  obscure()
   reductions()
   string_test()
   operator_test()

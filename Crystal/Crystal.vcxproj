@@ -146,7 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bytecode.cpp" />
-    <ClCompile Include="Clarity.cpp" />
+    <ClCompile Include="Clarity_Filter.cpp" />
     <ClCompile Include="Compiler.cpp" />
     <ClCompile Include="Generator.cpp" />
     <ClCompile Include="Helper.cpp" />
@@ -162,7 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bytecode.h" />
-    <ClInclude Include="Clarity.h" />
+    <ClInclude Include="Clarity_Filter.h" />
     <ClInclude Include="Compiler.h" />
     <ClInclude Include="Crystal.h" />
     <ClInclude Include="Helper.h" />

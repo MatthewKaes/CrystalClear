@@ -2,7 +2,7 @@
 #define CRYSTAL_TREE
 
 #include "Bytecode.h"
-#include "Clarity.h"
+#include "Clarity_Filter.h"
 #include <vector>
 
 #define MAX_ARGS 6
