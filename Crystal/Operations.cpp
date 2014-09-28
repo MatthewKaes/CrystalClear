@@ -73,6 +73,40 @@ bool Subtraction_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<C
 
   return true;
 }
+bool Multiplication_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  if(((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY) &&
+    ((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY))
+  {
+    if(MEM((*syms)[0]) == MEMR(result))
+      target->Mul(MEM((*syms)[0]), MEM((*syms)[1]));
+    else if(MEM((*syms)[1]) == MEMR(result))
+      target->Mul(MEM((*syms)[1]), MEM((*syms)[0]), false);
+    else
+    {
+      target->Copy(MEMR(result), MEM((*syms)[0]));
+      target->Mul(MEMR(result), MEM((*syms)[1]));
+    }
+    return true;
+  }
+  if((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY)
+  {
+    if(MEM((*syms)[0]) == MEMR(result))
+      target->MulC(MEM((*syms)[0]), &(*syms)[1]);
+    else
+    {
+      target->Copy(MEMR(result), MEM((*syms)[0]));
+      target->MulC(MEMR(result), &(*syms)[1]);
+    }
+    return true;
+  }
+
+  target->Copy(MEMR(result), MEM((*syms)[1]));
+  target->MulC(MEMR(result), &(*syms)[0], false);
+
+  return true;
+}
+
 bool Assignment_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   if((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY)

@@ -760,6 +760,7 @@ void Crystal_Compiler::Mul(unsigned dest, unsigned source, bool left)
     switch(resolve)
     {
     case CRY_BOOL:
+      //TO DO:
       Machine->Mov(EAX, offset_source - DATA_LOWER, true);
       Machine->Or(offset_dest - DATA_LOWER, EAX);
       break;
@@ -799,7 +800,11 @@ void Crystal_Compiler::Mul(unsigned dest, unsigned source, bool left)
   //Clarity Handling
   else
   {
-    //TO DO:
+    Push(source);
+    Push(dest);
+    Machine->Call(Obscure_Multiplication);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], states[source]);
   }
 }
 void Crystal_Compiler::MulC(unsigned dest, CRY_ARG const_, bool left)
@@ -856,7 +861,25 @@ void Crystal_Compiler::MulC(unsigned dest, CRY_ARG const_, bool left)
   //Clarity Handling
   else
   {
-    //TO DO:
+    //Load const into temp.
+    Load(Addr_Reg(stack_depth), const_);
+    if(left)
+    {
+      Push(Addr_Reg(stack_depth));
+      Push(dest);
+      Machine->Call(Obscure_Multiplication);
+      Pop(2);
+      Clarity_Filter::Combind(states[dest], const_.filt);
+    }
+    else
+    {
+      Push(dest);
+      Push(Addr_Reg(stack_depth));
+      Machine->Call(Obscure_Multiplication);
+      Pop(2);
+      Copy(dest, Addr_Reg(stack_depth));
+      Clarity_Filter::Combind(states[dest], const_.filt);
+    }
   }
 }
 unsigned Crystal_Compiler::Addr_Reg(unsigned reg)

@@ -30,6 +30,8 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
     return Addition_Gen;
   case '-':
     return Subtraction_Gen;
+  case '*':
+    return Multiplication_Gen;
   }
   return Null_Gen;
 }

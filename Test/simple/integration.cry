@@ -6,13 +6,13 @@ def main()
   print_color("Hello world!", 13)
   print(42)
   print(true)
-  print(1.54)
+  print(1.54 * 2)
   
   print_color("\nTesting package call:", 11)
   x = package
   y = "Returned: "
   print_color("Value Check:", 11)
-  print(y + (x + "\n"))
+  print(y + (x + "\n") * 3)
   
   #List of test
   obscure()
@@ -43,7 +43,7 @@ def operator_test()
   print(x)
   print(y)
   x = x + 8 + 0.3
-  print(x)
+  print(x * 2)
   x = 12.789
   x = (x + 8.4) - x
   print(x)

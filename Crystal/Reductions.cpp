@@ -38,6 +38,9 @@ bool Reduction(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
   case '-':
     Reduce_Subtraction(sym, left, right);
     break;
+  case '*':
+    Reduce_Multiplication(sym, left, right);
+    break;
   }
 
   return true;
@@ -157,6 +160,40 @@ void Reduce_Subtraction(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* rig
       l = left->type == DAT_DOUBLE ? left->d : left->i32;
       r = right->type == DAT_DOUBLE ? right->d : right->i32;
       sym->d = l - r;
+    }
+    break;
+  default:
+    resolve = DAT_NIL;
+  }
+  sym->type = resolve;
+}
+
+void Reduce_Multiplication(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
+{
+  Data_Type resolve = left->type > right->type ? left->type : right->type;
+  switch(resolve)
+  {
+  case DAT_BOOL:
+    if(left->type == DAT_NIL || right->type == DAT_NIL)
+      resolve = DAT_NIL;
+    else
+      sym->b = !(left->b ^ right->b);
+    break;
+  case DAT_INT:
+    if(left->type == DAT_NIL || right->type == DAT_NIL)
+      resolve = DAT_NIL;
+    else
+      sym->i32 = left->i32 * right->i32;
+    break;
+  case DAT_DOUBLE:
+    if(left->type == DAT_NIL || right->type == DAT_NIL)
+      resolve = DAT_NIL;
+    else
+    {
+      double l, r;
+      l = left->type == DAT_DOUBLE ? left->d : left->i32;
+      r = right->type == DAT_DOUBLE ? right->d : right->i32;
+      sym->d = l * r;
     }
     break;
   default:
