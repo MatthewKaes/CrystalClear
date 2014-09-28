@@ -361,11 +361,22 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
   //Clarity Handling
   else
   {
-    Push(source);
-    Push(dest);
-    Machine->Call(Obscure_Addition);
-    Pop(2);
-    Clarity_Filter::Combind(states[dest], states[source]);
+    if(left)
+    {
+      Push(source);
+      Push(dest);
+      Machine->Call(Obscure_Addition);
+      Pop(2);
+      Clarity_Filter::Combind(states[dest], states[source]);
+    }
+    else
+    {
+      Push(source);
+      Push(dest);
+      Machine->Call(Obscure_AdditionR);
+      Pop(2);
+      Clarity_Filter::Combind(states[dest], states[source]);
+    }
   }
 }
 void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
@@ -532,7 +543,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
     {
       Push(dest);
       Push(Addr_Reg(stack_depth));
-      Machine->Call(Obscure_Addition);
+      Machine->Call(Obscure_AdditionR);
       Pop(2);
       Copy(dest, Addr_Reg(stack_depth));
       Clarity_Filter::Combind(states[dest], const_.filt);
@@ -609,11 +620,22 @@ void Crystal_Compiler::Sub(unsigned dest, unsigned source, bool left)
   //Clarity Handling
   else
   {
-    Push(source);
-    Push(dest);
-    Machine->Call(Obscure_Subtraction);
-    Pop(2);
-    Clarity_Filter::Combind(states[dest], states[source]);
+    if(left)
+    {
+      Push(source);
+      Push(dest);
+      Machine->Call(Obscure_Subtraction);
+      Pop(2);
+      Clarity_Filter::Combind(states[dest], states[source]);
+    }
+    else
+    {
+      Push(source);
+      Push(dest);
+      Machine->Call(Obscure_SubtractionR);
+      Pop(2);
+      Clarity_Filter::Combind(states[dest], states[source]);
+    }
   }
 }
 void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
