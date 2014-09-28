@@ -93,12 +93,12 @@ public:
   
   void Load(unsigned var, CRY_ARG val = CRY_ARG());
   void Copy(unsigned dest, unsigned source);
-  void Add(unsigned dest, unsigned source);
+  void Add(unsigned dest, unsigned source, bool left = true);
   void AddC(unsigned dest, CRY_ARG const_, bool left = true);
-  void Sub(unsigned dest, unsigned source);
+  void Sub(unsigned dest, unsigned source, bool left = true);
   void SubC(unsigned dest, CRY_ARG const_, bool left = true);
-  void Mul(unsigned dest, unsigned source);
-  void MulC(unsigned dest, CRY_ARG const_);
+  void Mul(unsigned dest, unsigned source, bool left = true);
+  void MulC(unsigned dest, CRY_ARG const_, bool left = true);
 
   unsigned Addr_Reg(unsigned reg);
 private:

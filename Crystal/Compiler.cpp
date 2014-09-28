@@ -267,7 +267,7 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
   Machine->Mov(offset_dest - DATA_TYPE, EAX, true);
   states[dest] = states[source];
 }
-void Crystal_Compiler::Add(unsigned dest, unsigned source)
+void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   unsigned offset_source = stack_size - source * VAR_SIZE;
@@ -335,7 +335,10 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source)
       {
         Push(source);
         Push(dest);
-        Call(Crystal_Text_Append);
+        if(left)
+          Call(Crystal_Text_Append);
+        else
+          Call(Crystal_Text_AppendR);
         Pop(2);
       }
       //we now have a string.
@@ -344,7 +347,10 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source)
     case CRY_STRING:
       Push(source);
       Push(dest);
-      Call(Crystal_Text_Append);
+      if(left)
+        Call(Crystal_Text_Append);
+      else
+        Call(Crystal_Text_AppendR);
       Pop(2);
       break;
     NO_SUPPORT(CRY_ARRAY);
@@ -533,7 +539,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
     }
   }
 }
-void Crystal_Compiler::Sub(unsigned dest, unsigned source)
+void Crystal_Compiler::Sub(unsigned dest, unsigned source, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   unsigned offset_source = stack_size - source * VAR_SIZE;
@@ -553,25 +559,41 @@ void Crystal_Compiler::Sub(unsigned dest, unsigned source)
       Machine->And(offset_dest - DATA_LOWER, EAX);
       break;
     case CRY_INT:
-      Machine->Mov(EAX, offset_source - DATA_LOWER);
-      Machine->Sub(offset_dest - DATA_LOWER, EAX);
+      if(left)
+      {
+        Machine->Mov(EAX, offset_source - DATA_LOWER);
+        Machine->Sub(offset_dest - DATA_LOWER, EAX);
+      }
+      else
+      {
+        Machine->Mov(EAX, offset_source - DATA_LOWER);
+        Machine->Mov(EBX, offset_dest - DATA_LOWER);
+        Machine->Sub(EAX, EBX);
+        Machine->Mov(offset_dest - DATA_LOWER, EAX);
+      }
       break;
     case CRY_DOUBLE:
-      if(states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL))
+      if(left)
       {
-        Machine->FPU_Loadi(offset_dest - DATA_LOWER);
+        if(states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL))
+          Machine->FPU_Loadi(offset_dest - DATA_LOWER);
+        else
+          Machine->FPU_Loadd(offset_dest - DATA_LOWER);
+        if(states[source].Test(CRY_INT) || states[source].Test(CRY_BOOL))
+          Machine->FPU_Loadi(offset_source - DATA_LOWER);
+        else
+          Machine->FPU_Loadd(offset_source - DATA_LOWER);
       }
       else
       {
-        Machine->FPU_Loadd(offset_dest - DATA_LOWER);
-      }
-      if(states[source].Test(CRY_INT) || states[source].Test(CRY_BOOL))
-      {
-        Machine->FPU_Loadi(offset_source - DATA_LOWER);
-      }
-      else
-      {
-        Machine->FPU_Loadd(offset_source - DATA_LOWER);
+        if(states[source].Test(CRY_INT) || states[source].Test(CRY_BOOL))
+          Machine->FPU_Loadi(offset_source - DATA_LOWER);
+        else
+          Machine->FPU_Loadd(offset_source - DATA_LOWER);
+        if(states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL))
+          Machine->FPU_Loadi(offset_dest - DATA_LOWER);
+        else
+          Machine->FPU_Loadd(offset_dest - DATA_LOWER);
       }
       Machine->FPU_Sub();
       Machine->FPU_Store(offset_dest - DATA_LOWER);
@@ -700,7 +722,7 @@ void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
     }
   }
 }
-void Crystal_Compiler::Mul(unsigned dest, unsigned source)
+void Crystal_Compiler::Mul(unsigned dest, unsigned source, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   unsigned offset_source = stack_size - source * VAR_SIZE;
@@ -758,7 +780,7 @@ void Crystal_Compiler::Mul(unsigned dest, unsigned source)
     //TO DO:
   }
 }
-void Crystal_Compiler::MulC(unsigned dest, CRY_ARG const_)
+void Crystal_Compiler::MulC(unsigned dest, CRY_ARG const_, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 

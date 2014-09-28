@@ -15,7 +15,7 @@ bool Addition_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
     if(MEM((*syms)[0]) == MEMR(result))
       target->Add(MEM((*syms)[0]), MEM((*syms)[1]));
     else if(MEM((*syms)[1]) == MEMR(result))
-      target->Add(MEM((*syms)[1]), MEM((*syms)[0]));
+      target->Add(MEM((*syms)[1]), MEM((*syms)[0]), false);
     else
     {
       target->Copy(MEMR(result), MEM((*syms)[0]));
@@ -47,6 +47,8 @@ bool Subtraction_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<C
   {
     if(MEM((*syms)[0]) == MEMR(result))
       target->Sub(MEM((*syms)[0]), MEM((*syms)[1]));
+    else if(MEM((*syms)[1]) == MEMR(result))
+      target->Sub(MEM((*syms)[1]), MEM((*syms)[0]), false);
     else
     {
       target->Copy(MEMR(result), MEM((*syms)[0]));

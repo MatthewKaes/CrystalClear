@@ -35,6 +35,24 @@ void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)
   symd->ptr.str = new_buffer;
   symd->size = val_left.size() + val_right.size() + 1;
 }
+void Crystal_Text_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
+{
+  std::string val_left;
+  Parse_String(symd, &val_left);
+
+  std::string val_right;
+  Parse_String(syms, &val_right);
+
+  char* new_buffer = static_cast<char*>(malloc(val_left.size() + val_right.size() + 1));
+  strcpy(new_buffer, val_right.c_str());
+  strcpy(new_buffer + val_right.size(), val_left.c_str());
+  if(symd->type == CRY_STRING)
+  {
+    free(symd->ptr.str);
+  }
+  symd->ptr.str = new_buffer;
+  symd->size = val_left.size() + val_right.size() + 1;
+}
 
 void Crystal_Text_Append_C(Crystal_Symbol* symd, const char* str, unsigned length)
 {
