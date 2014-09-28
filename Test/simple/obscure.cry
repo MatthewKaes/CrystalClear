@@ -5,6 +5,11 @@ def obscure()
   print(int_obscure + double_obscure)
   print(string_obscure + int_obscure)
   print(double_obscure - int_obscure)
+  print_color("Testing Const Obscurity", 12)
+  print(int_obscure + 10)
+  print(10 - int_obscure)
+  print(double_obscure - 10.4)
+  print(10.4 - double_obscure)
   print("")
 end
 

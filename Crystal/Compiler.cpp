@@ -64,9 +64,9 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   if(stack_depth == 0)
     stack_depth = 1;
 
-  stack_size = (locals_count + stack_depth) * VAR_SIZE + 4;
+  stack_size = (locals_count + stack_depth + 1) * VAR_SIZE + 4;
   Machine->Allocate_Stack(stack_size);
-  states.resize(locals_count + stack_depth);
+  states.resize(locals_count + stack_depth + 1);
 }
 void Crystal_Compiler::End_Encode()
 {
@@ -512,7 +512,25 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
   //Clarity Handling
   else
   {
-    //TO DO:
+    //Load const into temp.
+    Load(Addr_Reg(stack_depth), const_);
+    if(left)
+    {
+      Push(Addr_Reg(stack_depth));
+      Push(dest);
+      Machine->Call(Obscure_Addition);
+      Pop(2);
+      Clarity_Filter::Combind(states[dest], const_.filt);
+    }
+    else
+    {
+      Push(dest);
+      Push(Addr_Reg(stack_depth));
+      Machine->Call(Obscure_Addition);
+      Pop(2);
+      Copy(dest, Addr_Reg(stack_depth));
+      Clarity_Filter::Combind(states[dest], const_.filt);
+    }
   }
 }
 void Crystal_Compiler::Sub(unsigned dest, unsigned source)
@@ -660,8 +678,26 @@ void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
   }
   //Clarity Handling
   else
-  {
-    //TO DO:
+  {    
+    //Load const into temp.
+    Load(Addr_Reg(stack_depth), const_);
+    if(left)
+    {
+      Push(Addr_Reg(stack_depth));
+      Push(dest);
+      Machine->Call(Obscure_Subtraction);
+      Pop(2);
+      Clarity_Filter::Combind(states[dest], const_.filt);
+    }
+    else
+    {
+      Push(dest);
+      Push(Addr_Reg(stack_depth));
+      Machine->Call(Obscure_Subtraction);
+      Pop(2);
+      Copy(dest, Addr_Reg(stack_depth));
+      Clarity_Filter::Combind(states[dest], const_.filt);
+    }
   }
 }
 void Crystal_Compiler::Mul(unsigned dest, unsigned source)

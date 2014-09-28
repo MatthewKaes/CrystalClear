@@ -1,6 +1,7 @@
 #Simple crystal code for testing
 
 def main()
+  print(y + ("Test" + x))
   #base type test
   print_color("Hello world!", 13)
   print(42)
@@ -12,8 +13,7 @@ def main()
   y = "Returned: "
   print_color("Value Check:", 11)
   print(y + x)
-  
-  print("\n")
+  print("")
   
   #List of test
   obscure()
