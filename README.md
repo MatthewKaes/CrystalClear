@@ -44,6 +44,9 @@ Crystal is built in the hopes to merge the abilities of high level languages lik
 
 Crystal Clear requires [Boost 1.56 or newer to build](http://sourceforge.net/projects/boost/files/boost/1.56.0/). If you choose to use the visual studio 2010 solution then make sure to set up boost in C:\Program Files\boost\boost_1_56_0\. You can find out more about building boost [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html). Crystal Clear currently has several dependencies on Windows but in the future Crystal will be made to run on any operating system. The only machine currently implemented for Crystal is the x86 machine. Other Archetectures are not supported at this time.
 
+For a quick setup using MSVC 10 (Visual studios 2010) you can build boost with the following command in a command window in the boost directory:
+b2 toolset=msvc-10.0 link=static threading=multi variant=release,debug runtime-link=static
+
 ##Updates on development
 
 Updates on the development of Crystal Clear can currently be found on my blog [Crystal Clear Programming](http://crystalclearprogramming.blogspot.com/search/label/Crystal%20Clear).
