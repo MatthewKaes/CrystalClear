@@ -72,8 +72,9 @@ bool Library_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cryst
       target->Load(Mem_Conv(target, &(*syms)[i + syms->size() / 2]), &(*syms)[i]);
     target->Push(Mem_Conv(target, &(*syms)[i + syms->size() / 2]));
   }
-  target->Push(MEMR(result));
-  target->Call(base->external);
+
+  target->Call(base->external, MEMR(result));
+  target->Pop(static_cast<int>(syms->size() / 2) + 1);
   
   return true;
 }

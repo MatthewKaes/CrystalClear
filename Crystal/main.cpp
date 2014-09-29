@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <boost\filesystem.hpp>
+#include <boost\date_time.hpp>
 
 #include "Compiler.h"
 #include "Interpreter.h"
@@ -44,6 +45,8 @@ int Process_Root(Crystal_Compiler* comp, const char* rootdir)
 
 int main(int argc, const char **argv)
 {
+  //Set up random
+  srand(static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds()));
   if(argc > 1)
   {
     Crystal_Compiler comp(new x86_Machine);

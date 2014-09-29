@@ -4,6 +4,8 @@
 #include "Crystal.h"
 
 //BIP (built in package) functions.
+void Crystal_Time(Crystal_Symbol* ret_sym);
+void Crystal_Rand(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
 void Crystal_Print(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
 void Crystal_PrintColor(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbol* color);
 

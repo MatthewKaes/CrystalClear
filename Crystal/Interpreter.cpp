@@ -23,6 +23,8 @@ void Crystal_Interpreter::Populate_BIP()
   //Define all executable packages
   REGISTER_FUNCTION(print, Crystal_Print, 1)
   REGISTER_FUNCTION(print_color, Crystal_PrintColor, 2);
+  REGISTER_FUNCTION(rand, Crystal_Rand, 1);
+  REGISTER_FUNCTION(time, Crystal_Time, 0);
 }
 void Crystal_Interpreter::Cache_Code(const char* filename)
 {

@@ -85,6 +85,7 @@ public:
 
   //System Functions
   void Call(void* function);
+  void Call(void* function, unsigned reg);
   void Call(const char* cry_function, unsigned reg = CRY_NULL);
   void Push(unsigned var);
   void Pop(unsigned args);

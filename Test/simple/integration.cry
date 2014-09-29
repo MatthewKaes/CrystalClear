@@ -1,18 +1,25 @@
 #Simple crystal code for testing
 
 def main()
+  #get the start time of execution
+  start_t = time
+
   #print(y + ("Test" + x))
   #base type test
   print_color("Hello world!", 13)
   print(42)
   print(true)
   print(1.54 * 2)
+
+
+  print_color("Random Value between 1 and 50:", 13)
+  print(rand(50))
   
   print_color("\nTesting package call:", 11)
   x = package
   y = "Returned: "
   print_color("Value Check:", 11)
-  print(y + (x + "\n") * 3)
+  print(y + (x + "\n"))
   
   #List of test
   obscure()
@@ -20,7 +27,10 @@ def main()
   string_test()
   operator_test()
 
-
+  #print the total runtime of the program
+  print_color("\nTotal Runtime:", 12)
+  end_t = (time - start_t)
+  print(end_t  + " miliseconds\n")
   return "Exit success!"
 end
 
@@ -46,6 +56,6 @@ def operator_test()
   print(x * 2)
   x = 12.789
   x = (x + 8.4) - x
-  print(x)
-  print( print(y - x) )
+  print(x - 1000)
+  print( print(y - x))
 end

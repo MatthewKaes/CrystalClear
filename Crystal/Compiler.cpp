@@ -114,6 +114,12 @@ void Crystal_Compiler::Call(void* function)
 {
   Machine->Call(function);
 }
+void Crystal_Compiler::Call(void* function, unsigned var)
+{
+  Push(var);
+  Machine->Call(function);
+  states[var].Obscurity();
+}
 void Crystal_Compiler::Call(const char* cry_function, unsigned var)
 {
   if(var != CRY_NULL)

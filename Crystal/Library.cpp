@@ -1,7 +1,19 @@
 #include "Library.h"
 #include "Helper.h"
 #include <windows.h>
+#include <boost\date_time.hpp>
 
+void Crystal_Time(Crystal_Symbol* ret_sym)
+{
+  ret_sym->i32 = static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds());
+  ret_sym->type = CRY_INT;
+}
+void Crystal_Rand(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  Parse_Int(sym);
+  ret_sym->i32 = rand() % Parse_Int(sym);
+  ret_sym->type = CRY_INT;
+}
 void Crystal_Print(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   std::string val;
