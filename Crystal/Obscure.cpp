@@ -83,21 +83,21 @@ void Obscure_Multiplication(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = resolve;
     return;
   case CRY_INT:
-    dest->i32 = dest->i32 - source->i32;
+    dest->i32 = dest->i32 * source->i32;
     dest->type = resolve;
     return;
   case CRY_DOUBLE:
     if(dest->type != CRY_DOUBLE)
     {
-      dest->d = dest->i32 - source->d;
+      dest->d = dest->i32 * source->d;
     }
     else if(source->type != CRY_DOUBLE)
     {
-      dest->d -= source->i32;
+      dest->d *= source->i32;
     }
     else
     {
-      dest->d -= source->d;
+      dest->d *= source->d;
     }
     dest->type = resolve;
     return;
