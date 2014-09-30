@@ -36,7 +36,8 @@ void x86_Machine::Make_Label(unsigned label)
   {
     if(walker->lab == label)
     {
-      walker->adr = 0;
+      walker->adr = l.adr;
+      break;
     }
     walker++;
   }
@@ -125,6 +126,10 @@ void x86_Machine::Cmp(unsigned address, ARG argument)
       (int&)p[0] = argument.num_; p+= sizeof(int);
     }
     break;
+  case AOT_REG:
+    *p++ = CMP_REG;
+    Reg_Op(address, EAX);
+    break;
   }
 }
 void x86_Machine::CmpF(unsigned address, ARG argument)
@@ -177,6 +182,11 @@ void x86_Machine::Jl(unsigned label)
 void x86_Machine::Jg(unsigned label)
 {
   *p++ = CODE_JG;
+  Label_Management(label);
+}
+void x86_Machine::Jge(unsigned label)
+{
+  *p++ = CODE_JGE;
   Label_Management(label);
 }
 void x86_Machine::Allocate_Stack(unsigned bytes)
@@ -475,6 +485,12 @@ void x86_Machine::Imul(unsigned address)
 {
   *p++ = REG_IMUL;
   Put_Addr(address, WID_ADR);
+}
+void x86_Machine::Imul(REGISTERS dest, unsigned address)
+{
+  *p++ = REG_MUL_L;
+  *p++ = REG_MUL_H;
+  Reg_Op(address, dest);
 }
 void x86_Machine::Inc(REGISTERS dest)
 {

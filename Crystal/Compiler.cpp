@@ -102,7 +102,8 @@ int Crystal_Compiler::Execute(Crystal_Symbol* ret)
     //Error
     return -1;
   }
-  return package_lookup["main"].call(ret);
+  CryProg entry = package_lookup["main"];
+  return entry.call(ret);
 }
 void Crystal_Compiler::Print(unsigned var)
 {
@@ -162,8 +163,8 @@ void Crystal_Compiler::Return(unsigned var)
   if(states[var].Test(CRY_TEXT) || states[var].Test(CRY_STRING) || 
      states[var].Test(CRY_ARRAY))
   {
-    Machine->MovP(offset - DATA_PNTR, DATA_PNTR);
     states[var].Collected();
+    Machine->MovP(offset - DATA_PNTR, DATA_PNTR);
   }
   Machine->MovP(offset - DATA_LOWER, DATA_LOWER);
   Machine->MovP(offset - DATA_UPPER, DATA_UPPER);
@@ -229,7 +230,6 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   unsigned offset_source = stack_size - source * VAR_SIZE;
-  Garbage_Collection(dest);
   if(!(states[source].Size() == 1 && states[source].Test(CRY_NIL)))
   {
     Machine->Mov(EAX, offset_source - DATA_LOWER);
@@ -239,34 +239,35 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
       Machine->Mov(EAX, offset_source - DATA_UPPER);
       Machine->Mov(offset_dest - DATA_UPPER, EAX);
     }
-    if(states[source].Test(CRY_TEXT))
+    if(states[source].Test(CRY_STRING))
     {
+      unsigned label = Machine->New_Label();
+      //If we can be more then just a string then we need to check
+      //our current state as a string.
+      if(states[source].Size() > 1)
+      {
+        Machine->Cmp(offset_source - DATA_TYPE, static_cast<char>(CRY_STRING));
+        Machine->Jne(label);
+      }
+      //Copy over if we are currently a string.
+      Machine->Mov(EBX, offset_source - DATA_LOWER);
+      Machine->Push(EBX);
+      Machine->Call(malloc);
+      Machine->Pop(4);
+      Machine->Strcpy(EAX, offset_source - DATA_PNTR, offset_source - DATA_LOWER);
+      Machine->Mov(offset_dest - DATA_PNTR, EAX);
+      Machine->Mov(offset_dest - DATA_LOWER, EBX);
+      //Create end label for jumping
+      if(states[source].Size() > 1)
+      {
+        Machine->Make_Label(label);
+      }
+    }
+    else if(states[source].Test(CRY_TEXT))
+    {
+      Garbage_Collection(dest);
       Machine->Mov(EAX, offset_source - DATA_PNTR);
       Machine->Mov(offset_dest - DATA_PNTR, EAX);
-    }
-  }
-  if(states[source].Test(CRY_STRING))
-  {
-    unsigned label = Machine->New_Label();
-    //If we can be more then just a string then we need to check
-    //our current state as a string.
-    if(states[source].Size() > 1)
-    {
-      Machine->Cmp(offset_source - DATA_TYPE, static_cast<char>(CRY_STRING));
-      Machine->Jne(label);
-    }
-    //Copy over if we are currently a string.
-    Machine->Mov(EBX, offset_source - DATA_LOWER);
-    Machine->Push(EBX);
-    Machine->Call(malloc);
-    Machine->Pop(4);
-    Machine->Strcpy(EAX, offset_source - DATA_PNTR, offset_source - DATA_LOWER);
-    Machine->Mov(offset_dest - DATA_PNTR, EAX);
-    Machine->Mov(offset_dest - DATA_LOWER, EBX);
-    //Create end label for jumping
-    if(states[source].Size() > 1)
-    {
-      Machine->Make_Label(label);
     }
   }
   Machine->Mov(EAX, offset_source - DATA_TYPE, true);
@@ -367,22 +368,11 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
   //Clarity Handling
   else
   {
-    if(left)
-    {
-      Push(source);
-      Push(dest);
-      Machine->Call(Obscure_Addition);
-      Pop(2);
-      Clarity_Filter::Combind(states[dest], states[source]);
-    }
-    else
-    {
-      Push(source);
-      Push(dest);
-      Machine->Call(Obscure_AdditionR);
-      Pop(2);
-      Clarity_Filter::Combind(states[dest], states[source]);
-    }
+    Push(source);
+    Push(dest);
+    Machine->Call(left ? Obscure_Addition : Obscure_AdditionR);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], states[source]);
   }
 }
 void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
@@ -537,23 +527,11 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
   {
     //Load const into temp.
     Load(Addr_Reg(stack_depth), const_);
-    if(left)
-    {
-      Push(Addr_Reg(stack_depth));
-      Push(dest);
-      Machine->Call(Obscure_Addition);
-      Pop(2);
-      Clarity_Filter::Combind(states[dest], const_.filt);
-    }
-    else
-    {
-      Push(dest);
-      Push(Addr_Reg(stack_depth));
-      Machine->Call(Obscure_AdditionR);
-      Pop(2);
-      Copy(dest, Addr_Reg(stack_depth));
-      Clarity_Filter::Combind(states[dest], const_.filt);
-    }
+    Push(Addr_Reg(stack_depth));
+    Push(dest);
+    Machine->Call(left ? Obscure_Addition : Obscure_AdditionR);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], const_.filt);
   }
 }
 void Crystal_Compiler::Sub(unsigned dest, unsigned source, bool left)
@@ -626,22 +604,11 @@ void Crystal_Compiler::Sub(unsigned dest, unsigned source, bool left)
   //Clarity Handling
   else
   {
-    if(left)
-    {
-      Push(source);
-      Push(dest);
-      Machine->Call(Obscure_Subtraction);
-      Pop(2);
-      Clarity_Filter::Combind(states[dest], states[source]);
-    }
-    else
-    {
-      Push(source);
-      Push(dest);
-      Machine->Call(Obscure_SubtractionR);
-      Pop(2);
-      Clarity_Filter::Combind(states[dest], states[source]);
-    }
+    Push(source);
+    Push(dest);
+    Machine->Call(left ? Obscure_Subtraction : Obscure_SubtractionR);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], states[source]);
   }
 }
 void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
@@ -731,23 +698,11 @@ void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
   {    
     //Load const into temp.
     Load(Addr_Reg(stack_depth), const_);
-    if(left)
-    {
-      Push(Addr_Reg(stack_depth));
-      Push(dest);
-      Machine->Call(Obscure_Subtraction);
-      Pop(2);
-      Clarity_Filter::Combind(states[dest], const_.filt);
-    }
-    else
-    {
-      Push(dest);
-      Push(Addr_Reg(stack_depth));
-      Machine->Call(Obscure_Subtraction);
-      Pop(2);
-      Copy(dest, Addr_Reg(stack_depth));
-      Clarity_Filter::Combind(states[dest], const_.filt);
-    }
+    Push(Addr_Reg(stack_depth));
+    Push(dest);
+    Machine->Call(left ? Obscure_Subtraction : Obscure_SubtractionR);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], const_.filt);
   }
 }
 void Crystal_Compiler::Mul(unsigned dest, unsigned source, bool left)
@@ -869,6 +824,168 @@ void Crystal_Compiler::MulC(unsigned dest, CRY_ARG const_, bool left)
   {
     //Load const into temp.
     Load(Addr_Reg(stack_depth), const_);
+    Push(Addr_Reg(stack_depth));
+    Push(dest);
+    Machine->Call(Obscure_Multiplication);
+    Pop(2);
+    Copy(dest, Addr_Reg(stack_depth));
+    Clarity_Filter::Combind(states[dest], const_.filt);
+  }
+}
+void Crystal_Compiler::Pow(unsigned dest, unsigned source, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+  unsigned offset_source = stack_size - source * VAR_SIZE;
+  unsigned labletop, lablebottom;
+
+  //std static handling
+  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  {
+    //null operation
+    if(Null_Op(states[dest], states[source], dest))
+      return;
+
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
+    switch(resolve)
+    {
+    case CRY_BOOL:
+      //TO DO:
+      Machine->Mov(EAX, offset_source - DATA_LOWER, true);
+      Machine->Or(offset_dest - DATA_LOWER, EAX);
+      break;
+    case CRY_INT:
+      labletop = Machine->Reserve_Label();
+      lablebottom = Machine->Reserve_Label();
+      Machine->Mov(EBX, (left ? offset_dest : offset_source) - DATA_LOWER);
+      Machine->Load_Register(EAX, 0);
+      Machine->Make_Label(labletop);
+      Machine->Inc(EAX);
+      Machine->Cmp((left ? offset_source : offset_dest) - DATA_LOWER, EAX);
+      Machine->Jge(lablebottom);
+
+      Machine->Imul(EBX, (left ? offset_dest : offset_source) - DATA_LOWER);
+
+      Machine->Jmp(labletop);
+      Machine->Make_Label(lablebottom);
+
+      Machine->Mov(offset_dest - DATA_LOWER, EBX);
+      break;
+    case CRY_DOUBLE:
+      if(states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL))
+      {
+        Machine->FPU_Loadi(offset_dest - DATA_LOWER);
+      }
+      else
+      {
+        Machine->FPU_Loadd(offset_dest - DATA_LOWER);
+      }
+      if(states[source].Test(CRY_INT) || states[source].Test(CRY_BOOL))
+      {
+        Machine->FPU_Loadi(offset_source - DATA_LOWER);
+      }
+      else
+      {
+        Machine->FPU_Loadd(offset_source - DATA_LOWER);
+      }
+      Machine->FPU_Mul();
+      Machine->FPU_Store(offset_dest - DATA_LOWER);
+      break;
+    //Lacking Support
+    NO_SUPPORT(CRY_TEXT);
+    NO_SUPPORT(CRY_STRING);
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    Runtime_Resovle(dest, resolve);
+  }
+  //Clarity Handling
+  else
+  {
+    Push(source);
+    Push(dest);
+    Machine->Call(Obscure_Power);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], states[source]);
+  }
+}
+void Crystal_Compiler::PowC(unsigned dest, CRY_ARG const_, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+  unsigned labletop, lablebottom;
+
+  //std static handling
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  {
+    //null operation
+    if(Null_Op(states[dest], const_.filt, dest))
+      return;
+
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
+    switch(resolve)
+    {
+    case CRY_BOOL:
+      Machine->Load_Register(EAX, const_.bol_);
+      Machine->Or(offset_dest - DATA_LOWER, EAX);
+      break;
+    case CRY_INT:
+      labletop = Machine->Reserve_Label();
+      lablebottom = Machine->Reserve_Label();
+      if(left)
+      {
+        Machine->Mov(EBX, offset_dest - DATA_LOWER);
+        Load(Addr_Reg(stack_depth), const_);
+      }
+      else
+        Machine->Load_Register(EBX, const_.num_);
+      Machine->Load_Register(EAX, 0);
+      Machine->Make_Label(labletop);
+      Machine->Inc(EAX);
+      if(left)
+        Machine->Cmp((stack_size - Addr_Reg(stack_depth) * VAR_SIZE) - DATA_LOWER, EAX);
+      else
+        Machine->Cmp(offset_dest - DATA_LOWER, EAX);
+      Machine->Jge(lablebottom);
+
+      Machine->Imul(EBX, (left ? offset_dest : stack_size - Addr_Reg(stack_depth) * VAR_SIZE) - DATA_LOWER);
+
+      Machine->Jmp(labletop);
+      Machine->Make_Label(lablebottom);
+
+      Machine->Mov(offset_dest - DATA_LOWER, EBX);
+      break;
+    case CRY_DOUBLE:
+      if(const_.filt.Test(CRY_INT) || const_.filt.Test(CRY_BOOL))
+      {
+        Machine->FPU_Load(const_.num_);
+      }
+      else
+      {
+        Machine->FPU_Load(const_.dec_);
+      }
+      if(states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL))
+      {
+        Machine->FPU_Loadi(offset_dest - DATA_LOWER);
+      }
+      else
+      {
+        Machine->FPU_Loadd(offset_dest - DATA_LOWER);
+      }
+      Machine->FPU_Mul();
+      Machine->FPU_Store(offset_dest - DATA_LOWER);
+      break;
+    //Lacking Support
+    NO_SUPPORT(CRY_TEXT);
+    NO_SUPPORT(CRY_STRING);
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    Runtime_Resovle(dest, resolve);
+  }
+  //Clarity Handling
+  else
+  {
+    //Load const into temp.
+    Load(Addr_Reg(stack_depth), const_);
     if(left)
     {
       Push(Addr_Reg(stack_depth));
@@ -938,6 +1055,7 @@ void Crystal_Compiler::Garbage_Collection(unsigned var)
     Machine->Push(EAX);
     Call(free);
     Machine->Pop(4);
+    Machine->Load_Mem(offset_dest - DATA_PNTR, 0);
     Machine->Make_Label(label);
     states[var].Collected();
   }

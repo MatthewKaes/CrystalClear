@@ -10,5 +10,6 @@ bool Reduction(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right);
 void Reduce_Addition(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right);
 void Reduce_Subtraction(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right);
 void Reduce_Multiplication(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right);
+void Reduce_Power(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right);
   
 #endif

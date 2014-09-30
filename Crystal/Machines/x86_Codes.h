@@ -64,12 +64,14 @@
 #define CMP_WORD 0x83
 #define CMP_WORDL 0x81
 #define CMP_MEM 0x7D
+#define CMP_REG 0x3B
 #define CODE_JMP 0xEB
 #define CODE_JE 0x74
 #define CODE_JNE 0x75
 #define CODE_JLE 0x7E
 #define CODE_JL 0x7C
 #define CODE_JG 0x7F
+#define CODE_JGE 0x7D
 
 //x87
 #define FPU_LOAD_ADDR 0x05

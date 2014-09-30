@@ -20,7 +20,7 @@ void Clarity_Filter::Obscurity()
 {
   static unsigned int flags_v = (1 << CRY_SYMS) - 1;
   flags = flags_v;
-  dilution = static_cast<unsigned>(-1);
+  dilution = CRY_SYMS;
 }
 bool Clarity_Filter::Test(Symbol_Type flag)
 {
@@ -36,6 +36,8 @@ bool Clarity_Filter::Collection()
 }
 void Clarity_Filter::Collected()
 {
+  static unsigned int flags_v = (1 << CRY_STRING) - 1;
+  flags &= flags_v;
   collection = false;
 }
 unsigned Clarity_Filter::Size()
