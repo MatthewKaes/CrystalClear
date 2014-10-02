@@ -646,14 +646,6 @@ void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
     case CRY_DOUBLE:
       if(left)
       {
-        if(const_.filt.Test(CRY_INT) || const_.filt.Test(CRY_BOOL))
-        {
-          Machine->FPU_Load(const_.num_);
-        }
-        else
-        {
-          Machine->FPU_Load(const_.dec_);
-        }
         if(states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL))
         {
           Machine->FPU_Loadi(offset_dest - DATA_LOWER);
@@ -661,18 +653,18 @@ void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
         else
         {
           Machine->FPU_Loadd(offset_dest - DATA_LOWER);
+        }
+        if(const_.filt.Test(CRY_INT) || const_.filt.Test(CRY_BOOL))
+        {
+          Machine->FPU_Load(const_.num_);
+        }
+        else
+        {
+          Machine->FPU_Load(const_.dec_);
         }
       }
       else
       {
-        if(states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL))
-        {
-          Machine->FPU_Loadi(offset_dest - DATA_LOWER);
-        }
-        else
-        {
-          Machine->FPU_Loadd(offset_dest - DATA_LOWER);
-        }
         if(const_.filt.Test(CRY_INT) || const_.filt.Test(CRY_BOOL))
         {
           Machine->FPU_Load(const_.num_);
@@ -680,6 +672,14 @@ void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
         else
         {
           Machine->FPU_Load(const_.dec_);
+        }
+        if(states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL))
+        {
+          Machine->FPU_Loadi(offset_dest - DATA_LOWER);
+        }
+        else
+        {
+          Machine->FPU_Loadd(offset_dest - DATA_LOWER);
         }
       }
       Machine->FPU_Sub();
@@ -828,7 +828,7 @@ void Crystal_Compiler::MulC(unsigned dest, CRY_ARG const_, bool left)
     Push(dest);
     Machine->Call(Obscure_Multiplication);
     Pop(2);
-    Copy(dest, Addr_Reg(stack_depth));
+    //Copy(dest, Addr_Reg(stack_depth));
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
 }
