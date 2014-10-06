@@ -148,3 +148,11 @@ bool Assignment_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cr
     target->Load(MEM((*syms)[0]), &(*syms)[1]);
   return true;
 }
+bool Additive_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  if((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY)
+    target->Add(MEM((*syms)[0]), MEM((*syms)[1]));
+  else
+    target->AddC(MEM((*syms)[0]), &(*syms)[1]);
+  return true;
+}

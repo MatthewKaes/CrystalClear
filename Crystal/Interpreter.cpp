@@ -338,6 +338,20 @@ unsigned Crystal_Interpreter::Get_Precedence(const char* sym)
   {
     return 13;
   }
+  //assignments
+  switch(sym[0])
+  {
+  case '+':
+  case '-':
+  case '*':
+  case '/':
+  case '%':
+  case '|':
+  case '&':
+    if(sym[1] == '=')
+      return 2;
+  }
+  //general
   switch(sym[0])
   {
   case '(':
@@ -377,8 +391,7 @@ unsigned Crystal_Interpreter::Get_Precedence(const char* sym)
   case '=':
     if(sym[1] == '=')
       return 4;
-    else
-      return 2;
+    return 2;
   case 'k':
   case ',':
     return 1;
