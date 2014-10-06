@@ -130,8 +130,11 @@ void Crystal_Interpreter::Format_Code()
     case '>':    
     case '|':
     case '&':
-    case '-':
     case '+':
+    case '-':
+    case '*':
+    case '/':
+    case '%':
       if(*(code_ptr + 1) == *code_ptr || *(code_ptr + 1) == '=')
       {
         code_out.push_back(*code_ptr++);

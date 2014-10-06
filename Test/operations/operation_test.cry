@@ -15,6 +15,11 @@ def main()
   y -= 10.5
   print(y)
 
+  print_color("Multiplicative Operations:", 11)
+  y = 10
+  y *= 10
+  print(y)
+
   print_color("Nil Assignments:", 11)
   z += 1
   print(z)

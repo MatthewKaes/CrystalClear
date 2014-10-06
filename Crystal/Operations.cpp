@@ -164,3 +164,11 @@ bool Subtractive_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<C
     target->SubC(MEM((*syms)[0]), &(*syms)[1]);
   return true;
 }
+bool Multiplicative_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  if((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY)
+    target->Mul(MEM((*syms)[0]), MEM((*syms)[1]));
+  else
+    target->MulC(MEM((*syms)[0]), &(*syms)[1]);
+  return true;
+}

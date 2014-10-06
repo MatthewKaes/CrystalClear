@@ -127,7 +127,7 @@ bool Syntax_Node::Evaluate()
   {
     //Stacking assignment operator without using
     //uneccesary registers.
-    if(sym.type == DAT_OP && (!sym.str.compare("=") || !sym.str.compare("+=")))
+    if(sym.type == DAT_OP && (!sym.str.compare("=") || !sym.str.compare("+=") || !sym.str.compare("-=") || !sym.str.compare("*=")))
     {
       sym = new_code.result = *params[0]->Acquire();
     }
