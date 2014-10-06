@@ -1,6 +1,7 @@
 #Simple crystal code for testing
 
 def main()
+  print_color("Additive Operations:", 11)
   x = 2
   x += 2.5 + x
   print(x)
@@ -8,5 +9,14 @@ def main()
   x = 2
   x += x += x
   print(x)
+
+  print_color("Subtractive Operations:", 11)
+  y = 32
+  y -= 10.5
+  print(y)
+
+  print_color("Nil Assignments:", 11)
+  z += 1
+  print(z)
   return "Done"
 end

@@ -32,7 +32,10 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
     else
       return Addition_Gen;
   case '-':
-    return Subtraction_Gen;
+    if(sym->str.c_str()[1] == '=')
+      return Subtractive_Gen;
+    else
+      return Subtraction_Gen;
   case '*':
     return Multiplication_Gen;
   case '^':
