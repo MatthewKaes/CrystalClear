@@ -1,6 +1,7 @@
 #include "Compiler.h"
 #include "Lexicon.h"
 #include "Obscure.h"
+#include "Helper.h"
 
 int CRY_ARG::poolindex = 0;
 char CRY_ARG::strpool[STRING_POOL] = {0};
@@ -871,24 +872,10 @@ void Crystal_Compiler::Pow(unsigned dest, unsigned source, bool left)
       Machine->Mov(offset_dest - DATA_LOWER, EBX);
       break;
     case CRY_DOUBLE:
-      if(states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL))
-      {
-        Machine->FPU_Loadi(offset_dest - DATA_LOWER);
-      }
-      else
-      {
-        Machine->FPU_Loadd(offset_dest - DATA_LOWER);
-      }
-      if(states[source].Test(CRY_INT) || states[source].Test(CRY_BOOL))
-      {
-        Machine->FPU_Loadi(offset_source - DATA_LOWER);
-      }
-      else
-      {
-        Machine->FPU_Loadd(offset_source - DATA_LOWER);
-      }
-      Machine->FPU_Mul();
-      Machine->FPU_Store(offset_dest - DATA_LOWER);
+      Push(source);
+      Push(dest);
+      Machine->Call(left ? Power_Syms : Power_SymsR);
+      Pop(2);
       break;
     //Lacking Support
     NO_SUPPORT(CRY_TEXT);
@@ -903,7 +890,7 @@ void Crystal_Compiler::Pow(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(Obscure_Power);
+    Machine->Call(left ? Obscure_Power : Obscure_PowerR);
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -954,24 +941,11 @@ void Crystal_Compiler::PowC(unsigned dest, CRY_ARG const_, bool left)
       Machine->Mov(offset_dest - DATA_LOWER, EBX);
       break;
     case CRY_DOUBLE:
-      if(const_.filt.Test(CRY_INT) || const_.filt.Test(CRY_BOOL))
-      {
-        Machine->FPU_Load(const_.num_);
-      }
-      else
-      {
-        Machine->FPU_Load(const_.dec_);
-      }
-      if(states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL))
-      {
-        Machine->FPU_Loadi(offset_dest - DATA_LOWER);
-      }
-      else
-      {
-        Machine->FPU_Loadd(offset_dest - DATA_LOWER);
-      }
-      Machine->FPU_Mul();
-      Machine->FPU_Store(offset_dest - DATA_LOWER);
+      Load(Addr_Reg(stack_depth), const_);
+      Push(Addr_Reg(stack_depth));
+      Push(dest);
+      Machine->Call(left ? Power_Syms : Power_SymsR);
+      Pop(2);
       break;
     //Lacking Support
     NO_SUPPORT(CRY_TEXT);
@@ -986,23 +960,11 @@ void Crystal_Compiler::PowC(unsigned dest, CRY_ARG const_, bool left)
   {
     //Load const into temp.
     Load(Addr_Reg(stack_depth), const_);
-    if(left)
-    {
-      Push(Addr_Reg(stack_depth));
-      Push(dest);
-      Machine->Call(Obscure_Multiplication);
-      Pop(2);
-      Clarity_Filter::Combind(states[dest], const_.filt);
-    }
-    else
-    {
-      Push(dest);
-      Push(Addr_Reg(stack_depth));
-      Machine->Call(Obscure_Multiplication);
-      Pop(2);
-      Copy(dest, Addr_Reg(stack_depth));
-      Clarity_Filter::Combind(states[dest], const_.filt);
-    }
+    Push(Addr_Reg(stack_depth));
+    Push(dest);
+    Machine->Call(left ? Obscure_Power : Obscure_PowerR);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], const_.filt);
   }
 }
 unsigned Crystal_Compiler::Addr_Reg(unsigned reg)

@@ -40,6 +40,7 @@
 #define REG_OR 0x08
 #define REG_AND 0x21
 #define LEA_EAX 0x24
+#define FPU_ESP LEA_EAX
 #define REG_XOR 0x33
 #define REG_INC 0x40
 #define REG_LEA 0x44

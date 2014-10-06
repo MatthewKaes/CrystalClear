@@ -60,7 +60,7 @@ def operator_test()
   print(1008.4 - x)
   
   print_color("Power Test:", 13)
-  pw = 2
-  print(pw ^ 8 + " == 256")
+  pw = 2.5
+  print(pw ^ pw + " == 9.8821176")
   print( print(y - x) * 1000)
 end

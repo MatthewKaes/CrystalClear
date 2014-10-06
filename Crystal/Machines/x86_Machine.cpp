@@ -324,6 +324,32 @@ void x86_Machine::Push_Adr(unsigned address)
   *p++ = REG_PSH; 
   pushed_bytes += BYTES_4;   
 }
+void x86_Machine::Push_LD(unsigned address, ARG_TYPES type)
+{
+  switch(type)
+  {
+  case AOT_INT:
+    *p++ = STK_POP;
+    *p++ = SUB_ESP;
+    *p++ = BYTES_8;
+    FPU_Loadi(address);
+    *p++ = FPU_DOUBLE_OP;
+    *p++ = FPU_ADR;
+    *p++ = FPU_ESP;
+    return;
+  case AOT_DOUBLE:
+    *p++ = STK_POP;
+    *p++ = SUB_ESP;
+    *p++ = BYTES_8;
+    FPU_Loadd(address);
+    *p++ = FPU_DOUBLE_OP;
+    *p++ = FPU_ADR;
+    *p++ = FPU_ESP;
+    return;
+  default:
+    return;
+  }
+}
 void x86_Machine::Pop(unsigned bytes)
 {
   if(!bytes)

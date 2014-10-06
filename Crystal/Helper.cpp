@@ -60,3 +60,15 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
     str->assign("nil");
   }
 }
+void Power_Syms(Crystal_Symbol* syml, Crystal_Symbol* symr)
+{
+  double l = syml->type == CRY_DOUBLE ? syml->d : syml->i32;
+  double r = symr->type == CRY_DOUBLE ? symr->d : symr->i32;
+  syml->d = pow(l, r);
+}
+void Power_SymsR(Crystal_Symbol* syml, Crystal_Symbol* symr)
+{
+  double l = syml->type == CRY_DOUBLE ? syml->d : syml->i32;
+  double r = symr->type == CRY_DOUBLE ? symr->d : symr->i32;
+  syml->d = pow(r, l);
+}

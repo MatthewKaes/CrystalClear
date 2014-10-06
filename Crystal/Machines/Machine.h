@@ -82,6 +82,7 @@ public:
   //Stack Operations
   virtual void Push(ARG argument) = 0;
   virtual void Push_Adr(unsigned address) = 0;
+  virtual void Push_LD(unsigned address, ARG_TYPES type) = 0;
   virtual void Pop(unsigned bytes = 0) = 0;
   //By name addressing
   virtual void Load_Mem(unsigned address, ARG argument) = 0;

@@ -45,6 +45,7 @@ public:
   //Stack Operations
   void Push(ARG argument);
   void Push_Adr(unsigned address);
+  void Push_LD(unsigned address, ARG_TYPES type);
   void Pop(unsigned bytes = 0);
   //By name addressing
   void Load_Mem(unsigned address, ARG argument);
