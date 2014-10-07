@@ -1,5 +1,6 @@
 #include "Interpreter.h"
 #include "Library.h"
+#include "Crystal_Math.h"
 #include <stdio.h>
 
 #define BUFFER_SIZE 0x8000
@@ -25,6 +26,8 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(print_color, Crystal_PrintColor, 2);
   REGISTER_FUNCTION(rand, Crystal_Rand, 1);
   REGISTER_FUNCTION(time, Crystal_Time, 0);
+  REGISTER_FUNCTION(cos, Crystal_Cos, 1);
+  REGISTER_FUNCTION(sin, Crystal_Sin, 1);
 }
 void Crystal_Interpreter::Cache_Code(const char* filename)
 {

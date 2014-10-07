@@ -23,5 +23,9 @@ def main()
   print_color("Nil Assignments:", 11)
   z += 1
   print(z)
+  z = 5
+  z -= nil
+  print(z)
+  
   return "Done"
 end

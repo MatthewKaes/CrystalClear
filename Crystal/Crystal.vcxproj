@@ -151,6 +151,7 @@
     <ClCompile Include="Bytecode.cpp" />
     <ClCompile Include="Clarity_Filter.cpp" />
     <ClCompile Include="Compiler.cpp" />
+    <ClCompile Include="Crystal_Math.cpp" />
     <ClCompile Include="Generator.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Interpreter.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Clarity_Filter.h" />
     <ClInclude Include="Compiler.h" />
     <ClInclude Include="Crystal.h" />
+    <ClInclude Include="Crystal_Math.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="Lexicon.h" />

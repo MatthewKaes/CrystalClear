@@ -81,6 +81,9 @@
     <ClCompile Include="Clarity_Filter.cpp">
       <Filter>Core Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Crystal_Math.cpp">
+      <Filter>Extensions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Crystal.h">
@@ -133,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="Clarity_Filter.h">
       <Filter>Core Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Crystal_Math.h">
+      <Filter>Extensions\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
