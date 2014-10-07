@@ -189,6 +189,12 @@ void x86_Machine::Jge(unsigned label)
   *p++ = CODE_JGE;
   Label_Management(label);
 }
+void x86_Machine::Sete(unsigned address)
+{
+  *p++ = 0x0F;  
+  *p++ = 0x94;  
+  Put_Addr(address);
+}
 void x86_Machine::Allocate_Stack(unsigned bytes)
 {
   //Strack preamble
@@ -499,6 +505,11 @@ void x86_Machine::Sub(REGISTERS dest, REGISTERS source)
 void x86_Machine::Sub(unsigned address, REGISTERS source)
 {
   *p++ = REG_SUB;
+  Reg_Op(address, source);
+}
+void x86_Machine::Sub(REGISTERS source, unsigned address)
+{
+  *p++ = 0x29;
   Reg_Op(address, source);
 }
 void x86_Machine::Mul(REGISTERS dest, REGISTERS source)

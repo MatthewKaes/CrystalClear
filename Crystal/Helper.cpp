@@ -60,6 +60,17 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
     str->assign("nil");
   }
 }
+bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr)
+{
+  int i = 0;
+  while(*(syml->ptr.str + i) || *(symr->ptr.str + i))
+  {
+    if(*(syml->ptr.str + i) != *(symr->ptr.str + i))
+      return false;
+    i++;
+  }
+  return true;
+}
 void Power_Syms(Crystal_Symbol* syml, Crystal_Symbol* symr)
 {
   double l = syml->type == CRY_DOUBLE ? syml->d : syml->i32;

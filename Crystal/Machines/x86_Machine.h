@@ -63,6 +63,7 @@ public:
   void Add(unsigned address, REGISTERS source);
   void Sub(REGISTERS dest, REGISTERS source);
   void Sub(unsigned address, REGISTERS source);
+  void Sub(REGISTERS source, unsigned address);
   void Mul(REGISTERS dest, REGISTERS source);
   void Imul(unsigned address);
   void Imul(REGISTERS dest, unsigned address);
@@ -79,6 +80,7 @@ public:
   void Jl(unsigned label);
   void Jg(unsigned label);
   void Jge(unsigned label);
+  void Sete(unsigned address);
   void Call(void* function);
   void Call(const char* function);
   void Return(ARG argument = 0);

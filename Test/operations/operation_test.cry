@@ -26,6 +26,23 @@ def main()
   z = 5
   z -= nil
   print(z)
+
+  print_color("Equvilant Operations:", 11)
+  print(2 == 2)
+  print("Hello" == "Hello")
+  flag = ("Hello" == "World") == false
+  print(flag)
+  print(PI == PI)
+  flag = false
+  print((true == flag) == false)
+  val = 4
+  val2 = 4
+  print_color("Variable Equvilant:", 10)
+  print(val == val2 )
+  val2 += 1
+  print(val == val2 )
+  val2 -= 1
+  print(val == val2 )
   
   return "Done"
 end

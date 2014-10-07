@@ -634,7 +634,7 @@ void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
       if(left)
       {
         Machine->Load_Register(EAX, const_.num_);
-        Machine->Sub(offset_dest - DATA_LOWER, EAX);
+        Machine->Sub(EAX, offset_dest - DATA_LOWER);
       }
       else
       {        
@@ -850,7 +850,6 @@ void Crystal_Compiler::Pow(unsigned dest, unsigned source, bool left)
     switch(resolve)
     {
     case CRY_BOOL:
-      //TO DO:
       Machine->Mov(EAX, offset_source - DATA_LOWER, true);
       Machine->Or(offset_dest - DATA_LOWER, EAX);
       break;
@@ -966,6 +965,112 @@ void Crystal_Compiler::PowC(unsigned dest, CRY_ARG const_, bool left)
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
+}
+void Crystal_Compiler::Eql(unsigned dest, unsigned source, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+  unsigned offset_source = stack_size - source * VAR_SIZE;
+
+  //std static handling
+  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  {
+    //null operation
+    if(states[dest].Test(CRY_NIL) || states[source].Test(CRY_NIL))
+    {
+      if(states[dest].Test(CRY_NIL) && states[source].Test(CRY_NIL))
+      {
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 1);
+      }
+      else
+      {
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      }
+      Runtime_Resovle(dest, CRY_BOOL);
+      return;
+    }
+
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
+    switch(resolve)
+    {
+    case CRY_INT:
+    case CRY_BOOL:
+      Machine->Mov(EAX, offset_dest - DATA_LOWER);
+      Machine->Cmp(offset_source - DATA_LOWER, EAX);
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      Machine->Sete(offset_dest - DATA_LOWER);
+      break;
+    //Lacking Support
+    NO_SUPPORT(CRY_DOUBLE);
+    NO_SUPPORT(CRY_TEXT);
+    NO_SUPPORT(CRY_STRING);
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    Runtime_Resovle(dest, CRY_BOOL);
+  }
+  //Clarity Handling
+  else
+  {
+    Push(source);
+    Push(dest);
+    Machine->Call(Obscure_Equal);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], states[source]);
+  }
+}
+void Crystal_Compiler::EqlC(unsigned dest, CRY_ARG const_, bool left)
+{  
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+
+  //std static handling
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  {
+    //null operation
+    if(states[dest].Test(CRY_NIL) || const_.filt.Test(CRY_NIL))
+    {
+      if(states[dest].Test(CRY_NIL) && const_.filt.Test(CRY_NIL))
+      {
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 1);
+      }
+      else
+      {
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      }
+      Runtime_Resovle(dest, CRY_BOOL);
+      return;
+    }
+
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
+    switch(resolve)
+    {
+    case CRY_BOOL:
+      const_.num_ = const_.bol_;
+    case CRY_INT:
+      Machine->Load_Register(EAX, const_.num_);
+      Machine->Cmp(offset_dest - DATA_LOWER, EAX);
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      Machine->Sete(offset_dest - DATA_LOWER);
+      break;
+    //Lacking Support
+    NO_SUPPORT(CRY_DOUBLE);
+    NO_SUPPORT(CRY_TEXT);
+    NO_SUPPORT(CRY_STRING);
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    Runtime_Resovle(dest, CRY_BOOL);
+  }
+  //Clarity Handling
+  else
+  {
+    Load(Addr_Reg(stack_depth), const_);
+    Push(Addr_Reg(stack_depth));
+    Push(dest);
+    Machine->Call(Obscure_Equal);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], const_.filt);
+  }
+
 }
 unsigned Crystal_Compiler::Addr_Reg(unsigned reg)
 {

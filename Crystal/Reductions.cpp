@@ -44,6 +44,12 @@ bool Reduction(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
   case '^':
     Reduce_Power(sym, left, right);
     break;
+  case '=':
+    if(sym->str.c_str()[1])
+    {
+      Reduce_Equal(sym, left, right);
+    }
+    break;
   }
 
   return true;
@@ -243,4 +249,33 @@ void Reduce_Power(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
     resolve = DAT_NIL;
   }
   sym->type = resolve;
+}
+void Reduce_Equal(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
+{
+  Data_Type resolve = left->type > right->type ? left->type : right->type;
+  switch(resolve)
+  {
+  case DAT_NIL:
+    sym->b = true;
+    break;
+  case DAT_BOOL:
+  case DAT_INT:
+    if(left->type == DAT_NIL || right->type == DAT_NIL)
+      sym->b = false;
+    else
+      sym->b = (left->i32 == right->i32);
+    break;
+  case DAT_DOUBLE:
+    if(left->type == DAT_NIL || right->type == DAT_NIL)
+      sym->b = false;
+    else
+      sym->b = (left->i32 == right->i32);
+    break;
+  case DAT_STRING:
+    sym->b = !left->str.compare(right->str);
+    break;
+  default:
+    sym->b = false;
+  }
+  sym->type = DAT_BOOL;
 }

@@ -100,6 +100,7 @@ public:
   virtual void Add(unsigned address, REGISTERS source) = 0;
   virtual void Sub(REGISTERS dest, REGISTERS source) = 0;
   virtual void Sub(unsigned address, REGISTERS source) = 0;
+  virtual void Sub(REGISTERS source, unsigned address) = 0;
   virtual void Mul(REGISTERS dest, REGISTERS source) = 0;
   virtual void Imul(unsigned address) = 0;
   virtual void Imul(REGISTERS dest, unsigned address) = 0;
@@ -116,6 +117,7 @@ public:
   virtual void Jl(unsigned label) = 0;
   virtual void Jg(unsigned label) = 0;
   virtual void Jge(unsigned label) = 0;
+  virtual void Sete(unsigned address) = 0;
   virtual void Call(void* function) = 0;
   virtual void Call(const char* function) = 0;
   virtual void Return(ARG argument = 0) = 0;
