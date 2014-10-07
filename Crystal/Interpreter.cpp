@@ -278,6 +278,15 @@ void Crystal_Interpreter::Process_Package(const char* code)
       {
         sym.type = DAT_STATEMENT;
       }
+      else if(!sym.str.compare("nil"))
+      {
+        sym.type = DAT_NIL;
+      }
+      else if(!sym.str.compare("PI"))
+      {
+        sym.type = DAT_DOUBLE;
+        sym.d = PI;
+      }
     }
     
     //Look up nodes that need are unknown
