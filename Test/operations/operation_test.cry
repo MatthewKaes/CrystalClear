@@ -28,25 +28,25 @@ def main()
   print(z)
 
   print_color("Equvilant Operations:", 11)
-  print(2 == 2)
-  print("Hello" == "Hello")
-  flag = ("Hello" == "World") == false
+  print(2 != 4)
+  print("Hello" != "Hello")
+  flag = ("Hello" != "World") == false
   print(flag)
-  print(PI == PI)
+  print(PI != PI)
   flag = false
-  print((true == flag) == false)
+  print((true != flag) == false)
   flag = 1.5
   print("World" == flag)
   flag2 = 1.5
-  print(obscure_nil == 2.4)
+  print(obscure_nil != 2.4)
   val = 1
   val2 = 1
   print_color("Variable Equvilant:", 10)
-  print(val == val2 )
+  print(val != val2 )
   val2 += 1
-  print(val == val2 )
+  print(val != val2 )
   val2 -= 1
-  print(val == val2 )
+  print(val != val2 )
   
   return "Done"
 end

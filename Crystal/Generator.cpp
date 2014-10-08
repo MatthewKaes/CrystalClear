@@ -28,6 +28,13 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
       return Equal_Gen;
     }
     return Null_Gen;
+  case '!':
+    switch(sym->str.c_str()[1])
+    {
+    case '=':
+      return Diffrent_Gen;
+    }
+    return Null_Gen;
   case '+':
     if(sym->str.c_str()[1] == '=')
       return Additive_Gen;

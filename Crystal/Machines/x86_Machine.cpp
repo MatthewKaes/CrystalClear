@@ -195,6 +195,12 @@ void x86_Machine::Sete(unsigned address)
   *p++ = 0x94;  
   Put_Addr(address);
 }
+void x86_Machine::Setne(unsigned address)
+{
+  *p++ = 0x0F;
+  *p++ = 0x95;
+  Put_Addr(address);
+}
 void x86_Machine::Allocate_Stack(unsigned bytes)
 {
   //Strack preamble

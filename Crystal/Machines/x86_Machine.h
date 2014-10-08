@@ -81,6 +81,7 @@ public:
   void Jg(unsigned label);
   void Jge(unsigned label);
   void Sete(unsigned address);
+  void Setne(unsigned address);
   void Call(void* function);
   void Call(const char* function);
   void Return(ARG argument = 0);

@@ -118,6 +118,7 @@ public:
   virtual void Jg(unsigned label) = 0;
   virtual void Jge(unsigned label) = 0;
   virtual void Sete(unsigned address) = 0;
+  virtual void Setne(unsigned address) = 0;
   virtual void Call(void* function) = 0;
   virtual void Call(const char* function) = 0;
   virtual void Return(ARG argument = 0) = 0;

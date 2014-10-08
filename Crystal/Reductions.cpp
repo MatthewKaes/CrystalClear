@@ -45,9 +45,15 @@ bool Reduction(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
     Reduce_Power(sym, left, right);
     break;
   case '=':
-    if(sym->str.c_str()[1])
+    if(sym->str.c_str()[1] == '=')
     {
       Reduce_Equal(sym, left, right);
+    }
+    break;
+  case '!':
+    if(sym->str.c_str()[1] == '=')
+    {
+      Reduce_Diffrence(sym, left, right);
     }
     break;
   }
@@ -252,30 +258,61 @@ void Reduce_Power(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
 }
 void Reduce_Equal(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
 {
-  Data_Type resolve = left->type > right->type ? left->type : right->type;
-  switch(resolve)
+  if(left->type != right->type)
   {
-  case DAT_NIL:
-    sym->b = true;
-    break;
-  case DAT_BOOL:
-  case DAT_INT:
-    if(left->type == DAT_NIL || right->type == DAT_NIL)
-      sym->b = false;
-    else
-      sym->b = (left->i32 == right->i32);
-    break;
-  case DAT_DOUBLE:
-    if(left->type == DAT_NIL || right->type == DAT_NIL)
-      sym->b = false;
-    else
-      sym->b = (left->i32 == right->i32);
-    break;
-  case DAT_STRING:
-    sym->b = !left->str.compare(right->str);
-    break;
-  default:
     sym->b = false;
+  }
+  else
+  {
+    Data_Type resolve = left->type > right->type ? left->type : right->type;
+    switch(resolve)
+    {
+    case DAT_NIL:
+      sym->b = true;
+      break;
+    case DAT_BOOL:
+    case DAT_INT:
+      sym->b = (left->i32 == right->i32);
+      break;
+    case DAT_DOUBLE:
+      sym->b = (left->d == right->d);
+      break;
+    case DAT_STRING:
+      sym->b = !left->str.compare(right->str);
+      break;
+    default:
+      sym->b = false;
+    }
+  }
+  sym->type = DAT_BOOL;
+}
+void Reduce_Diffrence(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
+{
+  if(left->type != right->type)
+  {
+    sym->b = true;
+  }
+  else
+  {
+    Data_Type resolve = left->type > right->type ? left->type : right->type;
+    switch(resolve)
+    {
+    case DAT_NIL:
+      sym->b = false;
+      break;
+    case DAT_BOOL:
+    case DAT_INT:
+      sym->b = (left->i32 != right->i32);
+      break;
+    case DAT_DOUBLE:
+      sym->b = (left->d != right->d);
+    case DAT_STRING:
+      sym->b = !left->str.compare(right->str);
+      sym->b = !sym->b;
+      break;
+    default:
+      sym->b = true;
+    }
   }
   sym->type = DAT_BOOL;
 }

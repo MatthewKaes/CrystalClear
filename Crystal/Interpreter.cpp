@@ -138,6 +138,7 @@ void Crystal_Interpreter::Format_Code()
     case '*':
     case '/':
     case '%':
+    case '!':
       if(*(code_ptr + 1) == *code_ptr || *(code_ptr + 1) == '=')
       {
         code_out.push_back(*code_ptr++);
@@ -403,6 +404,10 @@ unsigned Crystal_Interpreter::Get_Precedence(const char* sym)
   case '<':
   case '>':
     return 4;
+  case '!':
+    if(sym[1] == '=')
+      return 4;
+    return 9;
   case '=':
     if(sym[1] == '=')
       return 4;

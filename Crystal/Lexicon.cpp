@@ -24,6 +24,7 @@ bool is_symbol(char object)
   case ':':
   case ',':
   case '|':
+  case '!':
   case '&':
   case '0':
   case '1':
