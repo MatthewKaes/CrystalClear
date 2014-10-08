@@ -773,6 +773,11 @@ void x86_Machine::FPU_Store(unsigned address)
   *p++ = FPU_DOUBLE_OP;
   Put_Addr(address, FPU_STORE);
 }
+void x86_Machine::FPU_Cmp(FPU_REGISTERS reg)
+{
+  *p++ = 0xDF;
+  *p++ = 0xE8 + (unsigned)reg;
+}
 void x86_Machine::FPU_Add(FPU_REGISTERS reg)
 {
   *p++ = FPU_MATH;

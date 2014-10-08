@@ -155,9 +155,12 @@ void Obscure_Power(Crystal_Symbol* dest, Crystal_Symbol* source)
 }
 void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
-  dest->type = CRY_BOOL;
   switch(dest->type)
   {
+  case CRY_NIL:
+    dest->b = source->type == CRY_NIL;
+    dest->type = CRY_BOOL;
+    return;
   case CRY_BOOL:
     if(dest->type != source->type)
     {
@@ -165,6 +168,7 @@ void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
       return;
     }
     dest->b = (dest->b == source->b);
+    dest->type = CRY_BOOL;
     return;
   case CRY_INT:
     if(dest->type != source->type)
@@ -173,21 +177,26 @@ void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
       return;
     }
     dest->b = (dest->i32 == source->i32);
+    dest->type = CRY_BOOL;
     return;
   case CRY_DOUBLE:
     if(dest->type != source->type)
     {
       dest->b = false;
+      dest->type = CRY_BOOL;
       return;
     }
     dest->b = (dest->d == source->d);
+    dest->type = CRY_BOOL;
     return;
   case CRY_TEXT:
   case CRY_STRING:
     dest->b = Fast_strcmp(dest, source);
+    dest->type = CRY_BOOL;
     return;
   default:
     dest->b = false;
+    dest->type = CRY_BOOL;
     return;
   }
 }

@@ -35,8 +35,12 @@ def main()
   print(PI == PI)
   flag = false
   print((true == flag) == false)
-  val = 4
-  val2 = 4
+  flag = 1.5
+  print("World" == flag)
+  flag2 = 1.5
+  print(obscure_nil == 2.4)
+  val = 1
+  val2 = 1
   print_color("Variable Equvilant:", 10)
   print(val == val2 )
   val2 += 1
@@ -45,4 +49,7 @@ def main()
   print(val == val2 )
   
   return "Done"
+end
+def obscure_nil()
+  return 2.4
 end

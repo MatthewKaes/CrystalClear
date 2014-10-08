@@ -94,6 +94,8 @@ public:
   void FPU_Loadd(unsigned address);
   void FPU_Loadi(unsigned address);
   void FPU_Store(unsigned address);
+  //OP instructions
+  void FPU_Cmp(FPU_REGISTERS reg = ST1);
   //Pop instructions
   void FPU_Add(FPU_REGISTERS reg = ST1);
   void FPU_Sub(FPU_REGISTERS reg = ST1);

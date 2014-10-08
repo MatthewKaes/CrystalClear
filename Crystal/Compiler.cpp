@@ -994,15 +994,42 @@ void Crystal_Compiler::Eql(unsigned dest, unsigned source, bool left)
     {
     case CRY_INT:
     case CRY_BOOL:
-      Machine->Mov(EAX, offset_dest - DATA_LOWER);
-      Machine->Cmp(offset_source - DATA_LOWER, EAX);
+      if(states[dest].Test(CRY_TEXT) == states[source].Test(CRY_TEXT))
+      {
+        Machine->Mov(EAX, offset_dest - DATA_LOWER);
+        Machine->Cmp(offset_source - DATA_LOWER, EAX);
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+        Machine->Sete(offset_dest - DATA_LOWER);
+      }
+      else
+      {
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      }
+      break;
+    case CRY_DOUBLE:
+      Machine->FPU_Loadd(offset_source - DATA_LOWER);
+      Machine->FPU_Loadd(offset_dest - DATA_LOWER);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      Machine->FPU_Cmp();
       Machine->Sete(offset_dest - DATA_LOWER);
       break;
+    case CRY_TEXT:
+    case CRY_STRING:
+      if((states[dest].Test(CRY_TEXT) || states[source].Test(CRY_TEXT)) &&
+         (states[dest].Test(CRY_STRING) || states[source].Test(CRY_STRING)))
+      {
+        Push(source);
+        Push(dest);
+        Machine->Call(Fast_strcmp);
+        Pop(2);
+        Machine->Mov(offset_dest - DATA_LOWER, EAX);
+      }
+      else
+      {
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      }
+      break;
     //Lacking Support
-    NO_SUPPORT(CRY_DOUBLE);
-    NO_SUPPORT(CRY_TEXT);
-    NO_SUPPORT(CRY_STRING);
     NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);
     }
@@ -1046,15 +1073,35 @@ void Crystal_Compiler::EqlC(unsigned dest, CRY_ARG const_, bool left)
     case CRY_BOOL:
       const_.num_ = const_.bol_;
     case CRY_INT:
-      Machine->Load_Register(EAX, const_.num_);
-      Machine->Cmp(offset_dest - DATA_LOWER, EAX);
+      if(states[dest].Test(CRY_TEXT) == const_.filt.Test(CRY_TEXT))
+      {
+        Machine->Load_Register(EAX, const_.num_);
+        Machine->Cmp(offset_dest - DATA_LOWER, EAX);
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+        Machine->Sete(offset_dest - DATA_LOWER);
+      }
+      else
+      {
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      }
+      break;
+    case CRY_DOUBLE:
+      Machine->FPU_Load(const_.dec_);
+      Machine->FPU_Loadd(offset_dest - DATA_LOWER);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      Machine->FPU_Cmp();
       Machine->Sete(offset_dest - DATA_LOWER);
       break;
+    case CRY_TEXT:
+    case CRY_STRING:
+      Load(Addr_Reg(stack_depth), const_);
+      Push(Addr_Reg(stack_depth));
+      Push(dest);
+      Machine->Call(Fast_strcmp);
+      Pop(2);
+      Machine->Mov(offset_dest - DATA_LOWER, EAX);
+      break;
     //Lacking Support
-    NO_SUPPORT(CRY_DOUBLE);
-    NO_SUPPORT(CRY_TEXT);
-    NO_SUPPORT(CRY_STRING);
     NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);
     }
