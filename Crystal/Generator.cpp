@@ -51,7 +51,10 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
     else
       return Multiplication_Gen;
   case '^':
-    return Power_Gen;
+    if(sym->str.c_str()[1] == '=')
+      return Exponent_Gen;
+    else
+      return Power_Gen;
   }
   return Null_Gen;
 }

@@ -19,6 +19,11 @@ def main()
   y = 10
   y *= 10
   print(y)
+  
+  print_color("Exponent Operations:", 11)
+  y = 2
+  y ^= 10
+  print(y)
 
   print_color("Nil Assignments:", 11)
   z += 1

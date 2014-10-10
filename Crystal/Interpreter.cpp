@@ -137,6 +137,7 @@ void Crystal_Interpreter::Format_Code()
     case '-':
     case '*':
     case '/':
+    case '^':
     case '%':
     case '!':
       if(*(code_ptr + 1) == *code_ptr || *(code_ptr + 1) == '=')
@@ -360,6 +361,7 @@ unsigned Crystal_Interpreter::Get_Precedence(const char* sym)
   case '+':
   case '-':
   case '*':
+  case '^':
   case '/':
   case '%':
   case '|':
