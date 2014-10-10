@@ -1,4 +1,10 @@
 #include "Operations.h"
+#include <functional>
+
+typedef void (Crystal_Compiler::*OPERATION)(unsigned, unsigned, bool);
+typedef void (Crystal_Compiler::*OPERATION_C)(unsigned, CRY_ARG, bool);
+#define PREFORM_OPERATION(op) return Generic_Operation(target, base, syms, result, &Crystal_Compiler::##op, &Crystal_Compiler::##op ## C)
+#define PREFORM_ASSIGNMENT(op) return Generic_Assignment(target, base, syms, result, &Crystal_Compiler::##op, &Crystal_Compiler::##op ## C)
 
 int Mem_Conv(Crystal_Compiler* target, Crystal_Data* sym)
 {
@@ -7,205 +13,73 @@ int Mem_Conv(Crystal_Compiler* target, Crystal_Data* sym)
   return target->Addr_Reg(sym->i32);
 }
 
-bool Addition_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+bool Generic_Operation(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result, OPERATION func, OPERATION_C func_const)
 {
   if(((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY) &&
     ((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY))
   {
     if(MEM((*syms)[0]) == MEMR(result))
-      target->Add(MEM((*syms)[0]), MEM((*syms)[1]));
+      (target->*func)(MEM((*syms)[0]), MEM((*syms)[1]), true);
     else if(MEM((*syms)[1]) == MEMR(result))
-      target->Add(MEM((*syms)[1]), MEM((*syms)[0]), false);
+      (target->*func)(MEM((*syms)[1]), MEM((*syms)[0]), false);
     else
     {
       target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->Add(MEMR(result), MEM((*syms)[1]));
+      (target->*func)(MEMR(result), MEM((*syms)[1]), true);
     }
     return true;
   }
   if((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY)
   {
     if(MEM((*syms)[0]) == MEMR(result))
-      target->AddC(MEM((*syms)[0]), &(*syms)[1]);
+      (target->*func_const)(MEM((*syms)[0]), &(*syms)[1], true);
     else
     {
       target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->AddC(MEMR(result), &(*syms)[1]);
+      (target->*func_const)(MEMR(result), &(*syms)[1], true);
     }
     return true;
   }
 
   target->Copy(MEMR(result), MEM((*syms)[1]));
-  target->AddC(MEMR(result), &(*syms)[0], false);
+  (target->*func_const)(MEMR(result), &(*syms)[0], false);
 
   return true;
+}
+
+bool Addition_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  PREFORM_OPERATION(Add);
 }
 bool Subtraction_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  if(((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY) &&
-    ((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY))
-  {
-    if(MEM((*syms)[0]) == MEMR(result))
-      target->Sub(MEM((*syms)[0]), MEM((*syms)[1]));
-    else if(MEM((*syms)[1]) == MEMR(result))
-      target->Sub(MEM((*syms)[1]), MEM((*syms)[0]), false);
-    else
-    {
-      target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->Sub(MEMR(result), MEM((*syms)[1]));
-    }
-    return true;
-  }
-  if((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY)
-  {
-    if(MEM((*syms)[0]) == MEMR(result))
-      target->SubC(MEM((*syms)[0]), &(*syms)[1]);
-    else
-    {
-      target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->SubC(MEMR(result), &(*syms)[1]);
-    }
-    return true;
-  }
-
-  target->Copy(MEMR(result), MEM((*syms)[1]));
-  target->SubC(MEMR(result), &(*syms)[0], false);
-
-  return true;
+  PREFORM_OPERATION(Sub);
 }
 bool Multiplication_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  if(((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY) &&
-    ((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY))
-  {
-    if(MEM((*syms)[0]) == MEMR(result))
-      target->Mul(MEM((*syms)[0]), MEM((*syms)[1]));
-    else if(MEM((*syms)[1]) == MEMR(result))
-      target->Mul(MEM((*syms)[1]), MEM((*syms)[0]), false);
-    else
-    {
-      target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->Mul(MEMR(result), MEM((*syms)[1]));
-    }
-    return true;
-  }
-  if((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY)
-  {
-    if(MEM((*syms)[0]) == MEMR(result))
-      target->MulC(MEM((*syms)[0]), &(*syms)[1]);
-    else
-    {
-      target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->MulC(MEMR(result), &(*syms)[1]);
-    }
-    return true;
-  }
-
-  target->Copy(MEMR(result), MEM((*syms)[1]));
-  target->MulC(MEMR(result), &(*syms)[0], false);
-
-  return true;
+  PREFORM_OPERATION(Mul);
 }
 bool Power_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  if(((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY) &&
-    ((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY))
-  {
-    if(MEM((*syms)[0]) == MEMR(result))
-      target->Pow(MEM((*syms)[0]), MEM((*syms)[1]));
-    else if(MEM((*syms)[1]) == MEMR(result))
-      target->Pow(MEM((*syms)[1]), MEM((*syms)[0]), false);
-    else
-    {
-      target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->Pow(MEMR(result), MEM((*syms)[1]));
-    }
-    return true;
-  }
-  if((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY)
-  {
-    if(MEM((*syms)[0]) == MEMR(result))
-      target->PowC(MEM((*syms)[0]), &(*syms)[1]);
-    else
-    {
-      target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->PowC(MEMR(result), &(*syms)[1]);
-    }
-    return true;
-  }
-
-  target->Copy(MEMR(result), MEM((*syms)[1]));
-  target->PowC(MEMR(result), &(*syms)[0], false);
-
-  return true;
+  PREFORM_OPERATION(Pow);
 }
 bool Equal_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  if(((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY) &&
-    ((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY))
-  {
-    if(MEM((*syms)[0]) == MEMR(result))
-      target->Eql(MEM((*syms)[0]), MEM((*syms)[1]));
-    else if(MEM((*syms)[1]) == MEMR(result))
-      target->Eql(MEM((*syms)[1]), MEM((*syms)[0]), false);
-    else
-    {
-      target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->Eql(MEMR(result), MEM((*syms)[1]));
-    }
-    return true;
-  }
-  if((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY)
-  {
-    if(MEM((*syms)[0]) == MEMR(result))
-      target->EqlC(MEM((*syms)[0]), &(*syms)[1]);
-    else
-    {
-      target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->EqlC(MEMR(result), &(*syms)[1]);
-    }
-    return true;
-  }
-
-  target->Copy(MEMR(result), MEM((*syms)[1]));
-  target->EqlC(MEMR(result), &(*syms)[0], false);
-
-  return true;
+  PREFORM_OPERATION(Eql);
 }
 bool Diffrent_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  if(((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY) &&
-    ((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY))
-  {
-    if(MEM((*syms)[0]) == MEMR(result))
-      target->Dif(MEM((*syms)[0]), MEM((*syms)[1]));
-    else if(MEM((*syms)[1]) == MEMR(result))
-      target->Dif(MEM((*syms)[1]), MEM((*syms)[0]), false);
-    else
-    {
-      target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->Dif(MEMR(result), MEM((*syms)[1]));
-    }
-    return true;
-  }
-  if((*syms)[0].type == DAT_LOCAL || (*syms)[0].type == DAT_REGISTRY)
-  {
-    if(MEM((*syms)[0]) == MEMR(result))
-      target->DifC(MEM((*syms)[0]), &(*syms)[1]);
-    else
-    {
-      target->Copy(MEMR(result), MEM((*syms)[0]));
-      target->DifC(MEMR(result), &(*syms)[1]);
-    }
-    return true;
-  }
-
-  target->Copy(MEMR(result), MEM((*syms)[1]));
-  target->DifC(MEMR(result), &(*syms)[0], false);
-
-  return true;
+  PREFORM_OPERATION(Dif);
 }
 
+bool Generic_Assignment(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result, OPERATION func, OPERATION_C func_const)
+{
+  if((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY)
+    (target->*func)(MEM((*syms)[0]), MEM((*syms)[1]), true);
+  else
+    (target->*func_const)(MEM((*syms)[0]), &(*syms)[1], true);
+  return true;
+}
 bool Assignment_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   if((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY)
@@ -216,25 +90,13 @@ bool Assignment_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cr
 }
 bool Additive_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  if((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY)
-    target->Add(MEM((*syms)[0]), MEM((*syms)[1]));
-  else
-    target->AddC(MEM((*syms)[0]), &(*syms)[1]);
-  return true;
+  PREFORM_ASSIGNMENT(Add);
 }
 bool Subtractive_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  if((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY)
-    target->Sub(MEM((*syms)[0]), MEM((*syms)[1]));
-  else
-    target->SubC(MEM((*syms)[0]), &(*syms)[1]);
-  return true;
+  PREFORM_ASSIGNMENT(Sub);
 }
 bool Multiplicative_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  if((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY)
-    target->Mul(MEM((*syms)[0]), MEM((*syms)[1]));
-  else
-    target->MulC(MEM((*syms)[0]), &(*syms)[1]);
-  return true;
+  PREFORM_ASSIGNMENT(Mul);
 }
