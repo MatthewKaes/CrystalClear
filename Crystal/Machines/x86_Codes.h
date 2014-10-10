@@ -16,6 +16,7 @@
 #define ESP_WORD 0xC7
 #define PSH_INT_B 0x6A
 #define PSH_INT_W 0x68
+#define SET_TYP 0x0F 
 
 //loops
 #define REP 0xF3

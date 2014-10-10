@@ -191,14 +191,38 @@ void x86_Machine::Jge(unsigned label)
 }
 void x86_Machine::Sete(unsigned address)
 {
-  *p++ = 0x0F;  
+  *p++ = SET_TYP;  
   *p++ = 0x94;  
   Put_Addr(address);
 }
 void x86_Machine::Setne(unsigned address)
 {
-  *p++ = 0x0F;
+  *p++ = SET_TYP;
   *p++ = 0x95;
+  Put_Addr(address);
+}
+void x86_Machine::Setl(unsigned address)
+{
+  *p++ = SET_TYP;
+  *p++ = 0x9C;
+  Put_Addr(address);
+}
+void x86_Machine::Setle(unsigned address)
+{
+  *p++ = SET_TYP;
+  *p++ = 0x9E;
+  Put_Addr(address);
+}
+void x86_Machine::Setg(unsigned address)
+{
+  *p++ = SET_TYP;
+  *p++ = 0x9F;
+  Put_Addr(address);
+}
+void x86_Machine::Setge(unsigned address)
+{
+  *p++ = SET_TYP;
+  *p++ = 0x9D;
   Put_Addr(address);
 }
 void x86_Machine::Allocate_Stack(unsigned bytes)
