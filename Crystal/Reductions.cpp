@@ -50,6 +50,8 @@ bool Reduction(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
       Reduce_Equal(sym, left, right);
     }
     break;
+  case '<':
+    Reduce_Less(sym, left, right);
   case '!':
     if(sym->str.c_str()[1] == '=')
     {
@@ -315,4 +317,35 @@ void Reduce_Diffrence(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right
     }
   }
   sym->type = DAT_BOOL;
+}
+void Reduce_Less(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
+{
+  Data_Type resolve = left->type > right->type ? left->type : right->type;
+  switch(resolve)
+  {
+  case CRY_INT:
+    if(left->type != right->type)
+    {
+      sym->type = DAT_NIL;
+      return;
+    }
+    sym->b = (left->i32 < right->i32);
+    sym->type = DAT_BOOL;
+    return;
+  case CRY_DOUBLE:
+    if(left->type == DAT_NIL || right->type == DAT_NIL)
+      sym->type = DAT_NIL;
+    else
+    {
+      double l, r;
+      l = left->type == DAT_DOUBLE ? left->d : left->i32;
+      r = right->type == DAT_DOUBLE ? right->d : right->i32;
+      sym->b = (l < r);
+      sym->type = DAT_BOOL;
+    }
+    return;
+  default:
+    sym->type = DAT_NIL;
+    return;
+  }
 }

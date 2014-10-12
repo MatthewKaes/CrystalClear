@@ -44,9 +44,14 @@ def main()
   print("World" == flag)
   flag2 = 1.5
   print(obscure_nil != 2.4)
+  print_color("Less Operations:", 10)
+  print(2 < 4)
+  x = 12
+  y = 11.0
+  print(x < y)
+  print_color("Variable Equvilant:", 10)
   val = 1
   val2 = 1
-  print_color("Variable Equvilant:", 10)
   print(val != val2 )
   val2 += 1
   print(val != val2 )
@@ -56,5 +61,5 @@ def main()
   return "Done"
 end
 def obscure_nil()
-  return 2.4
+  return 2.5
 end

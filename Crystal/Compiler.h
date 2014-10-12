@@ -106,6 +106,8 @@ public:
   void EqlC(unsigned dest, CRY_ARG const_, bool left = true);
   void Dif(unsigned dest, unsigned source, bool left = true);
   void DifC(unsigned dest, CRY_ARG const_, bool left = true);
+  void Les(unsigned dest, unsigned source, bool left = true);
+  void LesC(unsigned dest, CRY_ARG const_, bool left = true);
 
   unsigned Addr_Reg(unsigned reg);
 private:

@@ -71,6 +71,10 @@ bool Diffrent_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
 {
   PREFORM_OPERATION(Dif);
 }
+bool Less_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  PREFORM_OPERATION(Les);
+}
 
 bool Generic_Assignment(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result, OPERATION func, OPERATION_C func_const)
 {

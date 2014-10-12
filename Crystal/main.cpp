@@ -45,6 +45,9 @@ int Process_Root(Crystal_Compiler* comp, const char* rootdir)
 
 int main(int argc, const char **argv)
 {
+  __asm{
+
+  }
   //Set up random
   srand(static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds()));
   if(argc > 1)

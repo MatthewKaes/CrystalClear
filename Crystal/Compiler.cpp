@@ -1226,7 +1226,7 @@ void Crystal_Compiler::DifC(unsigned dest, CRY_ARG const_, bool left)
     case CRY_BOOL:
       const_.num_ = const_.bol_;
     case CRY_INT:
-      if(states[dest].Test(CRY_TEXT) == const_.filt.Test(CRY_TEXT))
+      if(states[dest].Test(CRY_INT) == const_.filt.Test(CRY_INT))
       {
         Machine->Load_Register(EAX, const_.num_);
         Machine->Cmp(offset_dest - DATA_LOWER, EAX);
@@ -1270,7 +1270,119 @@ void Crystal_Compiler::DifC(unsigned dest, CRY_ARG const_, bool left)
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
+}
+void Crystal_Compiler::Les(unsigned dest, unsigned source, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+  unsigned offset_source = stack_size - source * VAR_SIZE;
 
+  //std static handling
+  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  {
+
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
+    switch(resolve)
+    {
+    case CRY_INT:
+      Machine->Mov(EAX, offset_dest - DATA_LOWER);
+      Machine->Cmp(offset_source - DATA_LOWER, EAX);
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      if(left)
+        Machine->Setl(offset_dest - DATA_LOWER);
+      else
+        Machine->Setg(offset_dest - DATA_LOWER);
+      resolve = CRY_BOOL;
+      break;
+    case CRY_DOUBLE:
+      if(states[source].Test(CRY_INT))
+        Machine->FPU_Loadi(offset_source - DATA_LOWER);
+      else
+        Machine->FPU_Loadd(offset_source - DATA_LOWER);
+      if(states[dest].Test(CRY_INT))
+        Machine->FPU_Loadi(offset_dest - DATA_LOWER);
+      else
+        Machine->FPU_Loadd(offset_dest - DATA_LOWER);
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      Machine->FPU_Cmp();
+      if(left)
+        Machine->Setl(offset_dest - DATA_LOWER);
+      else
+        Machine->Setg(offset_dest - DATA_LOWER);
+      resolve = CRY_BOOL;
+      break;
+    //Lacking Support
+    NO_SUPPORT(CRY_BOOL);
+    NO_SUPPORT(CRY_TEXT);
+    NO_SUPPORT(CRY_STRING);
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    Runtime_Resovle(dest, resolve);
+  }
+  //Clarity Handling
+  else
+  {
+    Push(source);
+    Push(dest);
+    Machine->Call(left ? Obscure_Less : Obscure_Greater);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], states[source]);
+  }
+}
+void Crystal_Compiler::LesC(unsigned dest, CRY_ARG const_, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+
+  //std static handling
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  {
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
+    switch(resolve)
+    {
+    case CRY_INT:
+      Machine->Load_Register(EAX, const_.num_);
+      Machine->Cmp(offset_dest - DATA_LOWER, EAX);
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      if(!left)
+        Machine->Setl(offset_dest - DATA_LOWER);
+      else
+        Machine->Setg(offset_dest - DATA_LOWER);
+      break;
+    case CRY_DOUBLE:
+      if(const_.filt.Test(CRY_INT))
+        Machine->FPU_Load(const_.num_);
+      else
+        Machine->FPU_Load(const_.dec_);
+      if(states[dest].Test(CRY_INT))
+        Machine->FPU_Loadi(offset_dest - DATA_LOWER);
+      else
+        Machine->FPU_Loadd(offset_dest - DATA_LOWER);
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      Machine->FPU_Cmp();
+      if(!left)
+        Machine->Setl(offset_dest - DATA_LOWER);
+      else
+        Machine->Setg(offset_dest - DATA_LOWER);
+      break;
+    //Lacking Support
+    NO_SUPPORT(CRY_BOOL);
+    NO_SUPPORT(CRY_TEXT);
+    NO_SUPPORT(CRY_STRING);
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    Runtime_Resovle(dest, CRY_BOOL);
+  }
+  //Clarity Handling
+  else
+  {
+    Load(Addr_Reg(stack_depth), const_);
+    Push(Addr_Reg(stack_depth));
+    Push(dest);
+    Machine->Call(left ? Obscure_Less : Obscure_Greater);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], const_.filt);
+  }
 }
 unsigned Crystal_Compiler::Addr_Reg(unsigned reg)
 {
@@ -1304,7 +1416,7 @@ bool Crystal_Compiler::Null_Op(Clarity_Filter& l, Clarity_Filter& r, unsigned de
 }
 void Crystal_Compiler::Runtime_Resovle(unsigned dest, Symbol_Type resolve)
 {
-  if(!states[dest].Test(resolve))
+  if(states[dest].Size() != 1 || !states[dest].Test(resolve))
   {
     Machine->Load_Mem(stack_size - VAR_SIZE * dest - DATA_TYPE, static_cast<char>(resolve));
     states[dest].Set(resolve);
