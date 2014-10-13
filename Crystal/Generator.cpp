@@ -24,6 +24,11 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
       return Less_Gen;
     else
       return Less_Equal_Gen;
+  case '>':
+    if(sym->str.c_str()[1] == '\0')
+      return Greater_Gen;
+    else
+      return Greater_Gen;
   case '=':
     switch(sym->str.c_str()[1])
     {

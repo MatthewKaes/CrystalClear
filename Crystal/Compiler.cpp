@@ -1343,7 +1343,7 @@ void Crystal_Compiler::LesC(unsigned dest, CRY_ARG const_, bool left)
       Machine->Load_Register(EAX, const_.num_);
       Machine->Cmp(offset_dest - DATA_LOWER, EAX);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
-      if(!left)
+      if(left)
         Machine->Setl(offset_dest - DATA_LOWER);
       else
         Machine->Setg(offset_dest - DATA_LOWER);
@@ -1359,7 +1359,7 @@ void Crystal_Compiler::LesC(unsigned dest, CRY_ARG const_, bool left)
         Machine->FPU_Loadd(offset_dest - DATA_LOWER);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
       Machine->FPU_Cmp();
-      if(!left)
+      if(left)
         Machine->Setb(offset_dest - DATA_LOWER);
       else
         Machine->Seta(offset_dest - DATA_LOWER);
@@ -1456,7 +1456,7 @@ void Crystal_Compiler::LesEqlC(unsigned dest, CRY_ARG const_, bool left)
       Machine->Load_Register(EAX, const_.num_);
       Machine->Cmp(offset_dest - DATA_LOWER, EAX);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
-      if(!left)
+      if(left)
         Machine->Setle(offset_dest - DATA_LOWER);
       else
         Machine->Setge(offset_dest - DATA_LOWER);
@@ -1472,7 +1472,7 @@ void Crystal_Compiler::LesEqlC(unsigned dest, CRY_ARG const_, bool left)
         Machine->FPU_Loadd(offset_dest - DATA_LOWER);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
       Machine->FPU_Cmp();
-      if(!left)
+      if(left)
         Machine->Setbe(offset_dest - DATA_LOWER);
       else
         Machine->Setae(offset_dest - DATA_LOWER);
@@ -1493,6 +1493,119 @@ void Crystal_Compiler::LesEqlC(unsigned dest, CRY_ARG const_, bool left)
     Push(Addr_Reg(stack_depth));
     Push(dest);
     Machine->Call(left ? Obscure_Less_Equal : Obscure_Greater_Equal);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], const_.filt);
+  }
+}
+void Crystal_Compiler::Gtr(unsigned dest, unsigned source, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+  unsigned offset_source = stack_size - source * VAR_SIZE;
+
+  //std static handling
+  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  {
+
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
+    switch(resolve)
+    {
+    case CRY_INT:
+      Machine->Mov(EAX, offset_dest - DATA_LOWER);
+      Machine->Cmp(offset_dest - DATA_LOWER, EAX);
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      if(!left)
+        Machine->Setl(offset_dest - DATA_LOWER);
+      else
+        Machine->Setg(offset_dest - DATA_LOWER);
+      resolve = CRY_BOOL;
+      break;
+    case CRY_DOUBLE:
+      if(states[source].Test(CRY_INT))
+        Machine->FPU_Loadi(offset_source - DATA_LOWER);
+      else
+        Machine->FPU_Loadd(offset_source - DATA_LOWER);
+      if(states[dest].Test(CRY_INT))
+        Machine->FPU_Loadi(offset_dest - DATA_LOWER);
+      else
+        Machine->FPU_Loadd(offset_dest - DATA_LOWER);
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      Machine->FPU_Cmp();
+      if(!left)
+        Machine->Setb(offset_dest - DATA_LOWER);
+      else
+        Machine->Seta(offset_dest - DATA_LOWER);
+      resolve = CRY_BOOL;
+      break;
+    //Lacking Support
+    NO_SUPPORT(CRY_BOOL);
+    NO_SUPPORT(CRY_TEXT);
+    NO_SUPPORT(CRY_STRING);
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    Runtime_Resovle(dest, resolve);
+  }
+  //Clarity Handling
+  else
+  {
+    Push(source);
+    Push(dest);
+    Machine->Call(!left ? Obscure_Less : Obscure_Greater);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], states[source]);
+  }
+}
+void Crystal_Compiler::GtrC(unsigned dest, CRY_ARG const_, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+
+  //std static handling
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  {
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
+    switch(resolve)
+    {
+    case CRY_INT:
+      Machine->Load_Register(EAX, const_.num_);
+      Machine->Cmp(offset_dest - DATA_LOWER, EAX);
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      if(!left)
+        Machine->Setl(offset_dest - DATA_LOWER);
+      else
+        Machine->Setg(offset_dest - DATA_LOWER);
+      break;
+    case CRY_DOUBLE:
+      if(const_.filt.Test(CRY_INT))
+        Machine->FPU_Load(const_.num_);
+      else
+        Machine->FPU_Load(const_.dec_);
+      if(states[dest].Test(CRY_INT))
+        Machine->FPU_Loadi(offset_dest - DATA_LOWER);
+      else
+        Machine->FPU_Loadd(offset_dest - DATA_LOWER);
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      Machine->FPU_Cmp();
+      if(!left)
+        Machine->Setb(offset_dest - DATA_LOWER);
+      else
+        Machine->Seta(offset_dest - DATA_LOWER);
+      break;
+    //Lacking Support
+    NO_SUPPORT(CRY_BOOL);
+    NO_SUPPORT(CRY_TEXT);
+    NO_SUPPORT(CRY_STRING);
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    Runtime_Resovle(dest, CRY_BOOL);
+  }
+  //Clarity Handling
+  else
+  {
+    Load(Addr_Reg(stack_depth), const_);
+    Push(Addr_Reg(stack_depth));
+    Push(dest);
+    Machine->Call(!left ? Obscure_Less : Obscure_Greater);
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }

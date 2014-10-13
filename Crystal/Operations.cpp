@@ -79,6 +79,10 @@ bool Less_Equal_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cr
 {
   PREFORM_OPERATION(LesEql);
 }
+bool Greater_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  PREFORM_OPERATION(Gtr);
+}
 
 bool Generic_Assignment(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result, OPERATION func, OPERATION_C func_const)
 {

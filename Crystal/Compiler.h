@@ -110,6 +110,8 @@ public:
   void LesC(unsigned dest, CRY_ARG const_, bool left = true);
   void LesEql(unsigned dest, unsigned source, bool left = true);
   void LesEqlC(unsigned dest, CRY_ARG const_, bool left = true);
+  void Gtr(unsigned dest, unsigned source, bool left = true);
+  void GtrC(unsigned dest, CRY_ARG const_, bool left = true);
 
   unsigned Addr_Reg(unsigned reg);
 private:

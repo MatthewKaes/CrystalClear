@@ -179,7 +179,10 @@ void Syntax_Node::Finalize()
 
   if(sym.type == DAT_OP)
   {
-    if(!sym.str.compare("="))
+    if(!sym.str.compare("=") || !sym.str.compare("+=")
+       || !sym.str.compare("-=")  || !sym.str.compare("*=")
+       || !sym.str.compare("^=")  || !sym.str.compare("%=")
+       || !sym.str.compare("<>"))
     {
       R_Assoc = true;
     }
