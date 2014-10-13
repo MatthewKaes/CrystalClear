@@ -37,6 +37,8 @@ void Crystal_Input(Crystal_Symbol* ret_sym)
     }
   else
   {
+    if(ret_sym->ptr.str)
+      free(ret_sym->ptr.str);
     ret_sym->type = CRY_STRING;
     ret_sym->ptr.str = value;
     ret_sym->size = str.size();
@@ -47,37 +49,37 @@ void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   switch(sym->type)
   {
   case CRY_BOOL:
-    ret_sym->ptr.str = "BOOLEAN";
+    ret_sym->text = "BOOLEAN";
     break;
   case CRY_INT:
-    ret_sym->ptr.str = "INTEGER";
+    ret_sym->text = "INTEGER";
     break;
   case CRY_INT64:
-    ret_sym->ptr.str = "INTEGER-64";
+    ret_sym->text = "INTEGER-64";
     break;
   case CRY_DOUBLE:
-    ret_sym->ptr.str = "DOUBLE";
+    ret_sym->text = "DOUBLE";
     break;
   case CRY_ARRAY:
-    ret_sym->ptr.str = "ARRAY";
+    ret_sym->text = "ARRAY";
     break;
   case CRY_POINTER:
-    ret_sym->ptr.str = "OBJECT";
+    ret_sym->text = "OBJECT";
     break;
   case CRY_CLASS_OBJ:
-    ret_sym->ptr.str = "CLASS";
+    ret_sym->text = "CLASS";
     break;
   case CRY_NIL:
-    ret_sym->ptr.str = "NIL";
+    ret_sym->text = "NIL";
     break;
   case CRY_TEXT:
-    ret_sym->ptr.str = "TEXT";
+    ret_sym->text = "TEXT";
     break;
   case CRY_STRING:
-    ret_sym->ptr.str = "STRING";
+    ret_sym->text = "STRING";
     break;
   }
-  ret_sym->i32 = strlen(ret_sym->ptr.str);
+  ret_sym->size = strlen(ret_sym->ptr.str);
   ret_sym->type = CRY_TEXT;
 }
 void Crystal_Rand(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
@@ -112,10 +114,8 @@ void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)
   char* new_buffer = static_cast<char*>(malloc(val_left.size() + val_right.size() + 1));
   strcpy(new_buffer, val_left.c_str());
   strcpy(new_buffer + val_left.size(), val_right.c_str());
-  if(symd->type == CRY_STRING)
-  {
+  if(symd->ptr.str)
     free(symd->ptr.str);
-  }
   symd->ptr.str = new_buffer;
   symd->size = val_left.size() + val_right.size() + 1;
 }
@@ -130,10 +130,8 @@ void Crystal_Text_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
   char* new_buffer = static_cast<char*>(malloc(val_left.size() + val_right.size() + 1));
   strcpy(new_buffer, val_right.c_str());
   strcpy(new_buffer + val_right.size(), val_left.c_str());
-  if(symd->type == CRY_STRING)
-  {
+  if(symd->ptr.str)
     free(symd->ptr.str);
-  }
   symd->ptr.str = new_buffer;
   symd->size = val_left.size() + val_right.size() + 1;
 }
@@ -142,7 +140,7 @@ void Crystal_Text_Append_C(Crystal_Symbol* symd, const char* str, unsigned lengt
 {
   char* new_buffer = static_cast<char*>(malloc(symd->size + length));
   strcpy(new_buffer, symd->ptr.str);
-  strcpy(new_buffer + symd->size - 1, str);
+  strcpy(new_buffer + strlen(symd->ptr.str), str);
 
   free(symd->ptr.str);
 
@@ -153,7 +151,7 @@ void Crystal_Text_Append_CR(Crystal_Symbol* symd, const char* str, unsigned leng
 {
   char* new_buffer = static_cast<char*>(malloc(symd->size + length));
   strcpy(new_buffer, str);
-  strcpy(new_buffer + symd->size - 1, symd->ptr.str);
+  strcpy(new_buffer + strlen(str), symd->ptr.str);
 
   free(symd->ptr.str);
 

@@ -32,6 +32,7 @@ public:
         unsigned LOWWER;
       };
       union {
+        char* text;
         unsigned capacity;
         unsigned UPPER;
       };

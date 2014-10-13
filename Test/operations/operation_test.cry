@@ -1,6 +1,10 @@
 #Simple crystal code for testing
 
 def main()
+  crash = "New " + "string"
+  print("string crash: " + (crash + "\n"))
+  print("string crash: " + crash + "\n")
+  
   print_color("Additive Operations:", 11)
   x = 2
   x += 2.5 + x
@@ -59,8 +63,7 @@ def main()
   val2 += 1
   print(val + " != " + val2 + ": " + (val != val2))
   val2 -= 1
-  print(val + " == " + val2 + ": " + (val == val2))
-  print("")
+  print(val + " == " + val2 + ": " + (val == val2) + "\n")
   
   print_color("Swap Operations:", 14)
   x = "New " + "string"
@@ -69,9 +72,10 @@ def main()
   print("y: " + y + "\n")
   x <> y
   print("x: " + x)
-  print("y: " + y)
+  print("y: " + y + "\n")
   
-  print("\n" + type(input))
+  k = input
+  print("The type of input was a " + type(k))
   
   return "Done"
 end

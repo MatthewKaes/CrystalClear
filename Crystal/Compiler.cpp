@@ -161,8 +161,7 @@ void Crystal_Compiler::Return(unsigned var)
   //Load the data into the ptr value
   Machine->Load_Ptr(RETURN_ADDRESS);
   //Mark memory as collected and pass it back for use.
-  if(states[var].Test(CRY_TEXT) || states[var].Test(CRY_STRING) || 
-     states[var].Test(CRY_ARRAY))
+  if(states[var].Test(CRY_STRING) || states[var].Test(CRY_ARRAY))
   {
     states[var].Collected();
     Machine->MovP(offset - DATA_PNTR, DATA_PNTR);
@@ -218,8 +217,7 @@ void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
     break;
   //Text can be loaded as constanst since strings cant.
   case CRY_TEXT:
-    Garbage_Collection(var);
-    Machine->Load_Mem(offset - DATA_PNTR, val.str_);
+    Machine->Load_Mem(offset - DATA_UPPER, val.str_);
     Machine->Load_Mem(offset - DATA_LOWER, static_cast<int>(strlen(val.str_)));
     //Machine->Load_Mem(offset - DATA_UPPER, EAX);
     break;
@@ -235,7 +233,8 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
   {
     Machine->Mov(EAX, offset_source - DATA_LOWER);
     Machine->Mov(offset_dest - DATA_LOWER, EAX);
-    if(states[source].Test(CRY_DOUBLE) || states[source].Test(CRY_INT64))
+    if(states[source].Test(CRY_DOUBLE) || states[source].Test(CRY_INT64) || 
+       states[source].Test(CRY_TEXT))
     {
       Machine->Mov(EAX, offset_source - DATA_UPPER);
       Machine->Mov(offset_dest - DATA_UPPER, EAX);
@@ -264,12 +263,6 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
         Machine->Make_Label(label);
       }
     }
-    else if(states[source].Test(CRY_TEXT))
-    {
-      Garbage_Collection(dest);
-      Machine->Mov(EAX, offset_source - DATA_PNTR);
-      Machine->Mov(offset_dest - DATA_PNTR, EAX);
-    }
   }
   Machine->Mov(EAX, offset_source - DATA_TYPE, true);
   Machine->Mov(offset_dest - DATA_TYPE, EAX, true);
@@ -285,7 +278,8 @@ void Crystal_Compiler::Swap(unsigned dest, unsigned source)
   Machine->Mov(offset_dest - DATA_LOWER, EAX);
   Machine->Mov(offset_source - DATA_LOWER, EBX);
 
-  if(states[dest].Order(CRY_INT64) || states[source].Order(CRY_INT64))
+  if(states[dest].Order(CRY_INT64) || states[source].Order(CRY_INT64) ||
+     states[dest].Order(CRY_TEXT))
   {
     Machine->Mov(EAX, offset_source - DATA_UPPER);
     Machine->Mov(EBX, offset_dest - DATA_UPPER);
@@ -293,7 +287,7 @@ void Crystal_Compiler::Swap(unsigned dest, unsigned source)
     Machine->Mov(offset_source - DATA_UPPER, EBX);
   }
   
-  if(states[dest].Order(CRY_TEXT) || states[source].Order(CRY_TEXT))
+  if(states[dest].Order(CRY_STRING) || states[source].Order(CRY_STRING))
   {
     Garbage_Collection(dest);
     Machine->Mov(EAX, offset_source - DATA_PNTR);
@@ -368,8 +362,8 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
         Machine->Push(EBX);
         Machine->Call(malloc);
         Machine->Pop(4);
-        Machine->Strcpy(EAX, offset_dest - DATA_PNTR, offset_dest - DATA_LOWER);
-        Machine->Strcpy(EDI, offset_source - DATA_PNTR, offset_source - DATA_LOWER);
+        Machine->Strcpy(EAX, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER);
+        Machine->Strcpy(EDI, offset_source - DATA_UPPER, offset_source - DATA_LOWER);
         Machine->Mov(offset_dest - DATA_PNTR, EAX);
         Machine->Mov(offset_dest - DATA_LOWER, EBX);
       }
@@ -488,21 +482,21 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
         {
           converted.assign("nil");
         }
-        Machine->Mov(EBX, offset_dest - DATA_LOWER);
-        Machine->Mov(EBX, converted.length() + 1);
+        Machine->Mov(EAX, offset_dest - DATA_LOWER);
+        Machine->Load_Register(EBX, static_cast<int>(converted.length() + 1));
         Machine->Add(EBX, EAX);
         Machine->Push(EBX);
         Machine->Call(malloc);
         Machine->Pop(4);
         if(left)
         {
-          Machine->Strcpy(EAX, offset_dest - DATA_PNTR, offset_dest - DATA_LOWER);
+          Machine->Strcpy(EAX, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER);
           Machine->Strcpy(EDI, static_cast<unsigned>(Machine->String_Address(converted.c_str())), converted.length() + 1, true);
         }
         else
         {
           Machine->Strcpy(EAX, static_cast<unsigned>(Machine->String_Address(converted.c_str())), converted.length(), true);
-          Machine->Strcpy(EDI, offset_dest - DATA_PNTR, offset_dest - DATA_LOWER, false, true);
+          Machine->Strcpy(EDI, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER, false, true);
         }
         Machine->Mov(offset_dest - DATA_PNTR, EAX);
         Machine->Mov(offset_dest - DATA_LOWER, EBX);
@@ -1031,13 +1025,19 @@ void Crystal_Compiler::Eql(unsigned dest, unsigned source, bool left)
       Runtime_Resovle(dest, CRY_BOOL);
       return;
     }
+    if(!states[dest].Compare(states[source]))
+    {
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      Runtime_Resovle(dest, CRY_BOOL);
+      return;
+    }
 
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
     switch(resolve)
     {
     case CRY_INT:
     case CRY_BOOL:
-      if(states[dest].Test(CRY_TEXT) == states[source].Test(CRY_TEXT))
+      if(states[dest].Test(CRY_INT) == states[source].Test(CRY_INT))
       {
         Machine->Mov(EAX, offset_dest - DATA_LOWER);
         Machine->Cmp(offset_source - DATA_LOWER, EAX);
@@ -1109,6 +1109,12 @@ void Crystal_Compiler::EqlC(unsigned dest, CRY_ARG const_, bool left)
       Runtime_Resovle(dest, CRY_BOOL);
       return;
     }
+    if(!states[dest].Compare(const_.filt))
+    {
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+      Runtime_Resovle(dest, CRY_BOOL);
+      return;
+    }
 
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
     switch(resolve)
@@ -1175,12 +1181,18 @@ void Crystal_Compiler::Dif(unsigned dest, unsigned source, bool left)
     {
       if(states[dest].Test(CRY_NIL) && states[source].Test(CRY_NIL))
       {
-        Machine->Load_Mem(offset_dest - DATA_LOWER, 1);
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
       }
       else
       {
-        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 1);
       }
+      Runtime_Resovle(dest, CRY_BOOL);
+      return;
+    }
+    if(!states[dest].Compare(states[source]))
+    {
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 1);
       Runtime_Resovle(dest, CRY_BOOL);
       return;
     }
@@ -1199,7 +1211,7 @@ void Crystal_Compiler::Dif(unsigned dest, unsigned source, bool left)
       }
       else
       {
-        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 1);
       }
       break;
     case CRY_DOUBLE:
@@ -1253,12 +1265,19 @@ void Crystal_Compiler::DifC(unsigned dest, CRY_ARG const_, bool left)
     {
       if(states[dest].Test(CRY_NIL) && const_.filt.Test(CRY_NIL))
       {
-        Machine->Load_Mem(offset_dest - DATA_LOWER, 1);
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
       }
       else
       {
-        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 1);
       }
+      Runtime_Resovle(dest, CRY_BOOL);
+      return;
+    }
+    
+    if(!states[dest].Compare(const_.filt))
+    {
+      Machine->Load_Mem(offset_dest - DATA_LOWER, 1);
       Runtime_Resovle(dest, CRY_BOOL);
       return;
     }
@@ -1278,7 +1297,7 @@ void Crystal_Compiler::DifC(unsigned dest, CRY_ARG const_, bool left)
       }
       else
       {
-        Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
+        Machine->Load_Mem(offset_dest - DATA_LOWER, 1);
       }
       break;
     case CRY_DOUBLE:

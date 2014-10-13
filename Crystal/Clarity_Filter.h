@@ -13,6 +13,7 @@ public:
   void Obscurity();
   bool Test(Symbol_Type flag);
   bool Order(Symbol_Type flag);
+  bool Compare(Clarity_Filter& filter);
   bool Collection();
   void Collected();
   unsigned Size();

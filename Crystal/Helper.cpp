@@ -32,14 +32,16 @@ double Parse_Double(Crystal_Symbol* sym)
 void Parse_String(Crystal_Symbol* sym, std::string* str)
 {
   str->clear();
-  if(sym->type == CRY_STRING || sym->type == CRY_TEXT)
+  if(sym->type == CRY_STRING)
   {
-    if(sym->type == CRY_STRING)
-      sym->ptr.str[sym->size - 1] = 0;
+    sym->ptr.str[sym->size - 1] = 0;
     str->assign(sym->ptr.str);
-    return;
   }
-  if(sym->type == CRY_INT)
+  else if(sym->type == CRY_TEXT)
+  {
+    str->assign(sym->text);
+  }
+  else if(sym->type == CRY_INT)
   {
     i_to_str(sym->i32, str);
   }
@@ -63,9 +65,11 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
 bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr)
 {
   int i = 0;
-  while(*(syml->ptr.str + i) || *(symr->ptr.str + i))
+  char* l = syml->type == CRY_TEXT ? syml->text : syml->ptr.str;
+  char* r = symr->type == CRY_TEXT ? symr->text : symr->ptr.str;
+  while(*(l + i) || *(r + i))
   {
-    if(*(syml->ptr.str + i) != *(symr->ptr.str + i))
+    if(*(l + i) != *(r + i))
       return false;
     i++;
   }

@@ -32,7 +32,15 @@ bool Clarity_Filter::Test(Symbol_Type flag)
 }
 bool Clarity_Filter::Order(Symbol_Type flag)
 {
-  if(flags >= (0x1 << (flag)))
+  if(flags >= (0x01u << (flag)))
+  {
+    return true;
+  }
+  return false;
+}
+bool Clarity_Filter::Compare(Clarity_Filter& filter)
+{
+  if(flags == filter.flags)
   {
     return true;
   }
@@ -66,6 +74,7 @@ Symbol_Type Clarity_Filter::Reduce(Clarity_Filter l, Clarity_Filter r)
 void Clarity_Filter::Combind(Clarity_Filter& l, Clarity_Filter& r)
 {
   l.flags = r.flags |= l.flags;
+  l.dilution = r.dilution |= l.dilution;
 }
 void Clarity_Filter::Dynamic(Symbol_Type flag)
 {
