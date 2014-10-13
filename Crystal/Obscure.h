@@ -12,6 +12,8 @@ void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source);
 void Obscure_Diffrence(Crystal_Symbol* dest, Crystal_Symbol* source);
 void Obscure_Less(Crystal_Symbol* dest, Crystal_Symbol* source);
 void Obscure_Greater(Crystal_Symbol* dest, Crystal_Symbol* source);
+void Obscure_Less_Equal(Crystal_Symbol* dest, Crystal_Symbol* source);
+void Obscure_Greater_Equal(Crystal_Symbol* dest, Crystal_Symbol* source);
 //Reverse Variants
 void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source);
 void Obscure_SubtractionR(Crystal_Symbol* dest, Crystal_Symbol* source);

@@ -305,6 +305,60 @@ void Obscure_Greater(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+void Obscure_Less_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
+{  
+  switch(dest->type)
+  {
+  case CRY_INT:
+    if(dest->type != source->type)
+    {
+      dest->type = CRY_NIL;
+      return;
+    }
+    dest->b = (dest->i32 <= source->i32);
+    dest->type = CRY_BOOL;
+    return;
+  case CRY_DOUBLE:
+    if(dest->type != source->type)
+    {
+      dest->type = CRY_NIL;
+      return;
+    }
+    dest->b = (dest->d <= source->d);
+    dest->type = CRY_BOOL;
+    return;
+  default:
+    dest->type = CRY_NIL;
+    return;
+  }
+}
+void Obscure_Greater_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
+{  
+  switch(dest->type)
+  {
+  case CRY_INT:
+    if(dest->type != source->type)
+    {
+      dest->type = CRY_NIL;
+      return;
+    }
+    dest->b = (dest->i32 >= source->i32);
+    dest->type = CRY_BOOL;
+    return;
+  case CRY_DOUBLE:
+    if(dest->type != source->type)
+    {
+      dest->type = CRY_NIL;
+      return;
+    }
+    dest->b = (dest->d >= source->d);
+    dest->type = CRY_BOOL;
+    return;
+  default:
+    dest->type = CRY_NIL;
+    return;
+  }
+}
 
 //Reversals
 void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)

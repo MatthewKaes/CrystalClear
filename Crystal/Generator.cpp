@@ -20,7 +20,10 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
   switch(sym->str.c_str()[0])
   {
   case '<':
-    return Less_Gen;
+    if(sym->str.c_str()[1] == '\0')
+      return Less_Gen;
+    else
+      return Less_Equal_Gen;
   case '=':
     switch(sym->str.c_str()[1])
     {
