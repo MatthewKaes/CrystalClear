@@ -42,6 +42,44 @@ void Crystal_Input(Crystal_Symbol* ret_sym)
     ret_sym->size = str.size();
   }
 }
+void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  switch(sym->type)
+  {
+  case CRY_BOOL:
+    ret_sym->ptr.str = "BOOLEAN";
+    break;
+  case CRY_INT:
+    ret_sym->ptr.str = "INTEGER";
+    break;
+  case CRY_INT64:
+    ret_sym->ptr.str = "INTEGER-64";
+    break;
+  case CRY_DOUBLE:
+    ret_sym->ptr.str = "DOUBLE";
+    break;
+  case CRY_ARRAY:
+    ret_sym->ptr.str = "ARRAY";
+    break;
+  case CRY_POINTER:
+    ret_sym->ptr.str = "OBJECT";
+    break;
+  case CRY_CLASS_OBJ:
+    ret_sym->ptr.str = "CLASS";
+    break;
+  case CRY_NIL:
+    ret_sym->ptr.str = "NIL";
+    break;
+  case CRY_TEXT:
+    ret_sym->ptr.str = "TEXT";
+    break;
+  case CRY_STRING:
+    ret_sym->ptr.str = "STRING";
+    break;
+  }
+  ret_sym->i32 = strlen(ret_sym->ptr.str);
+  ret_sym->type = CRY_TEXT;
+}
 void Crystal_Rand(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   Parse_Int(sym);
