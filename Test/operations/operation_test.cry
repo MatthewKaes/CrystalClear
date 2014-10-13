@@ -51,7 +51,7 @@ def main()
   print(x <= y)
   print_color("Greater Operations:", 10)
   print(2 > 4)
-  print(x > y)
+  print(x >= y)
   print_color("Variable Equivalent:", 10)
   val = 1
   val2 = 1

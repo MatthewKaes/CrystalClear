@@ -112,6 +112,8 @@ public:
   void LesEqlC(unsigned dest, CRY_ARG const_, bool left = true);
   void Gtr(unsigned dest, unsigned source, bool left = true);
   void GtrC(unsigned dest, CRY_ARG const_, bool left = true);
+  void GtrEql(unsigned dest, unsigned source, bool left = true);
+  void GtrEqlC(unsigned dest, CRY_ARG const_, bool left = true);
 
   unsigned Addr_Reg(unsigned reg);
 private:

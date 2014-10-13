@@ -83,6 +83,11 @@ bool Greater_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cryst
 {
   PREFORM_OPERATION(Gtr);
 }
+bool Greater_Equal_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  PREFORM_OPERATION(GtrEql);
+}
+
 
 bool Generic_Assignment(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result, OPERATION func, OPERATION_C func_const)
 {

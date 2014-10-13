@@ -28,7 +28,7 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
     if(sym->str.c_str()[1] == '\0')
       return Greater_Gen;
     else
-      return Greater_Gen;
+      return Greater_Equal_Gen;
   case '=':
     switch(sym->str.c_str()[1])
     {
