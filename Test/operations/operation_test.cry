@@ -60,6 +60,16 @@ def main()
   print(val + " != " + val2 + ": " + (val != val2))
   val2 -= 1
   print(val + " == " + val2 + ": " + (val == val2))
+  print("")
+  
+  print_color("Swap Operations:", 14)
+  x = "New " + "string"
+  y = 10.54
+  print("x: " + x)
+  print("y: " + y + "\n")
+  x <> y
+  print("x: " + x)
+  print("y: " + y)
   
   return "Done"
 end

@@ -12,6 +12,7 @@ public:
   void Dilute(Symbol_Type flag);
   void Obscurity();
   bool Test(Symbol_Type flag);
+  bool Order(Symbol_Type flag);
   bool Collection();
   void Collected();
   unsigned Size();

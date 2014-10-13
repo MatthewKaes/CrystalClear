@@ -169,7 +169,7 @@ public:
   //--------------------------
   // Special Functions
   //--------------------------
-  virtual void Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address = false) = 0;
+  virtual void Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address = false, bool extra_byte = false) = 0;
   
   //--------------------------
   // Memory Functions

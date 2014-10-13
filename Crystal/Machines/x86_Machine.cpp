@@ -912,12 +912,15 @@ void x86_Machine::FPU_Cos()
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_COS;
 }
-void x86_Machine::Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address)
+void x86_Machine::Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address, bool extra_byte)
 {
   if(raw_address)
     Load_Register(ECX, length);
   else
     Mov(ECX, length);
+
+  if(extra_byte)
+    Inc(ECX);
 
   if(raw_address)
     Load_Register(ESI, static_cast<int>(address));

@@ -275,6 +275,41 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
   Machine->Mov(offset_dest - DATA_TYPE, EAX, true);
   states[dest] = states[source];
 }
+void Crystal_Compiler::Swap(unsigned dest, unsigned source)
+{  
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+  unsigned offset_source = stack_size - source * VAR_SIZE;
+
+  Machine->Mov(EAX, offset_source - DATA_LOWER);
+  Machine->Mov(EBX, offset_dest - DATA_LOWER);
+  Machine->Mov(offset_dest - DATA_LOWER, EAX);
+  Machine->Mov(offset_source - DATA_LOWER, EBX);
+
+  if(states[dest].Order(CRY_INT64) || states[source].Order(CRY_INT64))
+  {
+    Machine->Mov(EAX, offset_source - DATA_UPPER);
+    Machine->Mov(EBX, offset_dest - DATA_UPPER);
+    Machine->Mov(offset_dest - DATA_UPPER, EAX);
+    Machine->Mov(offset_source - DATA_UPPER, EBX);
+  }
+  
+  if(states[dest].Order(CRY_TEXT) || states[source].Order(CRY_TEXT))
+  {
+    Garbage_Collection(dest);
+    Machine->Mov(EAX, offset_source - DATA_PNTR);
+    Machine->Mov(EBX, offset_dest - DATA_PNTR);
+    Machine->Mov(offset_dest - DATA_PNTR, EAX);
+    Machine->Mov(offset_source - DATA_PNTR, EBX);
+  }
+
+  Machine->Mov(EAX, offset_source - DATA_TYPE, true);
+  Machine->Mov(EBX, offset_dest - DATA_TYPE, true);
+  Machine->Mov(offset_dest - DATA_TYPE, EAX, true);
+  Machine->Mov(offset_source - DATA_TYPE, EBX, true);
+  Clarity_Filter temp = states[dest];
+  states[dest] = states[source];
+  states[source] = temp;
+}
 void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
@@ -459,8 +494,16 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
         Machine->Push(EBX);
         Machine->Call(malloc);
         Machine->Pop(4);
-        Machine->Strcpy(EAX, offset_dest - DATA_PNTR, offset_dest - DATA_LOWER);
-        Machine->Strcpy(EDI, static_cast<unsigned>(Machine->String_Address(converted.c_str())), converted.length() + 1, true);
+        if(left)
+        {
+          Machine->Strcpy(EAX, offset_dest - DATA_PNTR, offset_dest - DATA_LOWER);
+          Machine->Strcpy(EDI, static_cast<unsigned>(Machine->String_Address(converted.c_str())), converted.length() + 1, true);
+        }
+        else
+        {
+          Machine->Strcpy(EAX, static_cast<unsigned>(Machine->String_Address(converted.c_str())), converted.length(), true);
+          Machine->Strcpy(EDI, offset_dest - DATA_PNTR, offset_dest - DATA_LOWER, false, true);
+        }
         Machine->Mov(offset_dest - DATA_PNTR, EAX);
         Machine->Mov(offset_dest - DATA_LOWER, EBX);
       }
@@ -469,7 +512,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
         Machine->Push(static_cast<int>(strlen(const_.str_)));
         Machine->Push(Machine->String_Address(const_.str_));
         Push(dest);
-        if(left == true)
+        if(left)
           Call(Crystal_Const_Append_T);
         else
           Call(Crystal_Const_Append_TL);
@@ -514,7 +557,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
         Machine->Push(Machine->String_Address(converted.c_str()));
       }
       Push(dest);
-      Call(Crystal_Text_Append_C);
+      Call(left ? Crystal_Text_Append_C : Crystal_Text_Append_CR);
       Pop(3);
       break;
     //Lacking Support

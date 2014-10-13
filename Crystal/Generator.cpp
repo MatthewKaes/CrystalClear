@@ -22,6 +22,8 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
   case '<':
     if(sym->str.c_str()[1] == '\0')
       return Less_Gen;
+    if(sym->str.c_str()[1] == '>')
+      return Swap_Gen;
     else
       return Less_Equal_Gen;
   case '>':

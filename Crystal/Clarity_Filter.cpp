@@ -30,6 +30,14 @@ bool Clarity_Filter::Test(Symbol_Type flag)
   }
   return false;
 }
+bool Clarity_Filter::Order(Symbol_Type flag)
+{
+  if(flags >= (0x1 << (flag)))
+  {
+    return true;
+  }
+  return false;
+}
 bool Clarity_Filter::Collection()
 {
   return collection;

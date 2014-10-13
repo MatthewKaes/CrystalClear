@@ -121,3 +121,9 @@ bool Exponent_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
 {
   PREFORM_ASSIGNMENT(Pow);
 }
+
+bool Swap_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  target->Swap(MEM((*syms)[0]), MEM((*syms)[1]));
+  return true;
+}

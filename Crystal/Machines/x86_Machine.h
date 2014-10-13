@@ -130,7 +130,7 @@ public:
   //--------------------------
   // Special Functions
   //--------------------------
-  void Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address = false);
+  void Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address = false, bool extra_byte = false);
 
   //--------------------------
   // Memory Functions

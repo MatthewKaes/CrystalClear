@@ -77,6 +77,17 @@ void Crystal_Text_Append_C(Crystal_Symbol* symd, const char* str, unsigned lengt
   symd->ptr.str = new_buffer;
   symd->size = symd->size + length;
 }
+void Crystal_Text_Append_CR(Crystal_Symbol* symd, const char* str, unsigned length)
+{
+  char* new_buffer = static_cast<char*>(malloc(symd->size + length));
+  strcpy(new_buffer, str);
+  strcpy(new_buffer + symd->size - 1, symd->ptr.str);
+
+  free(symd->ptr.str);
+
+  symd->ptr.str = new_buffer;
+  symd->size = symd->size + length;
+}
 
 void Crystal_Const_Append_T(Crystal_Symbol* symd, const char* str, unsigned length)
 {  
