@@ -71,6 +71,8 @@ def main()
   print("x: " + x)
   print("y: " + y)
   
+  print("\n" + (input + 10))
+  
   return "Done"
 end
 def obscure_nil()

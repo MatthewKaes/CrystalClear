@@ -1,5 +1,6 @@
 #include "Library.h"
 #include "Helper.h"
+#include "Lexicon.h"
 #include <windows.h>
 #include <boost\date_time.hpp>
 
@@ -7,6 +8,39 @@ void Crystal_Time(Crystal_Symbol* ret_sym)
 {
   ret_sym->i32 = static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds());
   ret_sym->type = CRY_INT;
+}
+void Crystal_Input(Crystal_Symbol* ret_sym)
+{
+  char* value = (char*)malloc(256);
+  scanf("%s", value);
+  std::string str(value);
+
+  if(!str.compare("true") || !str.compare("false"))
+  {
+    ret_sym->type = CRY_BOOL;
+    ret_sym->b = str_to_b(&str);
+  }
+  else if(!str.compare("nil"))
+  {
+    ret_sym->type = CRY_NIL;
+  }
+  else if(is_number(str[0]))
+    if(str.find('.', 1) != std::string::npos)
+    {
+      ret_sym->type = CRY_DOUBLE;
+      ret_sym->d = str_to_d(&str);
+    }
+    else
+    {
+      ret_sym->type = CRY_INT;
+      ret_sym->i32 = str_to_i(&str);
+    }
+  else
+  {
+    ret_sym->type = CRY_STRING;
+    ret_sym->ptr.str = value;
+    ret_sym->size = str.size();
+  }
 }
 void Crystal_Rand(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
