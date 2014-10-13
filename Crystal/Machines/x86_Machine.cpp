@@ -225,6 +225,30 @@ void x86_Machine::Setge(unsigned address)
   *p++ = 0x9D;
   Put_Addr(address);
 }
+void x86_Machine::Seta(unsigned address)
+{
+  *p++ = SET_TYP;
+  *p++ = 0x97;
+  Put_Addr(address);
+}
+void x86_Machine::Setae(unsigned address)
+{
+  *p++ = SET_TYP;
+  *p++ = 0x93;
+  Put_Addr(address);
+}
+void x86_Machine::Setb(unsigned address)
+{
+  *p++ = SET_TYP;
+  *p++ = 0x92;
+  Put_Addr(address);
+}
+void x86_Machine::Setbe(unsigned address)
+{
+  *p++ = SET_TYP;
+  *p++ = 0x96;
+  Put_Addr(address);
+}
 void x86_Machine::Allocate_Stack(unsigned bytes)
 {
   //Strack preamble
@@ -805,7 +829,7 @@ void x86_Machine::FPU_Store(unsigned address)
 }
 void x86_Machine::FPU_Cmp(FPU_REGISTERS reg)
 {
-  *p++ = 0xDF;
+  *p++ = FPU_COMIP;
   *p++ = 0xE8 + (unsigned)reg;
 }
 void x86_Machine::FPU_Add(FPU_REGISTERS reg)

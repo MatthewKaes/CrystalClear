@@ -117,12 +117,18 @@ public:
   virtual void Jl(unsigned label) = 0;
   virtual void Jg(unsigned label) = 0;
   virtual void Jge(unsigned label) = 0;
+  //Sets
   virtual void Sete(unsigned address) = 0;
   virtual void Setne(unsigned address) = 0;
   virtual void Setl(unsigned address) = 0;
   virtual void Setle(unsigned address) = 0;
   virtual void Setg(unsigned address) = 0;
   virtual void Setge(unsigned address) = 0;
+  virtual void Seta(unsigned address) = 0;
+  virtual void Setae(unsigned address) = 0;
+  virtual void Setb(unsigned address) = 0;
+  virtual void Setbe(unsigned address) = 0;
+  //Calls
   virtual void Call(void* function) = 0;
   virtual void Call(const char* function) = 0;
   virtual void Return(ARG argument = 0) = 0;

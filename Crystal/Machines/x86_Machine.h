@@ -86,6 +86,10 @@ public:
   void Setle(unsigned address);
   void Setg(unsigned address);
   void Setge(unsigned address);
+  void Seta(unsigned address);
+  void Setae(unsigned address);
+  void Setb(unsigned address);
+  void Setbe(unsigned address);
   void Call(void* function);
   void Call(const char* function);
   void Return(ARG argument = 0);

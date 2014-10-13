@@ -101,3 +101,4 @@
 #define FPU_ROUND 0xFC
 #define FPU_SIN 0xFE
 #define FPU_COS 0xFF
+#define FPU_COMIP 0xDF
