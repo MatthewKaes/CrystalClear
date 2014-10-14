@@ -600,6 +600,14 @@ void x86_Machine::Idiv(unsigned address)
     (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
   }
 }
+void x86_Machine::Idiv(REGISTERS dest)
+{
+  //cdq
+  *p++ = 0x99;
+  //idiv
+  *p++ = 0xF7;
+  *p++ = 0xF8 + Reg_Id(dest);
+}
 void x86_Machine::Inc(REGISTERS dest)
 {
   *p++ = REG_INC + Reg_Id(dest);

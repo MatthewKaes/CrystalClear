@@ -1,7 +1,6 @@
 #Simple crystal code for testing
 
 def main()
-  
   print_color("Additive Operations:", 11)
   x = 2
   x += 2.5 + x
@@ -25,6 +24,19 @@ def main()
   y = 10
   y *= 10
   print(y)
+  
+  print_color("Division Operations:", 11)
+  y = 10
+  y /= 10
+  print(y)
+  #integer division
+  num = 80
+  den = 7
+  print(num / den)
+  #standard division
+  num = 80.0
+  den = 7
+  print(num / den)
   
   print_color("Exponent Operations:", 11)
   y = 2

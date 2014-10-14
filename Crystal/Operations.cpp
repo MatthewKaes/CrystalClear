@@ -59,6 +59,10 @@ bool Multiplication_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vecto
 {
   PREFORM_OPERATION(Mul);
 }
+bool Division_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  PREFORM_OPERATION(Div);
+}
 bool Power_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Pow);
@@ -116,6 +120,10 @@ bool Subtractive_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<C
 bool Multiplicative_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_ASSIGNMENT(Mul);
+}
+bool Divisional_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  PREFORM_ASSIGNMENT(Div);
 }
 bool Exponent_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {

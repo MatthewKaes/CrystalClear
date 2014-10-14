@@ -886,14 +886,9 @@ void Crystal_Compiler::Div(unsigned dest, unsigned source, bool left)
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
     switch(resolve)
     {
-    case CRY_BOOL:
-      //TO DO:
-      Machine->Mov(EAX, offset_source - DATA_LOWER, true);
-      Machine->Or(offset_dest - DATA_LOWER, EAX);
-      break;
     case CRY_INT:
-      Machine->Mov(EAX, offset_source - DATA_LOWER);
-      Machine->Imul(offset_dest - DATA_LOWER);
+      Machine->Mov(EAX, (left ? offset_dest : offset_source) - DATA_LOWER);
+      Machine->Idiv((left ? offset_source : offset_dest) - DATA_LOWER);
       Machine->Mov(offset_dest - DATA_LOWER, EAX);
       break;
     case CRY_DOUBLE:
@@ -913,10 +908,11 @@ void Crystal_Compiler::Div(unsigned dest, unsigned source, bool left)
       {
         Machine->FPU_Loadd(offset_source - DATA_LOWER);
       }
-      Machine->FPU_Mul();
+      Machine->FPU_Div();
       Machine->FPU_Store(offset_dest - DATA_LOWER);
       break;
     //Lacking Support
+    NO_SUPPORT(CRY_BOOL);
     NO_SUPPORT(CRY_TEXT);
     NO_SUPPORT(CRY_STRING);
     NO_SUPPORT(CRY_ARRAY);
@@ -948,13 +944,18 @@ void Crystal_Compiler::DivC(unsigned dest, CRY_ARG const_, bool left)
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
     switch(resolve)
     {
-    case CRY_BOOL:
-      Machine->Load_Register(EAX, const_.bol_);
-      Machine->Or(offset_dest - DATA_LOWER, EAX);
-      break;
     case CRY_INT:
-      Machine->Load_Register(EAX, const_.num_);
-      Machine->Imul(offset_dest - DATA_LOWER);
+      if(left)
+      {
+        Machine->Mov(EAX, offset_dest - DATA_LOWER);
+        Machine->Load_Register(EBX, const_.num_);
+      }
+      else
+      {
+        Machine->Load_Register(EAX, const_.num_);
+        Machine->Mov(EBX, offset_dest - DATA_LOWER);
+      }
+      Machine->Idiv(EBX);
       Machine->Mov(offset_dest - DATA_LOWER, EAX);
       break;
     case CRY_DOUBLE:
@@ -974,10 +975,11 @@ void Crystal_Compiler::DivC(unsigned dest, CRY_ARG const_, bool left)
       {
         Machine->FPU_Loadd(offset_dest - DATA_LOWER);
       }
-      Machine->FPU_Mul();
+      Machine->FPU_Div();
       Machine->FPU_Store(offset_dest - DATA_LOWER);
       break;
     //Lacking Support
+    NO_SUPPORT(CRY_BOOL);
     NO_SUPPORT(CRY_TEXT);
     NO_SUPPORT(CRY_STRING);
     NO_SUPPORT(CRY_ARRAY);
