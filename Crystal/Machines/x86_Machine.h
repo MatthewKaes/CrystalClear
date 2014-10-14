@@ -67,6 +67,7 @@ public:
   void Mul(REGISTERS dest, REGISTERS source);
   void Imul(unsigned address);
   void Imul(REGISTERS dest, unsigned address);
+  void Idiv(unsigned address);
   void Dec(REGISTERS dest);
   void Inc(REGISTERS dest);
   void Or(unsigned address, REGISTERS source);

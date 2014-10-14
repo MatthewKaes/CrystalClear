@@ -594,8 +594,9 @@ void Crystal_Compiler::Sub(unsigned dest, unsigned source, bool left)
     case CRY_INT:
       if(left)
       {
-        Machine->Mov(EAX, offset_source - DATA_LOWER);
-        Machine->Sub(offset_dest - DATA_LOWER, EAX);
+        Machine->Mov(EAX, offset_dest - DATA_LOWER);
+        Machine->Sub(offset_source - DATA_LOWER, EAX);
+        Machine->Mov(offset_dest - DATA_LOWER, EAX);
       }
       else
       {
@@ -807,6 +808,133 @@ void Crystal_Compiler::Mul(unsigned dest, unsigned source, bool left)
   }
 }
 void Crystal_Compiler::MulC(unsigned dest, CRY_ARG const_, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+
+  //std static handling
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  {
+    //null operation
+    if(Null_Op(states[dest], const_.filt, dest))
+      return;
+
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
+    switch(resolve)
+    {
+    case CRY_BOOL:
+      Machine->Load_Register(EAX, const_.bol_);
+      Machine->Or(offset_dest - DATA_LOWER, EAX);
+      break;
+    case CRY_INT:
+      Machine->Load_Register(EAX, const_.num_);
+      Machine->Imul(offset_dest - DATA_LOWER);
+      Machine->Mov(offset_dest - DATA_LOWER, EAX);
+      break;
+    case CRY_DOUBLE:
+      if(const_.filt.Test(CRY_INT) || const_.filt.Test(CRY_BOOL))
+      {
+        Machine->FPU_Load(const_.num_);
+      }
+      else
+      {
+        Machine->FPU_Load(const_.dec_);
+      }
+      if(states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL))
+      {
+        Machine->FPU_Loadi(offset_dest - DATA_LOWER);
+      }
+      else
+      {
+        Machine->FPU_Loadd(offset_dest - DATA_LOWER);
+      }
+      Machine->FPU_Mul();
+      Machine->FPU_Store(offset_dest - DATA_LOWER);
+      break;
+    //Lacking Support
+    NO_SUPPORT(CRY_TEXT);
+    NO_SUPPORT(CRY_STRING);
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    Runtime_Resovle(dest, resolve);
+  }
+  //Clarity Handling
+  else
+  {
+    //Load const into temp.
+    Load(Addr_Reg(stack_depth), const_);
+    Push(Addr_Reg(stack_depth));
+    Push(dest);
+    Machine->Call(Obscure_Multiplication);
+    Pop(2);
+    //Copy(dest, Addr_Reg(stack_depth));
+    Clarity_Filter::Combind(states[dest], const_.filt);
+  }
+}
+void Crystal_Compiler::Div(unsigned dest, unsigned source, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+  unsigned offset_source = stack_size - source * VAR_SIZE;
+
+  //std static handling
+  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  {
+    //null operation
+    if(Null_Op(states[dest], states[source], dest))
+      return;
+
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
+    switch(resolve)
+    {
+    case CRY_BOOL:
+      //TO DO:
+      Machine->Mov(EAX, offset_source - DATA_LOWER, true);
+      Machine->Or(offset_dest - DATA_LOWER, EAX);
+      break;
+    case CRY_INT:
+      Machine->Mov(EAX, offset_source - DATA_LOWER);
+      Machine->Imul(offset_dest - DATA_LOWER);
+      Machine->Mov(offset_dest - DATA_LOWER, EAX);
+      break;
+    case CRY_DOUBLE:
+      if(states[dest].Test(CRY_INT) || states[dest].Test(CRY_BOOL))
+      {
+        Machine->FPU_Loadi(offset_dest - DATA_LOWER);
+      }
+      else
+      {
+        Machine->FPU_Loadd(offset_dest - DATA_LOWER);
+      }
+      if(states[source].Test(CRY_INT) || states[source].Test(CRY_BOOL))
+      {
+        Machine->FPU_Loadi(offset_source - DATA_LOWER);
+      }
+      else
+      {
+        Machine->FPU_Loadd(offset_source - DATA_LOWER);
+      }
+      Machine->FPU_Mul();
+      Machine->FPU_Store(offset_dest - DATA_LOWER);
+      break;
+    //Lacking Support
+    NO_SUPPORT(CRY_TEXT);
+    NO_SUPPORT(CRY_STRING);
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    Runtime_Resovle(dest, resolve);
+  }
+  //Clarity Handling
+  else
+  {
+    Push(source);
+    Push(dest);
+    Machine->Call(Obscure_Multiplication);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], states[source]);
+  }
+}
+void Crystal_Compiler::DivC(unsigned dest, CRY_ARG const_, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 

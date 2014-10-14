@@ -101,6 +101,8 @@ public:
   void SubC(unsigned dest, CRY_ARG const_, bool left = true);
   void Mul(unsigned dest, unsigned source, bool left = true);
   void MulC(unsigned dest, CRY_ARG const_, bool left = true);
+  void Div(unsigned dest, unsigned source, bool left = true);
+  void DivC(unsigned dest, CRY_ARG const_, bool left = true);
   void Pow(unsigned dest, unsigned source, bool left = true);
   void PowC(unsigned dest, CRY_ARG const_, bool left = true);
   void Eql(unsigned dest, unsigned source, bool left = true);

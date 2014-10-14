@@ -1,9 +1,6 @@
 #Simple crystal code for testing
 
 def main()
-  crash = "New " + "string"
-  print("string crash: " + (crash + "\n"))
-  print("string crash: " + crash + "\n")
   
   print_color("Additive Operations:", 11)
   x = 2
@@ -17,7 +14,12 @@ def main()
   print_color("Subtractive Operations:", 11)
   y = 32
   y -= 10.5
-  print(y)
+  x = 10
+  y = 7
+  print(x - 7)
+  print(7 - x)
+  print(10 - (x - y))
+  print(10 - (y - x))
 
   print_color("Multiplicative Operations:", 11)
   y = 10

@@ -104,6 +104,7 @@ public:
   virtual void Mul(REGISTERS dest, REGISTERS source) = 0;
   virtual void Imul(unsigned address) = 0;
   virtual void Imul(REGISTERS dest, unsigned address) = 0;
+  virtual void Idiv(unsigned address) = 0;
   virtual void Dec(REGISTERS dest) = 0;
   virtual void Inc(REGISTERS dest) = 0;
   virtual void Or(unsigned address, REGISTERS source) = 0;
