@@ -7,18 +7,26 @@ int Parse_Int(Crystal_Symbol* sym)
   {
     return sym->i32;
   }
+  else if(sym->type == CRY_BOOL)
+  {
+    return sym->b;
+  }
+  else if(sym->type == CRY_DOUBLE)
+  {
+    return sym->d;
+  }
   return 0;
 }
 bool Parse_Bool(Crystal_Symbol* sym)
+{
+  return sym->i32 != 0;
+}
+double Parse_Double(Crystal_Symbol* sym)
 {
   if(sym->type == CRY_BOOL)
   {
     return sym->b;
   }
-  return false;
-}
-double Parse_Double(Crystal_Symbol* sym)
-{
   if(sym->type == CRY_DOUBLE)
   {
     return sym->d;

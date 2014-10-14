@@ -24,6 +24,7 @@ void Crystal_Interpreter::Populate_BIP()
   //Define all executable packages
   REGISTER_FUNCTION(print, Crystal_Print, 1);
   REGISTER_FUNCTION(type, Crystal_Type, 1);
+  REGISTER_FUNCTION(convert, Crystal_Convert, 2);
   REGISTER_FUNCTION(print_color, Crystal_PrintColor, 2);
   REGISTER_FUNCTION(rand, Crystal_Rand, 1);
   REGISTER_FUNCTION(time, Crystal_Time, 0);
