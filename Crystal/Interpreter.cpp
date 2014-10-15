@@ -126,6 +126,7 @@ void Crystal_Interpreter::Format_Code()
             code_out.push_back('\\');
             break;
           case '\"':
+            code_out.push_back('\\');
             code_out.push_back('\"');
             break;
           }

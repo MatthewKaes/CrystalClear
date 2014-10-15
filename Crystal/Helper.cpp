@@ -64,7 +64,6 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
   str->clear();
   if(sym->type == CRY_STRING)
   {
-    sym->ptr.str[sym->size - 1] = 0;
     str->assign(sym->ptr.str);
   }
   else if(sym->type == CRY_TEXT)

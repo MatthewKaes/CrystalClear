@@ -80,7 +80,7 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
     {
       if(ret_sym->ptr.str != 0)
         free(ret_sym->ptr.str);
-      ret_sym->ptr.str = static_cast<char*>(malloc(strlen(sym->text)));
+      ret_sym->ptr.str = static_cast<char*>(malloc(strlen(sym->text) + 1));
       strcpy(ret_sym->ptr.str, sym->text);
       return;
     }
@@ -96,9 +96,13 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
     {
       d_to_str(sym->d, &conv);
     }
+    else if(sym->type == CRY_NIL)
+    {
+      conv.assign("nil");
+    }
     if(ret_sym->ptr.str != 0)
       free(ret_sym->ptr.str);
-    ret_sym->ptr.str = static_cast<char*>(malloc(conv.size()));
+    ret_sym->ptr.str = static_cast<char*>(malloc(conv.size() + 1));
     strcpy(ret_sym->ptr.str, conv.c_str());
     return;
   }
@@ -130,7 +134,7 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   {
     if(ret_sym->ptr.str != 0)
       free(ret_sym->ptr.str);
-    ret_sym->ptr.str = static_cast<char*>(malloc(strlen(sym->text)));
+    ret_sym->ptr.str = static_cast<char*>(malloc(strlen(sym->text) + 1));
     strcpy(ret_sym->ptr.str, sym->text);
     return;
   }
@@ -146,9 +150,13 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   {
     d_to_str(sym->d, &conv);
   }
+  else if(sym->type == CRY_NIL)
+  {
+    conv.assign("nil");
+  }
   if(ret_sym->ptr.str != 0)
     free(ret_sym->ptr.str);
-  ret_sym->ptr.str = static_cast<char*>(malloc(conv.size()));
+  ret_sym->ptr.str = static_cast<char*>(malloc(conv.size() + 1));
   strcpy(ret_sym->ptr.str, conv.c_str());
 }
 void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)

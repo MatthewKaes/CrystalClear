@@ -1,10 +1,48 @@
 #Simple crystal code for testing
 
 def main()
+  #Conversions as a string
   x = "1520"
-  print_color("Values for the string \"1520\"", 11)
+  print_color("EXPLICIT conversions for the string \"1520\"", 11)
+  y = type(integer(x)) + ": " + integer(x)
+  print(y)
+  y = type(double(x)) + ": " + double(x)
+  print(y)
+  y = type(boolean(x)) + ": " + boolean(x)
+  print(y)
+  y = type(string(x)) + ": " + string(x) + "\n"
+  print(y)
+  
+  #Conversions as a integer
+  x = 56
+  print_color("EXPLICIT conversions for the integer 56", 11)
   print(type(integer(x)) + ": " + integer(x))
   print(type(double(x)) + ": " + double(x))
   print(type(boolean(x)) + ": " + boolean(x))
+  print(type(string(x)) + ": " + string(x) + "\n")
+  
+  #Conversions as a boolean
+  x = true
+  print_color("EXPLICIT conversions for the boolean \"true\"", 11)
+  print(type(integer(x)) + ": " + integer(x))
+  print(type(double(x)) + ": " + double(x))
+  print(type(boolean(x)) + ": " + boolean(x))
+  print(type(string(x)) + ": " + string(x) + "\n")
+  
+  #Conversions as a double
+  x = 89.5231
+  print_color("EXPLICIT conversions for the double 89.5231", 11)
+  print(type(integer(x)) + ": " + integer(x))
+  print(type(double(x)) + ": " + double(x))
+  print(type(boolean(x)) + ": " + boolean(x))
+  print(type(string(x)) + ": " + string(x) + "\n")
+  
+  #Conversions as NIL
+  x = nil
+  print_color("EXPLICIT conversions for NIL", 11)
+  print(type(integer(x)) + ": " + integer(x))
+  print(type(double(x)) + ": " + double(x))
+  print(type(boolean(x)) + ": " + boolean(x))
+  print(type(string(x)) + ": " + string(x) + "\n")
   return "Done"
 end

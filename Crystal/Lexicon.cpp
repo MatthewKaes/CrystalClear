@@ -71,6 +71,10 @@ void Create_Symbol(const char** stream, Crystal_Data* sym)
     (*stream)++;
     while(**stream != '\"' && **stream != 0)
     {
+      if(**stream == '\\')
+      {
+        (*stream)++;
+      }
       sym->str.push_back(**stream);
       (*stream)++;
     }
