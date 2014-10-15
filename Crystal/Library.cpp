@@ -72,7 +72,18 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
   }
   else if(!conv.compare("TEXT") || !conv.compare("STRING"))
   {
+    //Save the expensive operation if we can!
+    if(ret_sym->type == CRY_STRING && ret_sym == sym)
+      return;
     ret_sym->type = CRY_STRING;
+    if(sym->type == CRY_TEXT)
+    {
+      if(ret_sym->ptr.str != 0)
+        free(ret_sym->ptr.str);
+      ret_sym->ptr.str = static_cast<char*>(malloc(strlen(sym->text)));
+      strcpy(ret_sym->ptr.str, sym->text);
+      return;
+    }
     if(sym->type == CRY_BOOL)
     {
       b_to_str(sym->b, &conv);
@@ -92,6 +103,53 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
     return;
   }
   ret_sym->type = CRY_NIL;
+}
+void Crystal_Boolean(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  ret_sym->type = CRY_BOOL;
+  ret_sym->i32 = Parse_Bool(sym);
+}
+void Crystal_Integer(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  ret_sym->type = CRY_INT;
+  ret_sym->i32 = Parse_Int(sym);
+}
+void Crystal_Double(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  ret_sym->type = CRY_DOUBLE;
+  ret_sym->d = Parse_Double(sym);
+}
+void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  std::string conv;
+  //Save the expensive operation if we can!
+  if(ret_sym->type == CRY_STRING && ret_sym == sym)
+    return;
+  ret_sym->type = CRY_STRING;
+  if(sym->type == CRY_TEXT)
+  {
+    if(ret_sym->ptr.str != 0)
+      free(ret_sym->ptr.str);
+    ret_sym->ptr.str = static_cast<char*>(malloc(strlen(sym->text)));
+    strcpy(ret_sym->ptr.str, sym->text);
+    return;
+  }
+  if(sym->type == CRY_BOOL)
+  {
+    b_to_str(sym->b, &conv);
+  }
+  else if(sym->type == CRY_INT || sym->type == CRY_INT64)
+  {
+    i_to_str(sym->i32, &conv);
+  }
+  else if(sym->type == CRY_DOUBLE)
+  {
+    d_to_str(sym->d, &conv);
+  }
+  if(ret_sym->ptr.str != 0)
+    free(ret_sym->ptr.str);
+  ret_sym->ptr.str = static_cast<char*>(malloc(conv.size()));
+  strcpy(ret_sym->ptr.str, conv.c_str());
 }
 void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {

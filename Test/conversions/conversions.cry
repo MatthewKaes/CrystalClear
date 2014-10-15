@@ -1,0 +1,10 @@
+#Simple crystal code for testing
+
+def main()
+  x = "1520"
+  print_color("Values for the string \"1520\"", 15)
+  print(type(integer(x)) + ": " + integer(x))
+  print(type(double(x)) + ": " + double(x))
+  print(type(boolean(x)) + ": " + boolean(x))
+  return "Done"
+end

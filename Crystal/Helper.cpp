@@ -3,26 +3,48 @@
 
 int Parse_Int(Crystal_Symbol* sym)
 {
+  if(sym->type == CRY_STRING)
+  {
+    std::string str(sym->ptr.str);
+    return str_to_i(&str);
+  }
+  if(sym->type == CRY_TEXT)
+  {
+    std::string str(sym->text);
+    return str_to_i(&str);
+  }
   if(sym->type == CRY_INT)
   {
     return sym->i32;
   }
-  else if(sym->type == CRY_BOOL)
+  if(sym->type == CRY_BOOL)
   {
     return sym->b;
   }
-  else if(sym->type == CRY_DOUBLE)
+  if(sym->type == CRY_DOUBLE)
   {
-    return sym->d;
+    return static_cast<int>(sym->d);
   }
   return 0;
 }
 bool Parse_Bool(Crystal_Symbol* sym)
 {
+  if(sym->type == CRY_NIL)
+    return 0;
   return sym->i32 != 0;
 }
 double Parse_Double(Crystal_Symbol* sym)
 {
+  if(sym->type == CRY_STRING)
+  {
+    std::string str(sym->ptr.str);
+    return str_to_d(&str);
+  }
+  if(sym->type == CRY_TEXT)
+  {
+    std::string str(sym->text);
+    return str_to_d(&str);
+  }
   if(sym->type == CRY_BOOL)
   {
     return sym->b;
