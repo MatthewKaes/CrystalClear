@@ -365,6 +365,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
         Machine->Strcpy(EAX, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER);
         Machine->Strcpy(EDI, offset_source - DATA_UPPER, offset_source - DATA_LOWER, false, true);
         Machine->Mov(offset_dest - DATA_PNTR, EAX);
+        Machine->Mov(offset_dest - DATA_LOWER, EBX);
       }
       //complex slower text handling:
       else

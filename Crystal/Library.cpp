@@ -80,7 +80,9 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
     {
       if(ret_sym->ptr.str != 0)
         free(ret_sym->ptr.str);
-      ret_sym->ptr.str = static_cast<char*>(malloc(strlen(sym->text) + 1));
+      int size = strlen(sym->text) + 1;
+      ret_sym->ptr.str = static_cast<char*>(malloc(size));
+      ret_sym->size = size;
       strcpy(ret_sym->ptr.str, sym->text);
       return;
     }
@@ -103,6 +105,7 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
     if(ret_sym->ptr.str != 0)
       free(ret_sym->ptr.str);
     ret_sym->ptr.str = static_cast<char*>(malloc(conv.size() + 1));
+    ret_sym->size = conv.size() + 1;
     strcpy(ret_sym->ptr.str, conv.c_str());
     return;
   }
@@ -134,7 +137,9 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   {
     if(ret_sym->ptr.str != 0)
       free(ret_sym->ptr.str);
-    ret_sym->ptr.str = static_cast<char*>(malloc(strlen(sym->text) + 1));
+    int size = strlen(sym->text) + 1;
+    ret_sym->ptr.str = static_cast<char*>(malloc(size));
+    ret_sym->size = size;
     strcpy(ret_sym->ptr.str, sym->text);
     return;
   }
@@ -157,6 +162,7 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   if(ret_sym->ptr.str != 0)
     free(ret_sym->ptr.str);
   ret_sym->ptr.str = static_cast<char*>(malloc(conv.size() + 1));
+  ret_sym->size = conv.size() + 1;
   strcpy(ret_sym->ptr.str, conv.c_str());
 }
 void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
@@ -253,23 +259,25 @@ void Crystal_Text_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
 
 void Crystal_Text_Append_C(Crystal_Symbol* symd, const char* str, unsigned length)
 {
-  char* new_buffer = static_cast<char*>(malloc(symd->size + length));
+  char* new_buffer = static_cast<char*>(malloc(symd->size + length + 1));
   strcpy(new_buffer, symd->ptr.str);
   strcpy(new_buffer + strlen(symd->ptr.str), str);
 
   free(symd->ptr.str);
 
   symd->ptr.str = new_buffer;
+  symd->size = symd->size + length;
 }
 void Crystal_Text_Append_CR(Crystal_Symbol* symd, const char* str, unsigned length)
 {
   char* new_buffer = static_cast<char*>(malloc(symd->size + length + 1));
   strcpy(new_buffer, str);
-  strcpy(new_buffer + strlen(str), symd->ptr.str);
+  strcpy(new_buffer + length, symd->ptr.str);
 
   free(symd->ptr.str);
 
   symd->ptr.str = new_buffer;
+  symd->size = symd->size + length;
 }
 
 void Crystal_Const_Append_T(Crystal_Symbol* symd, const char* str, unsigned length)
@@ -282,6 +290,7 @@ void Crystal_Const_Append_T(Crystal_Symbol* symd, const char* str, unsigned leng
   strcpy(new_buffer + val_left.size(), str);
 
   symd->ptr.str = new_buffer;
+  symd->size = val_left.size() + length;
 }
 void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned length)
 {  
@@ -293,4 +302,5 @@ void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned len
   strcpy(new_buffer + length, val_left.c_str());
 
   symd->ptr.str = new_buffer;
+  symd->size = val_left.size() + length;
 }
