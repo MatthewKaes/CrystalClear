@@ -143,6 +143,25 @@ void Obscure_Division(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+void Obscure_Modulo(Crystal_Symbol* dest, Crystal_Symbol* source)
+{
+  if(dest->type == CRY_NIL || source->type == CRY_NIL)
+  {
+    dest->type = CRY_NIL;
+    return;
+  }
+  Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
+  switch(resolve)
+  {
+  case CRY_INT:
+    dest->i32 %= source->i32;
+    dest->type = resolve;
+    return;
+  default:
+    dest->type = CRY_NIL;
+    return;
+  }
+}
 void Obscure_Power(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
@@ -489,6 +508,25 @@ void Obscure_DivisionR(Crystal_Symbol* dest, Crystal_Symbol* source)
       dest->d = source->d / dest->i32;
     else
       dest->d = source->d / dest->d;
+    dest->type = resolve;
+    return;
+  default:
+    dest->type = CRY_NIL;
+    return;
+  }
+}
+void Obscure_ModuloR(Crystal_Symbol* dest, Crystal_Symbol* source)
+{
+  if(dest->type == CRY_NIL || source->type == CRY_NIL)
+  {
+    dest->type = CRY_NIL;
+    return;
+  }
+  Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
+  switch(resolve)
+  {
+  case CRY_INT:
+    dest->i32 = source->i32 % dest->i32;
     dest->type = resolve;
     return;
   default:

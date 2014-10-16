@@ -925,7 +925,7 @@ void Crystal_Compiler::Div(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(Obscure_Multiplication);
+    Machine->Call(left ? Obscure_Division : Obscure_DivisionR);
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -994,7 +994,97 @@ void Crystal_Compiler::DivC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(Obscure_Multiplication);
+    Machine->Call(left ? Obscure_Division : Obscure_DivisionR);
+    Pop(2);
+    //Copy(dest, Addr_Reg(stack_depth));
+    Clarity_Filter::Combind(states[dest], const_.filt);
+  }
+}
+void Crystal_Compiler::Mod(unsigned dest, unsigned source, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+  unsigned offset_source = stack_size - source * VAR_SIZE;
+
+  //std static handling
+  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  {
+    //null operation
+    if(Null_Op(states[dest], states[source], dest))
+      return;
+
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
+    switch(resolve)
+    {
+    case CRY_INT:
+      Machine->Mov(EAX, (left ? offset_dest : offset_source) - DATA_LOWER);
+      Machine->Idiv((left ? offset_source : offset_dest) - DATA_LOWER);
+      Machine->Mov(offset_dest - DATA_LOWER, EDX);
+      break;
+    //Lacking Support
+    NO_SUPPORT(CRY_DOUBLE);
+    NO_SUPPORT(CRY_BOOL);
+    NO_SUPPORT(CRY_TEXT);
+    NO_SUPPORT(CRY_STRING);
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    Runtime_Resovle(dest, resolve);
+  }
+  //Clarity Handling
+  else
+  {
+    Push(source);
+    Push(dest);
+    Machine->Call(left ? Obscure_Modulo : Obscure_ModuloR);
+    Pop(2);
+    Clarity_Filter::Combind(states[dest], states[source]);
+  }
+}
+void Crystal_Compiler::ModC(unsigned dest, CRY_ARG const_, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+
+  //std static handling
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  {
+    //null operation
+    if(Null_Op(states[dest], const_.filt, dest))
+      return;
+
+    Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
+    switch(resolve)
+    {
+    case CRY_INT:
+      if(left)
+      {
+        Machine->Mov(EAX, offset_dest - DATA_LOWER);
+        Machine->Load_Register(EBX, const_.num_);
+      }
+      else
+      {
+        Machine->Load_Register(EAX, const_.num_);
+        Machine->Mov(EBX, offset_dest - DATA_LOWER);
+      }
+      Machine->Idiv(EBX);
+      Machine->Mov(offset_dest - DATA_LOWER, EDX);
+      break;
+    NO_SUPPORT(CRY_DOUBLE);
+    NO_SUPPORT(CRY_BOOL);
+    NO_SUPPORT(CRY_TEXT);
+    NO_SUPPORT(CRY_STRING);
+    NO_SUPPORT(CRY_ARRAY);
+    NO_SUPPORT(CRY_POINTER);
+    }
+    Runtime_Resovle(dest, resolve);
+  }
+  //Clarity Handling
+  else
+  {
+    //Load const into temp.
+    Load(Addr_Reg(stack_depth), const_);
+    Push(Addr_Reg(stack_depth));
+    Push(dest);
+    Machine->Call(left ? Obscure_Modulo : Obscure_ModuloR);
     Pop(2);
     //Copy(dest, Addr_Reg(stack_depth));
     Clarity_Filter::Combind(states[dest], const_.filt);

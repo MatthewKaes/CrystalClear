@@ -53,6 +53,7 @@ bool Reduction(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
     REDUCTION('>', Greater)
     APPEND_REDUCTION('=', Greater_Equal)
     REDUCTION('/', Division)
+    REDUCTION('%', Modulo)
   case '=':
     if(sym->str.c_str()[1] == '=')
     {
@@ -231,7 +232,8 @@ void Reduce_Division(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
   switch(resolve)
   {
   case DAT_INT:
-    if(left->type == DAT_NIL || right->type == DAT_NIL)
+    if(left->type == DAT_NIL || right->type == DAT_NIL ||
+       left->type == DAT_BOOL || right->type == DAT_BOOL)
       resolve = DAT_NIL;
     else
       sym->i32 = left->i32 / right->i32;
@@ -246,6 +248,23 @@ void Reduce_Division(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
       r = right->type == DAT_DOUBLE ? right->d : right->i32;
       sym->d = l / r;
     }
+    break;
+  default:
+    resolve = DAT_NIL;
+  }
+  sym->type = resolve;
+}
+void Reduce_Modulo(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
+{  
+  Data_Type resolve = left->type > right->type ? left->type : right->type;
+  switch(resolve)
+  {
+  case DAT_INT:
+    if(left->type == DAT_NIL || right->type == DAT_NIL ||
+       left->type == DAT_BOOL || right->type == DAT_BOOL)
+      resolve = DAT_NIL;
+    else
+      sym->i32 = left->i32 % right->i32;
     break;
   default:
     resolve = DAT_NIL;

@@ -63,6 +63,10 @@ bool Division_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
 {
   PREFORM_OPERATION(Div);
 }
+bool Modulo_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  PREFORM_OPERATION(Mod);
+}
 bool Power_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Pow);

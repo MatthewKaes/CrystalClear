@@ -1,9 +1,6 @@
 #Simple crystal code for testing
 
 def main()
-  x = 494
-  print(convert(x, type(0.5)))
-  print(convert(x, "BOOLEAN"))
   print_color("Additive Operations:", 11)
   x = 2
   x += 2.5 + x

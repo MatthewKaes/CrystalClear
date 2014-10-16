@@ -67,6 +67,11 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
       return Divisional_Gen;
     else
       return Division_Gen;
+  case '%':
+    if(sym->str.c_str()[1] == '=')
+      return Modulo_Gen;
+    else
+      return Modulo_Gen;
   case '^':
     if(sym->str.c_str()[1] == '=')
       return Exponent_Gen;
