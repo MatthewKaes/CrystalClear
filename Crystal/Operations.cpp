@@ -129,6 +129,10 @@ bool Divisional_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cr
 {
   PREFORM_ASSIGNMENT(Div);
 }
+bool Remainder_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  PREFORM_ASSIGNMENT(Mod);
+}
 bool Exponent_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_ASSIGNMENT(Pow);

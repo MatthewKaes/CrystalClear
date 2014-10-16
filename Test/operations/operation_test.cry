@@ -1,6 +1,12 @@
 #Simple crystal code for testing
 
 def main()
+  x = 180
+  x += x *= x %= 7
+  print(x)
+  print(x %= x)
+  print(x)
+  input
   print_color("Additive Operations:", 11)
   x = 2
   x += 2.5 + x
