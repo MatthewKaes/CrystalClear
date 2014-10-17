@@ -37,6 +37,9 @@
     <Filter Include="Extensions\Headers">
       <UniqueIdentifier>{1b66b38a-867d-4d82-b88c-862aef5ab506}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Front End\Headers">
+      <UniqueIdentifier>{66a330df-c8b8-48af-9cfb-18b7df3dd863}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Compiler.cpp">
@@ -139,6 +142,9 @@
     </ClInclude>
     <ClInclude Include="Crystal_Math.h">
       <Filter>Extensions\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Front End\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 #ifndef CRYSTAL_MAIN
 #define CRYSTAL_MAIN
 
+#include "Config.h"
 #include <string>
 
 //Controls Higherarchy

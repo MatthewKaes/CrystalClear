@@ -1,0 +1,6 @@
+#Simple crystal code for testing
+
+def main()
+  python("script.py")
+  return "Done"
+end

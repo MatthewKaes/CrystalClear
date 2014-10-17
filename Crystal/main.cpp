@@ -6,47 +6,62 @@
 #include "Interpreter.h"
 #include "Lexicon.h"
 
+#if INCLUDE_PYTHON
+#include <boost\python.hpp>
+#endif
+
 //Avalible Machines
 #include "Machines\x86_Machine.h"
 
+const char* CRY_ROOT = 0;
+
 int Process_Root(Crystal_Compiler* comp, const char* rootdir)
 {
-    Crystal_Interpreter interpreter(comp);
-    boost::filesystem::path root(rootdir);
-    int Files_Read = 0;
+  //Set the root for other functions to use
+  CRY_ROOT = rootdir;
 
-    if(!boost::filesystem::exists(root) || !boost::filesystem::is_directory(root))
-    {
-      printf("CRYSTAL ERROR: Root path is not a directory. Crystal must be pointed to a directory to run. \n\n");
-      return 1;
-    }
+  //Create the interpreter
+  Crystal_Interpreter interpreter(comp);
+  boost::filesystem::path root(rootdir);
+  int Files_Read = 0;
 
-    for (boost::filesystem::directory_iterator it(root); it != boost::filesystem::directory_iterator(); ++it)
+  if(!boost::filesystem::exists(root) || !boost::filesystem::is_directory(root))
+  {
+    printf("CRYSTAL ERROR: Root path is not a directory. Crystal must be pointed to a directory to run. \n\n");
+    return 1;
+  }
+
+  for (boost::filesystem::directory_iterator it(root); it != boost::filesystem::directory_iterator(); ++it)
+  {
+    if(boost::filesystem::is_regular_file(it->path()))
     {
-      if(boost::filesystem::is_regular_file(it->path()))
+      if(!it->path().extension().compare(std::string(".cry")))
       {
-        if(!it->path().extension().compare(std::string(".cry")))
-        {
-          Files_Read++;
-          interpreter.Cache_Code(it->path().generic_string().c_str());
-        }
+        Files_Read++;
+        interpreter.Cache_Code(it->path().generic_string().c_str());
       }
     }
+  }
     
-    if(!Files_Read)
-    {
-      printf("CRYSTAL ERROR: Root project empty. The Root project must contain one or more files. \n\n");
-      return 1;
-    }
+  if(!Files_Read)
+  {
+    printf("CRYSTAL ERROR: Root project empty. The Root project must contain one or more files. \n\n");
+    return 1;
+  }
 
-    interpreter.Interpret();
-    return 0;
+  interpreter.Interpret();
+  return 0;
  }
 
 int main(int argc, const char **argv)
 {
   //Set up random
   srand(static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds()));
+  //Set up Python
+#if INCLUDE_PYTHON
+  Py_Initialize();
+#endif
+
   if(argc > 1)
   {
     Crystal_Compiler comp(new x86_Machine);

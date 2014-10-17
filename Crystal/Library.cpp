@@ -4,6 +4,8 @@
 #include <windows.h>
 #include <boost\date_time.hpp>
 
+extern const char* CRY_ROOT;
+
 void Crystal_Time(Crystal_Symbol* ret_sym)
 {
   ret_sym->i32 = static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds());
@@ -223,6 +225,44 @@ void Crystal_PrintColor(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Sy
   Crystal_Print(ret_sym, sym);
   SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
+
+#if INCLUDE_PYTHON
+#include <boost\python.hpp>
+void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  //Get realitive path of the project, not where Crystal is
+  //running.
+  std::string val;
+  Parse_String(sym, &val);
+  val = CRY_ROOT + ("\\" + val);
+
+  //Load the code
+  FILE* f = fopen(val.c_str(), "r");
+  char code[PYTHON_SCRIPT_SIZE];
+  unsigned code_size = fread(code, 1, PYTHON_SCRIPT_SIZE, f);
+  //Check if code is to large.
+  if(code_size > PYTHON_SCRIPT_SIZE)
+  {
+    printf("PYTHON FILE %s IS TO LARGE!\nIncrease Python side in Config.h", val.c_str());
+    ret_sym->type = CRY_NIL;
+    return;
+  }
+  code[code_size] = 0;
+  
+  // Retrieve the main module
+  boost::python::object main = boost::python::import("__main__");
+  // Retrieve the main module's namespace
+  boost::python::object global(main.attr("__dict__"));
+  
+  //Execute the code
+	boost::python::object result;
+  result = boost::python::exec(code, global, global);
+
+  //Currently no conversion from Python->Crystal so return nil
+  ret_sym->type = CRY_NIL;
+}
+#endif
+
 
 void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)
 {
