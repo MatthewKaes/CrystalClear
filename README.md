@@ -35,6 +35,8 @@ An example snippit of how clarity filters work under the hood can be found on my
 
 Sometimes the code you are looking to write already exist or you want more control over the machine code that is produced. In these cases you can call out to C/C++ code compiled directly into the compiler or call functions from DLL files. This gives the user the ability to easily get Crystal talking to or invoking other languages.
 
+Crystal also has hooks for Python using Boost.Python. If a version of python is installed and the python libraries are built for boost then scripts can be run directly from Crystal. 
+
 
 ##Useable and Fast
 
