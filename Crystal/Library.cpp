@@ -261,6 +261,12 @@ void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   //Currently no conversion from Python->Crystal so return nil
   ret_sym->type = CRY_NIL;
 }
+#else
+void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  printf("PYTHON NOT SUPPORTED\n");
+  ret_sym->type = CRY_NIL;
+}
 #endif
 
 

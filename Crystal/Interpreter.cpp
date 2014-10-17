@@ -37,9 +37,7 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(sin, Crystal_Sin, 1);
 
   //Hooks to other langauges
-#if INCLUDE_PYTHON
   REGISTER_FUNCTION(python, Crystal_Python, 1);
-#endif
 }
 void Crystal_Interpreter::Cache_Code(const char* filename)
 {
