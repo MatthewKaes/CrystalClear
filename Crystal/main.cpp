@@ -99,5 +99,9 @@ int main(int argc, const char **argv)
     printf("  directory: The root directory of the target crystal project. \n\n");
     printf("Compiles and runs a crystal program for a collection of crystal source code.\n");
     printf("Source code will be pulled for the target directory and aggragated for use.\n\n");
-  }
+  }  
+  //Release Python
+#if INCLUDE_PYTHON
+  Py_Finalize();
+#endif
 }

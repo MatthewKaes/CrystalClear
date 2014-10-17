@@ -1,6 +1,9 @@
 #Simple crystal code for testing
 
 def main()
+  print_color("Calling Python Script", 11)
   python("script.py")
+  print_color("First 10 fibonacci numbers", 10)
+  python("fibonacci.py")
   return "Done"
 end
