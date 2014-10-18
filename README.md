@@ -21,7 +21,7 @@ The key feature of Crystal is its use of an AOT (Ahead of Time) Compiler to turn
 
 ###Resource Acquisition Is Initialization
 
-Variables have function scooping rather than standard scooping techniques making it so variables are easy to construct and destruct. Rather than standard garbage collection variables are compiled to know their lifetime using clarity filters so they are only cleaned up when dynamic data reaches it's lifetime. Dynamic data is always cleaned up only when necessary to minimize the footprint of memory management on the program.
+Variables have function scooping rather than standard scooping techniques making it so variables are easy to construct and destruct. Rather than standard garbage collection variables are compiled to know their lifetime using clarity filters so they are only cleaned up when dynamic data reaches it's lifetime. Dynamic data is always created when it's aquired and cleaned up only when necessary to minimize the footprint of memory management on the program.
 
 ##The "Clear"
 
@@ -35,7 +35,8 @@ An example snippit of how clarity filters work under the hood can be found on my
 
 Sometimes the code you are looking to write already exist or you want more control over the machine code that is produced. In these cases you can call out to C/C++ code compiled directly into the compiler or call functions from DLL files. This gives the user the ability to easily get Crystal talking to or invoking other languages.
 
-Crystal also has hooks for Python using Boost.Python. If a version of python is installed and the python libraries are built for boost then scripts can be run directly from Crystal. 
+####Python
+Crystal also has hooks for Python using [Boost.Python](http://www.boost.org/doc/libs/1_56_0/libs/python/doc/). If a version of python is installed and the python libraries are built for boost then scripts can be run directly from Crystal. 
 
 
 ##Useable and Fast
