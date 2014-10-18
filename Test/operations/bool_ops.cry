@@ -6,8 +6,8 @@ def booleans()
 end
 def and_ops()
   print_color("And testing:", 11)
-  print(1 && 2)
-  print(15 && 0)
+  print(1 and 2)
+  print(15 and 0)
   y = "text"
   print(x && y)
   x = 32.9
@@ -18,8 +18,9 @@ def and_ops()
  end
  def or_ops()
   print_color("Or testing:", 11)
-  print(1 || 2)
-  print(15 || 0)
+  print(1 or 2)
+  print(15 or 0)
+  print(0.0 or (0.1 - 0.1))
   y
   print(x || y)
   y = "text"

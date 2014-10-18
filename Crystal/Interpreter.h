@@ -39,6 +39,7 @@ private:
   void Process_Code();
   void Process_Package(const char* code);
   unsigned Get_Precedence(const char*  sym);
+  void Special_Processing(Crystal_Data* sym);
 
   //Private members
   Crystal_Compiler* comp;

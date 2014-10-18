@@ -269,7 +269,6 @@ void Crystal_Interpreter::Process_Package(const char* code)
   {
     Create_Symbol(&package_code, &sym);
 
-    //Special symbol handling
     if(sym.type != DAT_STRING)
     {
       if(sym.str[0] == '\n')
@@ -277,7 +276,7 @@ void Crystal_Interpreter::Process_Package(const char* code)
         precedence = 0;
         syntax.Evaluate();
         continue;
-      }
+      } 
       else if(sym.str[0] == '(' || sym.str[0] == '[')
       {
         precedence++;
@@ -293,21 +292,10 @@ void Crystal_Interpreter::Process_Package(const char* code)
         scope -= 1;
         continue;
       }
-      //Statments
-      else if(!sym.str.compare("return"))
-      {
-        sym.type = DAT_STATEMENT;
-      }
-      else if(!sym.str.compare("nil"))
-      {
-        sym.type = DAT_NIL;
-      }
-      else if(!sym.str.compare("PI"))
-      {
-        sym.type = DAT_DOUBLE;
-        sym.d = PI;
-      }
-    }
+    }   
+    
+    //Special Symbols
+    Special_Processing(&sym);
     
     //Look up nodes that need are unknown
     if(sym.type == DAT_LOOKUP)
@@ -366,6 +354,36 @@ void Crystal_Interpreter::Process_Package(const char* code)
   }
   comp->End_Encode();
   syntax.Reset();
+}
+void Crystal_Interpreter::Special_Processing(Crystal_Data* sym)
+{
+  //Special symbol handling
+  if(sym->type != DAT_STRING)
+  {
+    if(!sym->str.compare("return"))
+    {
+      sym->type = DAT_STATEMENT;
+    }
+    else if(!sym->str.compare("nil"))
+    {
+      sym->type = DAT_NIL;
+    }
+    else if(!sym->str.compare("PI"))
+    {
+      sym->type = DAT_DOUBLE;
+      sym->d = PI;
+    }
+    else if(!sym->str.compare("and"))
+    {
+      sym->str.assign("&&");
+      sym->type = DAT_OP;
+    }
+    else if(!sym->str.compare("or"))
+    {
+      sym->str.assign("||");
+      sym->type = DAT_OP;
+    }
+  }
 }
 unsigned Crystal_Interpreter::Get_Precedence(const char* sym)
 {
