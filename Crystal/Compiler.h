@@ -75,6 +75,7 @@ public:
   void Pop(unsigned args);
   void Return(unsigned var);
   void Return();
+  void While(unsigned var);
   void If(unsigned var);
   void End();
   

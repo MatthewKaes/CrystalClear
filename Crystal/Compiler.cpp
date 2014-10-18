@@ -201,6 +201,32 @@ void Crystal_Compiler::Return()
   }
   Machine->Return();
 }
+void Crystal_Compiler::While(unsigned var)
+{
+  unsigned offset_dest = stack_size - var * VAR_SIZE;
+  CryLookup new_lookup;
+  //setup lookups
+  new_lookup.corruptions.reserve(locals_count + stack_depth);
+  for(unsigned i = 0; i < (locals_count + stack_depth); i++)
+  {
+    new_lookup.corruptions.push_back(false);
+  }
+  new_lookup.loop_back_lable = Machine->Reserve_Label();
+  new_lookup.lable_id = Machine->Reserve_Label();
+  //While procedure
+  Machine->Make_Label(new_lookup.loop_back_lable);
+  if(!(states[var].Test(CRY_NIL) && states[var].Size()))
+  {
+    Machine->Cmp(offset_dest - DATA_LOWER, 0);
+    Machine->Je(new_lookup.lable_id);
+  }
+  if(states[var].Test(CRY_NIL))
+  {
+    Machine->Cmp(offset_dest - DATA_TYPE, static_cast<char>(CRY_NIL));
+    Machine->Je(new_lookup.lable_id);
+  }
+  lookups.push_back(new_lookup);
+}
 void Crystal_Compiler::If(unsigned var)
 {
   unsigned offset_dest = stack_size - var * VAR_SIZE;
@@ -228,7 +254,7 @@ void Crystal_Compiler::If(unsigned var)
 }
 void Crystal_Compiler::End()
 {
-  if(lookups.back().loop_back_lable > 0)
+  if(lookups.back().loop_back_lable >= 0)
   {
     Machine->Jmp(lookups.back().loop_back_lable);
   }

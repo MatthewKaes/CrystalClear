@@ -1,0 +1,10 @@
+#Simple crystal code for testing
+
+def main()
+  print_color("Printing from 100 to 0 counting down by 5:", 11)
+  x = 100
+  while(x)
+    print(x)
+	x -= 5
+  end
+end

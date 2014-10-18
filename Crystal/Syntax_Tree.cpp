@@ -108,7 +108,7 @@ bool Syntax_Node::Evaluate()
   }
   if(sym.type == DAT_STATEMENT)
   {
-    if(!sym.str.compare("return") || !sym.str.compare("if"))
+    if(!sym.str.compare("return") || !sym.str.compare("if") || !sym.str.compare("while"))
       Force_Memory(&new_code);
   }
 
