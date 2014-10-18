@@ -214,8 +214,16 @@ void Crystal_Compiler::If(unsigned var)
   new_lookup.loop_back_lable = -1;
   new_lookup.lable_id = Machine->Reserve_Label();
   //IF procedure
-  Machine->Cmp(offset_dest - DATA_LOWER, 0);
-  Machine->Je(new_lookup.lable_id);
+  if(!(states[var].Test(CRY_NIL) && states[var].Size()))
+  {
+    Machine->Cmp(offset_dest - DATA_LOWER, 0);
+    Machine->Je(new_lookup.lable_id);
+  }
+  if(states[var].Test(CRY_NIL))
+  {
+    Machine->Cmp(offset_dest - DATA_TYPE, static_cast<char>(CRY_NIL));
+    Machine->Je(new_lookup.lable_id);
+  }
   lookups.push_back(new_lookup);
 }
 void Crystal_Compiler::End()

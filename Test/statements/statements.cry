@@ -20,4 +20,10 @@ def main()
     end
     print(x)
   end
+  if(nil)
+    print("INCORRECT")
+  end
+  if(k == nil)
+    print("NIL VALIDATION")
+  end
 end
