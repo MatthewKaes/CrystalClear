@@ -1245,6 +1245,27 @@ void Crystal_Compiler::AndC(unsigned dest, CRY_ARG const_, bool left)
   Machine->Mov(offset_dest - DATA_LOWER, EAX);
   Runtime_Resovle(dest, CRY_BOOL);
 }
+void Crystal_Compiler::Or(unsigned dest, unsigned source, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+  Push(source);
+  Push(dest);
+  Machine->Call(Crystal_Or);
+  Pop(2);
+  Machine->Mov(offset_dest - DATA_LOWER, EAX);
+  Runtime_Resovle(dest, CRY_BOOL);
+}
+void Crystal_Compiler::OrC(unsigned dest, CRY_ARG const_, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+  Load(Addr_Reg(stack_depth), const_);
+  Push(Addr_Reg(stack_depth));
+  Push(dest);
+  Machine->Call(Crystal_Or);
+  Pop(2);
+  Machine->Mov(offset_dest - DATA_LOWER, EAX);
+  Runtime_Resovle(dest, CRY_BOOL);
+}
 void Crystal_Compiler::Eql(unsigned dest, unsigned source, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;

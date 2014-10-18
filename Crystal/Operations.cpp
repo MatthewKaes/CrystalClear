@@ -75,6 +75,10 @@ bool And_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_D
 {
   PREFORM_OPERATION(And);
 }
+bool Or_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  PREFORM_OPERATION(Or);
+}
 bool Equal_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Eql);

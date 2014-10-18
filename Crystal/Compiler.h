@@ -109,6 +109,8 @@ public:
   void PowC(unsigned dest, CRY_ARG const_, bool left = true);
   void And(unsigned dest, unsigned source, bool left = true);
   void AndC(unsigned dest, CRY_ARG const_, bool left = true);
+  void Or(unsigned dest, unsigned source, bool left = true);
+  void OrC(unsigned dest, CRY_ARG const_, bool left = true);
   void Eql(unsigned dest, unsigned source, bool left = true);
   void EqlC(unsigned dest, CRY_ARG const_, bool left = true);
   void Dif(unsigned dest, unsigned source, bool left = true);

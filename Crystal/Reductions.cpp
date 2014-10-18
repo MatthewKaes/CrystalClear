@@ -61,6 +61,7 @@ bool Reduction(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
     REDUCTION('/', Division)
     REDUCTION('%', Modulo)
     REDUCTION_EX('&', '&', And)
+    REDUCTION_EX('|', '|', Or)
     REDUCTION_EX('=', '=', Equal)
     REDUCTION_EX('!', '=', Diffrence)
   }
@@ -320,6 +321,20 @@ void Reduce_And(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
   else
     r = right->i32 != 0;
   sym->i32 = l && r;
+  sym->type = DAT_BOOL;
+}
+void Reduce_Or(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
+{
+  int l, r;
+  if(left->type == CRY_NIL)
+    l = 0;
+  else
+    l = left->i32 != 0;
+  if(right->type == CRY_NIL)
+    r = 0;
+  else
+    r = right->i32 != 0;
+  sym->i32 = l || r;
   sym->type = DAT_BOOL;
 }
 void Reduce_Equal(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)

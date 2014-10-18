@@ -40,6 +40,13 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
       return And_Gen;
     }
     break;
+  case '|':
+    switch(sym->str.c_str()[1])
+    {
+    case '|':
+      return Or_Gen;
+    }
+    break;
   case '=':
     switch(sym->str.c_str()[1])
     {
