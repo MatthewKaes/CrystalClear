@@ -23,22 +23,6 @@
 #define DATA_TYPE (unsigned)&(((Crystal_Symbol *)0)->type)
 #define DATA_PNTR (unsigned)&(((Crystal_Symbol *)0)->ptr)
 
-//Crystal Macros
-#define NO_SUPPORT(type) \
-    case type: \
-      resolve = CRY_NIL; \
-      break;
-
-union funcptr {
-  FuncPtr call;
-  BYTE* load;
-};
-
-union CryProg {
-  FuncPtr call;
-  BYTE* load;
-};
-
 struct CryPackage
 {
   std::vector<LINKER_Data> links;
@@ -91,6 +75,8 @@ public:
   void Pop(unsigned args);
   void Return(unsigned var);
   void Return();
+  void If(unsigned var);
+  void End();
   
   void Load(unsigned var, CRY_ARG val = CRY_ARG());
   void Copy(unsigned dest, unsigned source);
@@ -153,6 +139,11 @@ private:
   unsigned stack_depth;
   std::vector<CryPackage> packages;
   std::unordered_map<std::string, CryProg> package_lookup;
+  
+  //==========================
+  // Function Management
+  //==========================
+  std::vector<CryLookup> lookups;
 };
 
 #endif

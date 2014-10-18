@@ -1,0 +1,23 @@
+#Simple crystal code for testing
+
+def main()
+  print_color("Control statements:", 11)
+  x = "INCORRECT"
+  if(true)
+    x = "CORRECT"
+  end
+  print(x)
+  if(false)
+    x = "INCORRECT"
+  end
+  print(x)
+  if(x == "CORRECT")
+    if(true)
+	  print(x)
+    end
+    if(false)
+      print("INCORRECT")
+    end
+    print(x)
+  end
+end

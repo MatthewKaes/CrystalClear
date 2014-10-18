@@ -69,6 +69,9 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   stack_size = (locals_count + stack_depth + 1) * VAR_SIZE + 4;
   Machine->Allocate_Stack(stack_size);
   states.resize(locals_count + stack_depth + 1);
+  
+  //tidy up lookup data.
+  lookups.clear();
 }
 void Crystal_Compiler::End_Encode()
 {
@@ -198,6 +201,41 @@ void Crystal_Compiler::Return()
   }
   Machine->Return();
 }
+void Crystal_Compiler::If(unsigned var)
+{
+  unsigned offset_dest = stack_size - var * VAR_SIZE;
+  CryLookup new_lookup;
+  //setup lookups
+  new_lookup.corruptions.reserve(locals_count + stack_depth);
+  for(unsigned i = 0; i < (locals_count + stack_depth); i++)
+  {
+    new_lookup.corruptions.push_back(false);
+  }
+  new_lookup.loop_back_lable = -1;
+  new_lookup.lable_id = Machine->Reserve_Label();
+  //IF procedure
+  Machine->Cmp(offset_dest - DATA_LOWER, 0);
+  Machine->Je(new_lookup.lable_id);
+  lookups.push_back(new_lookup);
+}
+void Crystal_Compiler::End()
+{
+  if(lookups.back().loop_back_lable > 0)
+  {
+    Machine->Jmp(lookups.back().loop_back_lable);
+  }
+  Machine->Make_Label(lookups.back().lable_id);
+  
+  //obscure corruptions
+  for(unsigned i = 0; i < (locals_count + stack_depth); i++)
+  {
+    if(lookups.back().corruptions[i])
+    {
+      states[i].Obscurity();
+    }
+  }
+  lookups.pop_back();
+}
 void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
 {
   unsigned offset = stack_size - VAR_SIZE * var;
@@ -225,6 +263,9 @@ void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
   }
   Machine->Load_Mem(offset - DATA_TYPE, static_cast<char>(val.type));
   states[var].Set(val.type);
+  //Corrupt the state of the object
+  if(lookups.size())
+    lookups.back().corruptions[var] = true;
 }
 void Crystal_Compiler::Copy(unsigned dest, unsigned source)
 {
@@ -268,6 +309,9 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
   Machine->Mov(EAX, offset_source - DATA_TYPE, true);
   Machine->Mov(offset_dest - DATA_TYPE, EAX, true);
   states[dest] = states[source];
+  //Corrupt the state of the object
+  if(lookups.size())
+    lookups.back().corruptions[dest] = true;
 }
 void Crystal_Compiler::Swap(unsigned dest, unsigned source)
 {  

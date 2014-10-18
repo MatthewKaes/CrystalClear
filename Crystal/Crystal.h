@@ -3,6 +3,17 @@
 
 #include "Config.h"
 #include <string>
+#include <vector>
+
+//Crystal Macros
+#define NO_SUPPORT(type) \
+    case type: \
+      resolve = CRY_NIL; \
+      break;
+
+//Crystal Types
+typedef int (*FuncPtr)(void *);
+typedef unsigned char BYTE;
 
 //Controls Higherarchy
 enum Symbol_Type : char { CRY_NIL = 0, CRY_BOOL, CRY_INT, CRY_INT64, CRY_DOUBLE, CRY_TEXT, 
@@ -11,6 +22,16 @@ enum Symbol_Type : char { CRY_NIL = 0, CRY_BOOL, CRY_INT, CRY_INT64, CRY_DOUBLE,
 enum Data_Type : char { DAT_NIL, DAT_LOOKUP, DAT_INT, DAT_INT64, DAT_DOUBLE, DAT_BOOL, 
                         DAT_LOCAL, DAT_STRING, DAT_OP, DAT_FUNCTION, DAT_BIFUNCTION, DAT_ARRAY, 
                         DAT_REGISTRY, DAT_OBJ, DAT_STATEMENT };
+
+union funcptr {
+  FuncPtr call;
+  BYTE* load;
+};
+
+union CryProg {
+  FuncPtr call;
+  BYTE* load;
+};
 
 class Crystal_Symbol
 {
@@ -53,6 +74,13 @@ public:
   void* external;
   Data_Type type;
   std::string str;
+};
+
+struct CryLookup
+{
+  int lable_id;
+  int loop_back_lable;
+  std::vector<bool> corruptions;
 };
 
 #endif

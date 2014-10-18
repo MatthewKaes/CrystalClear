@@ -17,9 +17,9 @@ enum ARG_TYPES { AOT_MEMORY, AOT_INT, AOT_BOOL, AOT_STRING, AOT_FLOAT, AOT_DOUBL
 enum VAR_TYPES { _INT, _FLOAT, _DOUBLE };
 enum FPU_REGISTERS { ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7 };
 
+//Crystal Types
 typedef int (*FuncPtr)(void *);
 typedef unsigned char BYTE;
-
 
 struct LINKER_Data
 {

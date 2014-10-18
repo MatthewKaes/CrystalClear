@@ -108,6 +108,10 @@ GENERATOR_CODE Resolve_Statement(Crystal_Data* sym)
   {
   case 'r':
     return Return_Gen;
+  case 'i':
+    return If_Gen;
+  case 'e':
+    return End_Gen;
   }
   return Null_Gen;
 }
@@ -151,5 +155,17 @@ bool Return_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crysta
     target->Load(Mem_Conv(target, &(*syms)[1]), &(*syms)[0]);
   target->Return(Mem_Conv(target, &(*syms)[1]));
 
+  return true;
+}
+bool End_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  target->End();
+  return true;
+}
+bool If_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  if((*syms)[0].type != DAT_LOCAL && (*syms)[0].type != DAT_REGISTRY)
+    target->Load(Mem_Conv(target, &(*syms)[1]), &(*syms)[0]);
+  target->If(Mem_Conv(target, &(*syms)[1]));
   return true;
 }

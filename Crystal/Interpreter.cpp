@@ -290,9 +290,16 @@ void Crystal_Interpreter::Process_Package(const char* code)
       else if(!sym.str.compare("end"))
       {
         scope -= 1;
-        continue;
+        if(scope == 0)
+          continue;
+        sym.type = DAT_STATEMENT;
       }
-    }   
+      else if(!sym.str.compare("if"))
+      {
+        scope += 1;
+        sym.type = DAT_STATEMENT;
+      }
+    }
     
     //Special Symbols
     Special_Processing(&sym);

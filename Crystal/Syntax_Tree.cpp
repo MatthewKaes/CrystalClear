@@ -88,7 +88,7 @@ bool Syntax_Node::Evaluate()
     }
   }
   
-  if(sym.type != DAT_FUNCTION && sym.type != DAT_BIFUNCTION && !evaluation)
+  if(sym.type != DAT_FUNCTION && sym.type != DAT_BIFUNCTION  && sym.type != DAT_STATEMENT && !evaluation)
     return true;
 
   new_code.code_gen = Resolve_Genorator(&sym);
@@ -108,7 +108,7 @@ bool Syntax_Node::Evaluate()
   }
   if(sym.type == DAT_STATEMENT)
   {
-    if(!sym.str.compare("return"))
+    if(!sym.str.compare("return") || !sym.str.compare("if"))
       Force_Memory(&new_code);
   }
 

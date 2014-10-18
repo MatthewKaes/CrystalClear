@@ -54,13 +54,13 @@ bool is_number(char object)
 void Create_Symbol(const char** stream, Crystal_Data* sym)
 {
   sym->str.clear();
-  while(**stream == ' ')
+  while(**stream == '\t' || **stream == ' ')
   {
     (*stream)++;
   }
   if(**stream != '\"')
   {
-    while(**stream != ' ' && **stream != 0)
+    while(**stream != '\t' && **stream != ' ' && **stream != 0)
     {
       sym->str.push_back(**stream);
       (*stream)++;
