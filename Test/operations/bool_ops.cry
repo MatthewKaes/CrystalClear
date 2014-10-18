@@ -1,0 +1,14 @@
+#Simple crystal code for testing
+
+def booleans()
+  print_color("And testing:", 11)
+  print(1 && 2)
+  print(15 && 0)
+  y = "text"
+  print(x && y)
+  x = 32.9
+  print(x && y)
+  y = x
+  print((obscure_nil == nil) && (x == y))
+  print(obscure_nil && nil)
+end

@@ -2,6 +2,7 @@
 #include "Lexicon.h"
 #include "Obscure.h"
 #include "Helper.h"
+#include "Function.h"
 
 int CRY_ARG::poolindex = 0;
 char CRY_ARG::strpool[STRING_POOL] = {0};
@@ -1222,6 +1223,27 @@ void Crystal_Compiler::PowC(unsigned dest, CRY_ARG const_, bool left)
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
+}
+void Crystal_Compiler::And(unsigned dest, unsigned source, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+  Push(source);
+  Push(dest);
+  Machine->Call(Crystal_And);
+  Pop(2);
+  Machine->Mov(offset_dest - DATA_LOWER, EAX);
+  Runtime_Resovle(dest, CRY_BOOL);
+}
+void Crystal_Compiler::AndC(unsigned dest, CRY_ARG const_, bool left)
+{
+  unsigned offset_dest = stack_size - dest * VAR_SIZE;
+  Load(Addr_Reg(stack_depth), const_);
+  Push(Addr_Reg(stack_depth));
+  Push(dest);
+  Machine->Call(Crystal_And);
+  Pop(2);
+  Machine->Mov(offset_dest - DATA_LOWER, EAX);
+  Runtime_Resovle(dest, CRY_BOOL);
 }
 void Crystal_Compiler::Eql(unsigned dest, unsigned source, bool left)
 {

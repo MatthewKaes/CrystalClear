@@ -26,11 +26,20 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
       return Swap_Gen;
     else
       return Less_Equal_Gen;
+    break;
   case '>':
     if(sym->str.c_str()[1] == '\0')
       return Greater_Gen;
     else
       return Greater_Equal_Gen;
+    break;
+  case '&':
+    switch(sym->str.c_str()[1])
+    {
+    case '&':
+      return And_Gen;
+    }
+    break;
   case '=':
     switch(sym->str.c_str()[1])
     {
@@ -39,44 +48,50 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
     case '=':
       return Equal_Gen;
     }
-    return Null_Gen;
+    break;
   case '!':
     switch(sym->str.c_str()[1])
     {
     case '=':
       return Diffrent_Gen;
     }
-    return Null_Gen;
+    break;
   case '+':
     if(sym->str.c_str()[1] == '=')
       return Additive_Gen;
     else
       return Addition_Gen;
+    break;
   case '-':
     if(sym->str.c_str()[1] == '=')
       return Subtractive_Gen;
     else
       return Subtraction_Gen;
+    break;
   case '*':
     if(sym->str.c_str()[1] == '=')
       return Multiplicative_Gen;
     else
       return Multiplication_Gen;
+    break;
   case '/':
     if(sym->str.c_str()[1] == '=')
       return Divisional_Gen;
     else
       return Division_Gen;
+    break;
   case '%':
     if(sym->str.c_str()[1] == '=')
       return Remainder_Gen;
     else
       return Modulo_Gen;
+    break;
   case '^':
     if(sym->str.c_str()[1] == '=')
       return Exponent_Gen;
     else
       return Power_Gen;
+    break;
   }
   return Null_Gen;
 }

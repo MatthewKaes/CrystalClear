@@ -1,4 +1,4 @@
-#include "Crystal_Math.h"
+#include "Math.h"
 #include "Helper.h"
 
 void Crystal_Cos(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)

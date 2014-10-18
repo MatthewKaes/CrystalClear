@@ -1,6 +1,6 @@
 #include "Interpreter.h"
 #include "Library.h"
-#include "Crystal_Math.h"
+#include "Math.h"
 #include <stdio.h>
 
 #define BUFFER_SIZE 0x8000
@@ -147,10 +147,10 @@ void Crystal_Interpreter::Format_Code()
       {
         code_out.push_back(*code_ptr++);
       }
-    case '=':   
-    case '>':    
+    case '=':    
     case '|':
-    case '&':
+    case '&':   
+    case '>':
     case '+':
     case '-':
     case '*':

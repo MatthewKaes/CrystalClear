@@ -1,12 +1,11 @@
 #Simple crystal code for testing
 
 def main()
-  x = 180
-  x += x *= x %= 7
-  print(x)
-  print(x %= x)
-  print(x)
-  input
+  print_color("Boolean operations", 14)
+  booleans()
+  print("")
+  
+  print_color("Standard operations", 14)
   print_color("Additive Operations:", 11)
   x = 2
   x += 2.5 + x
@@ -32,8 +31,8 @@ def main()
   print(y)
   
   print_color("Division Operations:", 11)
-  y = 10
-  y /= 10
+  y = 110
+  y /= 11
   print(y)
   #integer division
   num = 80
@@ -67,7 +66,7 @@ def main()
   flag = 1.5
   print("World" == flag)
   flag2 = 1.5
-  print(obscure_nil != 2.4)
+  print(obscure_val != 2.4)
   print_color("Less Operations:", 10)
   print(2 < 4)
   x = 7.5
@@ -99,6 +98,9 @@ def main()
   
   return "Done"
 end
-def obscure_nil()
+def obscure_val()
   return 2.5
+end
+def obscure_nil()
+  return nil
 end

@@ -27,7 +27,7 @@ int Parse_Int(Crystal_Symbol* sym)
   }
   return 0;
 }
-bool Parse_Bool(Crystal_Symbol* sym)
+int Parse_Bool(Crystal_Symbol* sym)
 {
   if(sym->type == CRY_NIL)
     return 0;

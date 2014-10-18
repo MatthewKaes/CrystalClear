@@ -71,6 +71,10 @@ bool Power_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal
 {
   PREFORM_OPERATION(Pow);
 }
+bool And_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  PREFORM_OPERATION(And);
+}
 bool Equal_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Eql);
