@@ -218,7 +218,7 @@ void Crystal_Interpreter::Lookup_Packages()
       Create_Symbol(&ptr, &sym); 
       while(sym.str[0] != '\n')
       {
-        if(sym.str[0] != '(' && sym.str[0] != ')')
+        if(sym.str[0] != '(' && sym.str[0] != ')' && sym.str[0] != ',')
         {
           new_package.info.arguments++;
         }
@@ -256,7 +256,7 @@ void Crystal_Interpreter::Process_Package(const char* code)
   Create_Symbol(&package_code, &sym);
   while(sym.str[0] != '\n')
   {
-    if(sym.str[0] != '(' && sym.str[0] != ')')
+    if(sym.str[0] != '(' && sym.str[0] != ')' && sym.str[0] != ',')
     {
       unsigned index = local_map.size();
       local_map[sym.str] = index;

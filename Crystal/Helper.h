@@ -10,6 +10,8 @@ void Parse_String(Crystal_Symbol* sym, std::string* str);
 
 bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr);
 
+void Stack_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from);
+
 void Power_Syms(Crystal_Symbol* syml, Crystal_Symbol* symr);
 void Power_SymsR(Crystal_Symbol* syml, Crystal_Symbol* symr);
 

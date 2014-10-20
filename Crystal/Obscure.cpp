@@ -4,23 +4,33 @@
 
 void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
-  if(dest->type == CRY_NIL || source->type == CRY_NIL)
-  {
-    dest->type = CRY_NIL;
-    return;
-  }
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
   case CRY_BOOL:
     dest->b = dest->b || source->b;
     dest->type = resolve;
+    if(dest->type == CRY_NIL || source->type == CRY_NIL)
+    {
+      dest->type = CRY_NIL;
+      return;
+    }
     return;
   case CRY_INT:
     dest->i32 = dest->i32 + source->i32;
-    dest->type = resolve;
+    dest->type = resolve;    
+    if(dest->type == CRY_NIL || source->type == CRY_NIL)
+    {
+      dest->type = CRY_NIL;
+      return;
+    }
     return;
-  case CRY_DOUBLE:
+  case CRY_DOUBLE:    
+    if(dest->type == CRY_NIL || source->type == CRY_NIL)
+    {
+      dest->type = CRY_NIL;
+      return;
+    }
     if(dest->type != CRY_DOUBLE)
     {
       dest->d = dest->i32 + source->d;
@@ -410,23 +420,33 @@ void Obscure_Greater_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 //Reversals
 void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
-  if(dest->type == CRY_NIL || source->type == CRY_NIL)
-  {
-    dest->type = CRY_NIL;
-    return;
-  }
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
-  case CRY_BOOL:
+  case CRY_BOOL:    
+    if(dest->type == CRY_NIL || source->type == CRY_NIL)
+    {
+      dest->type = CRY_NIL;
+      return;
+    }
     dest->b = dest->b || source->b;
     dest->type = resolve;
     return;
-  case CRY_INT:
+  case CRY_INT:    
+    if(dest->type == CRY_NIL || source->type == CRY_NIL)
+    {
+      dest->type = CRY_NIL;
+      return;
+    }
     dest->i32 = dest->i32 + source->i32;
     dest->type = resolve;
     return;
-  case CRY_DOUBLE:
+  case CRY_DOUBLE:    
+    if(dest->type == CRY_NIL || source->type == CRY_NIL)
+    {
+      dest->type = CRY_NIL;
+      return;
+    }
     if(dest->type != CRY_DOUBLE)
     {
       dest->d = dest->i32 + source->d;
@@ -445,6 +465,9 @@ void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
   case CRY_STRING:
     Crystal_Text_AppendR(dest, source);
     dest->type = CRY_STRING;
+    return;
+  default:
+    dest->type = CRY_NIL;
     return;
   }
 }

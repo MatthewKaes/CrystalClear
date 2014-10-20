@@ -384,6 +384,12 @@ void x86_Machine::Push_Adr(unsigned address)
   *p++ = REG_PSH; 
   pushed_bytes += BYTES_4;   
 }
+void x86_Machine::Push_Stk(unsigned address)
+{
+  Mov(EAX, two_complement_32(address));
+  *p++ = REG_PSH; 
+  pushed_bytes += BYTES_4;   
+}
 void x86_Machine::Push_LD(unsigned address, ARG_TYPES type)
 {
   switch(type)
@@ -706,15 +712,31 @@ unsigned x86_Machine::Reg_Id(REGISTERS reg)
 } 
 void x86_Machine::Reg_Op(unsigned address, REGISTERS source)
 {
+  bool t_comp = true;
+  if(address > 0x80000000)
+  {
+    address = 0xFFFFFFFF - address + 1;
+    t_comp = false;
+  }
   if(address < ADDER_S)
   {
     *p++ = source - WORD_VARIANT;
-    *p++ = two_complement_8(address);
+    if(t_comp)
+      *p++ = two_complement_8(address);
+    else
+      *p++ = static_cast<unsigned char>(address);
   }
   else
   {
     *p++ = source;
-    (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
+    if(t_comp)
+    {
+      (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
+    }
+    else
+    {
+      (int&)p[0] = address; p+= sizeof(int);
+    }
   }
 }
 void x86_Machine::Put_Addr(unsigned addr, int op_offset)

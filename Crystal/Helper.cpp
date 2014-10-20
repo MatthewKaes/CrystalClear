@@ -104,6 +104,19 @@ bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr)
   }
   return true;
 }
+void Stack_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from)
+{
+  if(sym_from->type == CRY_STRING)
+  {
+    sym_stack->size = sym_from->size;
+    sym_stack->text = sym_from->ptr.str;
+    sym_from->type = CRY_TEXT;
+    return;
+  }
+  sym_stack->i64 = sym_from->i64;
+  sym_stack->ptr = sym_from->ptr;
+  sym_stack->type = sym_from->type;
+}
 void Power_Syms(Crystal_Symbol* syml, Crystal_Symbol* symr)
 {
   double l = syml->type == CRY_DOUBLE ? syml->d : syml->i32;

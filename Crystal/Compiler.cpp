@@ -70,6 +70,15 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   Machine->Allocate_Stack(stack_size);
   states.resize(locals_count + stack_depth + 1);
   
+  for(unsigned i = 0; i < arguments; i++)
+  {
+    Machine->Push_Stk(i * 4 + 0x14);
+    Push(i);
+    Call(Stack_Copy);
+    Pop(2);
+    states[i].Obscurity();
+  }
+
   //tidy up lookup data.
   lookups.clear();
 }

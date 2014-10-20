@@ -3,7 +3,7 @@ def main()
   start_time = time()
   print("\nTiming Test using Standard Operations:")
   while(val)
-    val = val - 1
+    val -= 1
   end
   print(((time() - start_time) / 1000.0) + " seconds")
   input

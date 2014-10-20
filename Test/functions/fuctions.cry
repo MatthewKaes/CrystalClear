@@ -1,0 +1,32 @@
+def main()
+  x = 5
+  print_color("Calling Single Variable Function:", 11)
+  print_var(x)
+  print_color("Calling Multi Variable Function:", 11)
+  y = "Hello"
+  z = 80.8
+  print_vars(x, y, z)
+  print_color("Calling Fuction with Constants:", 11)
+  print_vars("var1", nil, true)
+  print_color("Fuction value testing", 11)
+  test_value(true, false)
+end
+
+def print_var(x)
+  print("x: " + x)
+end
+
+def print_vars(x, y, z)
+  print("x: " + x)
+  print("y: " + y)
+  print("z: " + z)
+end
+
+def test_value(bool, bad_bool)
+  if(bool)
+    print("CORRECT")
+  end
+  if(bad_bool == false)
+    print("CORRECT")
+  end
+end
