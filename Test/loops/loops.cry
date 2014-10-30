@@ -5,6 +5,6 @@ def main()
   x = 100
   while(x)
     print(x)
-	x -= 5
+    x -= 5
   end
 end
