@@ -104,4 +104,9 @@ int main(int argc, const char **argv)
 #if INCLUDE_PYTHON
   Py_Finalize();
 #endif
+  //Free extensions
+  for(unsigned i = 0; i < Crystal_Interpreter::Extension_Libs.size(); i++)
+  {
+    FreeLibrary(Crystal_Interpreter::Extension_Libs[i]);
+  }
 }

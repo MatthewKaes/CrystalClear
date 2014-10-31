@@ -2,6 +2,7 @@
 #include "Library.h"
 #include "Math.h"
 #include <stdio.h>
+#include <boost\filesystem.hpp>
 
 #define BUFFER_SIZE 0x8000
 
@@ -11,6 +12,10 @@
   new_package.info.arguments = Args; \
   new_package.function = Func; \
   built_in[#Name] = new_package; } 
+
+typedef int (*CRY_EXPORT)(std::unordered_map<std::string, Package_Info>*);
+
+std::vector<HINSTANCE> Crystal_Interpreter::Extension_Libs;
 
 Crystal_Interpreter::Crystal_Interpreter(Crystal_Compiler* compiler)
 {
@@ -38,6 +43,31 @@ void Crystal_Interpreter::Populate_BIP()
 
   //Hooks to other langauges
   REGISTER_FUNCTION(python, Crystal_Python, 1);
+
+  //Load extensions
+  boost::filesystem::path extensions("Extensions");
+  if(boost::filesystem::exists(extensions) && boost::filesystem::is_directory(extensions))
+  {
+    for (boost::filesystem::directory_iterator it(extensions); it != boost::filesystem::directory_iterator(); ++it)
+    {
+      if(boost::filesystem::is_regular_file(it->path()))
+      {
+        if(!it->path().extension().compare(std::string(".dll")))
+        {
+          wchar_t name[256];
+          mbstowcs( name, it->path().string().c_str(), it->path().string().length());
+          name[it->path().string().length()] = 0;
+          HINSTANCE Crystal_Lib = LoadLibrary(name);
+          CRY_EXPORT import = (CRY_EXPORT)GetProcAddress(Crystal_Lib, "CrystalExports");
+          //Call the CrystalExports function which contains all the REGISTER_FUNCTION
+          //calls that builds up the built_in object;
+          import(&built_in);
+          //Add the library to save it
+          Extension_Libs.push_back(Crystal_Lib);
+        }
+      }
+    }
+  }
 }
 void Crystal_Interpreter::Cache_Code(const char* filename)
 {

@@ -14,18 +14,9 @@ public:
   void Cache_Code(const char* filename);
   void Interpret();
 
+  static std::vector<HINSTANCE> Extension_Libs;
+
 private:
-
-  enum PACKAGE_TYPE { PGK_EXE, PGK_OBJ };
-
-  struct Package_Info {
-    PACKAGE_TYPE pt;
-    union{
-      unsigned attributes;
-      unsigned arguments;
-    } info;
-    void* function;
-  };
 
   //Hidden constructor
   Crystal_Interpreter();
