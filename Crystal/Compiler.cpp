@@ -215,8 +215,8 @@ void Crystal_Compiler::While(unsigned var)
   unsigned offset_dest = stack_size - var * VAR_SIZE;
   CryLookup new_lookup;
   //setup lookups
-  new_lookup.corruptions.reserve(locals_count + stack_depth);
-  for(unsigned i = 0; i < (locals_count + stack_depth); i++)
+  new_lookup.corruptions.reserve(locals_count + stack_depth + 1);
+  for(unsigned i = 0; i < (locals_count + stack_depth + 1); i++)
   {
     new_lookup.corruptions.push_back(false);
   }
@@ -224,7 +224,7 @@ void Crystal_Compiler::While(unsigned var)
   new_lookup.lable_id = Machine->Reserve_Label();
   //While procedure
   Machine->Make_Label(new_lookup.loop_back_lable);
-  if(!(states[var].Test(CRY_NIL) && states[var].Size()))
+  if(!(states[var].Test(CRY_NIL) && states[var].Size() == 1))
   {
     Machine->Cmp(offset_dest - DATA_LOWER, 0);
     Machine->Je(new_lookup.lable_id);
@@ -241,15 +241,15 @@ void Crystal_Compiler::If(unsigned var)
   unsigned offset_dest = stack_size - var * VAR_SIZE;
   CryLookup new_lookup;
   //setup lookups
-  new_lookup.corruptions.reserve(locals_count + stack_depth);
-  for(unsigned i = 0; i < (locals_count + stack_depth); i++)
+  new_lookup.corruptions.reserve(locals_count + stack_depth + 1);
+  for(unsigned i = 0; i < (locals_count + stack_depth + 1); i++)
   {
     new_lookup.corruptions.push_back(false);
   }
   new_lookup.loop_back_lable = -1;
   new_lookup.lable_id = Machine->Reserve_Label();
   //IF procedure
-  if(!(states[var].Test(CRY_NIL) && states[var].Size()))
+  if(!(states[var].Test(CRY_NIL) && states[var].Size() == 1))
   {
     Machine->Cmp(offset_dest - DATA_LOWER, 0);
     Machine->Je(new_lookup.lable_id);
@@ -336,10 +336,11 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
       }
       //Copy over if we are currently a string.
       Machine->Mov(EBX, offset_source - DATA_LOWER);
+      Machine->Inc(EBX);
       Machine->Push(EBX);
       Machine->Call(malloc);
       Machine->Pop(4);
-      Machine->Strcpy(EAX, offset_source - DATA_PNTR, offset_source - DATA_LOWER);
+      Machine->Strcpy(EAX, offset_source - DATA_PNTR, offset_source - DATA_LOWER, false, true);
       Machine->Mov(offset_dest - DATA_PNTR, EAX);
       Machine->Mov(offset_dest - DATA_LOWER, EBX);
       //Create end label for jumping

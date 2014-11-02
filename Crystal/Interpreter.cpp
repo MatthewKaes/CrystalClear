@@ -43,9 +43,36 @@ void Crystal_Interpreter::Populate_BIP()
 
   //Hooks to other langauges
   REGISTER_FUNCTION(python, Crystal_Python, 1);
-
+  
+#if _DEBUG
+  //Load extensions
+  //Get the debug version of the dll.
+  boost::filesystem::path externals("Extensions\\Debug\\External");
+#else
+  //Load extensions
+  boost::filesystem::path externals("Extensions\\External");
+#endif
+  if(boost::filesystem::exists(externals) && boost::filesystem::is_directory(externals))
+  {
+    for (boost::filesystem::directory_iterator it(externals); it != boost::filesystem::directory_iterator(); ++it)
+    {
+      if(!it->path().extension().compare(std::string(".dll")))
+      {
+        wchar_t name[256];
+        mbstowcs( name, it->path().string().c_str(), it->path().string().length());
+        name[it->path().string().length()] = 0;
+        HINSTANCE Crystal_Lib = LoadLibrary(name);
+      }
+    }
+  }
+#if _DEBUG
+  //Load extensions
+  //Get the debug version of the dll.
+  boost::filesystem::path extensions("Extensions\\Debug");
+#else
   //Load extensions
   boost::filesystem::path extensions("Extensions");
+#endif
   if(boost::filesystem::exists(extensions) && boost::filesystem::is_directory(extensions))
   {
     for (boost::filesystem::directory_iterator it(extensions); it != boost::filesystem::directory_iterator(); ++it)
@@ -59,11 +86,14 @@ void Crystal_Interpreter::Populate_BIP()
           name[it->path().string().length()] = 0;
           HINSTANCE Crystal_Lib = LoadLibrary(name);
           CRY_EXPORT import = (CRY_EXPORT)GetProcAddress(Crystal_Lib, "CrystalExports");
-          //Call the CrystalExports function which contains all the REGISTER_FUNCTION
-          //calls that builds up the built_in object;
-          import(&built_in);
-          //Add the library to save it
-          Extension_Libs.push_back(Crystal_Lib);
+          if(import)
+          {
+            //Call the CrystalExports function which contains all the REGISTER_FUNCTION
+            //calls that builds up the built_in object;
+            import(&built_in);
+            //Add the library to save it
+            Extension_Libs.push_back(Crystal_Lib);
+          }
         }
       }
     }
@@ -156,6 +186,7 @@ void Crystal_Interpreter::Format_Code()
             code_out.push_back('\t');
             break;
           case '\\':
+            code_out.push_back('\\');
             code_out.push_back('\\');
             break;
           case '\"':

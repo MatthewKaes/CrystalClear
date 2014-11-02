@@ -53,7 +53,19 @@ void x86_Machine::Make_Label(unsigned label)
     if(walker->lab == label)
     {
       unsigned distance = l.adr - walker->adr - BYTES_1;
-      (walker->loc)[0] = distance;
+      if(static_cast<int>(distance) < ADDER_S)
+      {
+        (walker->loc)[0] = distance - 1;
+        (walker->loc)[1] = 0x90;
+        (walker->loc)[2] = 0x90;
+        (walker->loc)[3] = 0x90;
+      }
+      else
+      {  
+        *(walker->loc - 1) = *(walker->loc - 1) + 0x10;
+        *(walker->loc - 2) = 0x0F;
+        *reinterpret_cast<int*>(walker->loc) = distance - 4;
+      }
     }
     walker++;
   }
@@ -782,7 +794,15 @@ void x86_Machine::Label_Management(unsigned label)
     {
       if(walker->adr == 0)
         break;
-      *p++ = two_complement_8((unsigned)p - walker->adr + 1);
+      if(abs(static_cast<int>((unsigned)p - walker->adr + 1)) < ADDER_S)
+      {
+        *p++ = two_complement_8((unsigned)p - walker->adr + 1);
+      }
+      else
+      {
+        *(p - 1) = 0xE9;
+        (int&)p[0] = two_complement_32((unsigned)p - walker->adr + 4); p+= sizeof(int);
+      }
       return;
     }
   }
@@ -790,9 +810,20 @@ void x86_Machine::Label_Management(unsigned label)
   AOT_Var var;
   var.lab = label;
   var.adr = (unsigned)p;
-  var.loc = p;
-  cjs.push_back(var);
-  p++;
+  if(*(p - 1) != CODE_JMP)
+  {    
+    var.loc = p + 1;
+    cjs.push_back(var);
+    *p = *(p - 1);
+    *(p - 1)  = 0x90;
+    p += 1 + sizeof(int);
+  }
+  else
+  {
+    var.loc = p;
+    cjs.push_back(var);
+    p++;
+  }
 }
 int x86_Machine::Float_Address(float dec)
 {

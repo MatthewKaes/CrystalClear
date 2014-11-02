@@ -1,3 +1,15 @@
 def main()
-  export
+  #set to some absolute path to a mp3 or other music file.
+  print_color("Input absolute path to a music file", 11)
+  x = input()
+  while(x)
+    result = play_bgm(x)
+	if(result)
+		print_color("Playing: " + x, 10)
+	end
+	if(result == false)
+		print_color("Could not find or ply file: " + x, 12)
+	end
+	x = input()
+  end
 end

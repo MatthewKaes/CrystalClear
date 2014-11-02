@@ -15,6 +15,8 @@
 
 const char* CRY_ROOT = 0;
 
+typedef void (*CRY_EXPORT)();
+
 int Process_Root(Crystal_Compiler* comp, const char* rootdir)
 {
   //Set the root for other functions to use
@@ -61,7 +63,6 @@ int main(int argc, const char **argv)
 #if INCLUDE_PYTHON
   Py_Initialize();
 #endif
-
   if(argc > 1)
   {
     Crystal_Compiler comp(new x86_Machine);
@@ -106,7 +107,14 @@ int main(int argc, const char **argv)
 #endif
   //Free extensions
   for(unsigned i = 0; i < Crystal_Interpreter::Extension_Libs.size(); i++)
-  {
+  {          
+    CRY_EXPORT release = (CRY_EXPORT)GetProcAddress(Crystal_Interpreter::Extension_Libs[i], "CrystalRelease");
+    if(release)
+    {
+      //Call the CrystalRelease function which contains all
+      //of the clean up logic for the dll
+      release();
+    }
     FreeLibrary(Crystal_Interpreter::Extension_Libs[i]);
   }
 }
