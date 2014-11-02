@@ -35,7 +35,13 @@ An example snippit of how clarity filters work under the hood can be found on my
 
 Sometimes the code you are looking to write already exist or you want more control over the machine code that is produced. In these cases you can call out to C/C++ code compiled directly into the compiler or call functions from DLL files. This gives the user the ability to easily get Crystal talking to or invoking other languages.
 
-####Python
+###Clear Exports
+
+It is possible to extend the BIP (built in packages) of Crystal Clear by exporting a specially configured DLL. These DLL are automatically loaded and wired into the Interpreter. Clear Exports can manipulate Pre and Post build behavior along with execution behavior. Clear Exports allow for a "plug and play" model allowing end users to change the behavior of Crystal Clear without having to touch a bit of code. 
+
+As an exmaple, [Crystal Sound](https://github.com/MatthewKaes/CrystalSound) is a Clear Export used to wrap FMOD to bring audio functionallity to Crystal in a plugable way.
+
+###Python
 Crystal also has hooks for Python using [Boost.Python](http://www.boost.org/doc/libs/1_56_0/libs/python/doc/). If a version of python is installed and the python libraries are built for boost then scripts can be run directly from Crystal. 
 
 
