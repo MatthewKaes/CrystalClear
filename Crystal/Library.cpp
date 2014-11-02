@@ -13,11 +13,14 @@ void Crystal_Time(Crystal_Symbol* ret_sym)
 }
 void Crystal_Input(Crystal_Symbol* ret_sym)
 {
-  char* value = (char*)malloc(256);
-  scanf("%s", value);
-  std::string str(value);
+  std::string str;
+  std::getline(std::cin, str);
 
-  if(!str.compare("true") || !str.compare("false"))
+  if(!str.size())
+  {
+    ret_sym->type = CRY_NIL;
+  }
+  else if(!str.compare("true") || !str.compare("false"))
   {
     ret_sym->type = CRY_BOOL;
     ret_sym->b = str_to_b(&str);
@@ -42,8 +45,10 @@ void Crystal_Input(Crystal_Symbol* ret_sym)
     if(ret_sym->ptr.str)
       free(ret_sym->ptr.str);
     ret_sym->type = CRY_STRING;
+    char* value = (char*)malloc(str.size() + 1);
+    strcpy(value, str.c_str());
     ret_sym->ptr.str = value;
-    ret_sym->size = str.size();
+    ret_sym->size = str.size() + 1;
   }
 }
 void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbol* conversion)
