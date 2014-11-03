@@ -74,6 +74,13 @@ void Syntax_Node::Reduce()
 }
 bool Syntax_Node::Evaluate()
 {  
+  //Setup labels for loops
+  if(sym.type == DAT_STATEMENT && !sym.str.compare("while"))
+  {
+    Bytecode loop_code;
+    loop_code.code_gen = Loop_Gen;
+    tree_->Get_Bytecodes()->push_back(loop_code);
+  }
   bool evaluation = false;
   Bytecode new_code;
   for(int i = 0; i < MAX_ARGS; i++)

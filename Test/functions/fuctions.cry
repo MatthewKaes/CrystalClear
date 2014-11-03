@@ -17,7 +17,11 @@ def print_var(x)
 end
 
 def print_vars(x, y, z)
-  print("x: " + x)
+  #stacked function calls
+  while(x)
+    print_var(x)
+    x -= 1
+  end
   print("y: " + y)
   print("z: " + z)
 end

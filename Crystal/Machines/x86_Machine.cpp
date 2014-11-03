@@ -26,6 +26,9 @@ void x86_Machine::Setup(std::string name, BYTE* program)
   prg_id = name;
   call_links.clear();
 }
+BYTE* x86_Machine::Location(){
+  return p;
+}
 void x86_Machine::Make_Label(unsigned label)
 {
   AOT_Var l;

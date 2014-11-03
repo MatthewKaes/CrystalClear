@@ -47,6 +47,7 @@ CRY_ARG::CRY_ARG(Crystal_Data* sym)
 Crystal_Compiler::Crystal_Compiler(AOT_Compiler* target)
 {
   Machine = target;
+  program.load = (byte*)VirtualAllocEx( GetCurrentProcess(), 0, 1<<16, MEM_COMMIT | MEM_RESERVE , PAGE_EXECUTE_READWRITE);
 }
 
 Crystal_Compiler::~Crystal_Compiler()
@@ -57,7 +58,6 @@ Crystal_Compiler::~Crystal_Compiler()
 
 void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsigned stack_count, unsigned arguments)
 {
-  program.load = (byte*)VirtualAllocEx( GetCurrentProcess(), 0, 1<<10, MEM_COMMIT | MEM_RESERVE , PAGE_EXECUTE_READWRITE);
   Machine->Setup(name, program.load);
 
   //Local and stack depth.
@@ -93,6 +93,7 @@ void Crystal_Compiler::End_Encode()
   pack.program = program;
   packages.push_back(pack);
   package_lookup[pack.name] = pack.program;
+  program.load = Machine->Location() + 1;
 }
 void Crystal_Compiler::Linker()
 {
@@ -210,20 +211,25 @@ void Crystal_Compiler::Return()
   }
   Machine->Return();
 }
-void Crystal_Compiler::While(unsigned var)
+void Crystal_Compiler::Loop()
 {
-  unsigned offset_dest = stack_size - var * VAR_SIZE;
   CryLookup new_lookup;
   //setup lookups
   new_lookup.corruptions.reserve(locals_count + stack_depth + 1);
   for(unsigned i = 0; i < (locals_count + stack_depth + 1); i++)
   {
-    new_lookup.corruptions.push_back(false);
+    new_lookup.corruptions.push_back(true);
   }
   new_lookup.loop_back_lable = Machine->Reserve_Label();
   new_lookup.lable_id = Machine->Reserve_Label();
   //While procedure
   Machine->Make_Label(new_lookup.loop_back_lable);
+  lookups.push_back(new_lookup);
+}
+void Crystal_Compiler::While(unsigned var)
+{
+  unsigned offset_dest = stack_size - var * VAR_SIZE;
+  CryLookup new_lookup = lookups.back();
   if(!(states[var].Test(CRY_NIL) && states[var].Size() == 1))
   {
     Machine->Cmp(offset_dest - DATA_LOWER, 0);
@@ -234,7 +240,6 @@ void Crystal_Compiler::While(unsigned var)
     Machine->Cmp(offset_dest - DATA_TYPE, static_cast<char>(CRY_NIL));
     Machine->Je(new_lookup.lable_id);
   }
-  lookups.push_back(new_lookup);
 }
 void Crystal_Compiler::If(unsigned var)
 {
@@ -1756,7 +1761,7 @@ void Crystal_Compiler::LesC(unsigned dest, CRY_ARG const_, bool left)
       Machine->Load_Register(EAX, const_.num_);
       Machine->Cmp(offset_dest - DATA_LOWER, EAX);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
-      if(left)
+      if(!left)
         Machine->Setl(offset_dest - DATA_LOWER);
       else
         Machine->Setg(offset_dest - DATA_LOWER);
@@ -1869,7 +1874,7 @@ void Crystal_Compiler::LesEqlC(unsigned dest, CRY_ARG const_, bool left)
       Machine->Load_Register(EAX, const_.num_);
       Machine->Cmp(offset_dest - DATA_LOWER, EAX);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
-      if(left)
+      if(!left)
         Machine->Setle(offset_dest - DATA_LOWER);
       else
         Machine->Setge(offset_dest - DATA_LOWER);
@@ -1982,7 +1987,7 @@ void Crystal_Compiler::GtrC(unsigned dest, CRY_ARG const_, bool left)
       Machine->Load_Register(EAX, const_.num_);
       Machine->Cmp(offset_dest - DATA_LOWER, EAX);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
-      if(!left)
+      if(left)
         Machine->Setl(offset_dest - DATA_LOWER);
       else
         Machine->Setg(offset_dest - DATA_LOWER);
@@ -1998,7 +2003,7 @@ void Crystal_Compiler::GtrC(unsigned dest, CRY_ARG const_, bool left)
         Machine->FPU_Loadd(offset_dest - DATA_LOWER);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
       Machine->FPU_Cmp();
-      if(!left)
+      if(left)
         Machine->Setb(offset_dest - DATA_LOWER);
       else
         Machine->Seta(offset_dest - DATA_LOWER);
@@ -2095,7 +2100,7 @@ void Crystal_Compiler::GtrEqlC(unsigned dest, CRY_ARG const_, bool left)
       Machine->Load_Register(EAX, const_.num_);
       Machine->Cmp(offset_dest - DATA_LOWER, EAX);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
-      if(!left)
+      if(left)
         Machine->Setle(offset_dest - DATA_LOWER);
       else
         Machine->Setge(offset_dest - DATA_LOWER);
@@ -2111,7 +2116,7 @@ void Crystal_Compiler::GtrEqlC(unsigned dest, CRY_ARG const_, bool left)
         Machine->FPU_Loadd(offset_dest - DATA_LOWER);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
       Machine->FPU_Cmp();
-      if(!left)
+      if(left)
         Machine->Setbe(offset_dest - DATA_LOWER);
       else
         Machine->Setae(offset_dest - DATA_LOWER);

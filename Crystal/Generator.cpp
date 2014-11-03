@@ -164,6 +164,11 @@ bool End_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_D
   target->End();
   return true;
 }
+bool Loop_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  target->Loop();
+  return true;
+}
 bool If_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   if((*syms)[0].type != DAT_LOCAL && (*syms)[0].type != DAT_REGISTRY)

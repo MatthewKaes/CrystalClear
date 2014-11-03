@@ -22,6 +22,7 @@ public:
   x86_Machine();
   //Get the hooks
   void Setup(std::string name, BYTE* program);
+  BYTE* Location();
   //Compiler info
   const char* Get_Version();
   const char* Get_Name();

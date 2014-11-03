@@ -62,6 +62,7 @@ public:
   //Get the hooks
   virtual ~AOT_Compiler(){};
   virtual void Setup(std::string name, BYTE* program) = 0;
+  virtual BYTE* Location() = 0;
   //Compiler info
   virtual const char* Get_Version() = 0;
   virtual const char* Get_Name() = 0;
