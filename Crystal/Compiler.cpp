@@ -1702,10 +1702,10 @@ void Crystal_Compiler::Les(unsigned dest, unsigned source, bool left)
     switch(resolve)
     {
     case CRY_INT:
-      Machine->Mov(EAX, offset_dest - DATA_LOWER);
+      Machine->Mov(EAX, offset_source - DATA_LOWER);
       Machine->Cmp(offset_dest - DATA_LOWER, EAX);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
-      if(left)
+      if(!left)
         Machine->Setl(offset_dest - DATA_LOWER);
       else
         Machine->Setg(offset_dest - DATA_LOWER);
@@ -1815,10 +1815,10 @@ void Crystal_Compiler::LesEql(unsigned dest, unsigned source, bool left)
     switch(resolve)
     {
     case CRY_INT:
-      Machine->Mov(EAX, offset_dest - DATA_LOWER);
+      Machine->Mov(EAX, offset_source - DATA_LOWER);
       Machine->Cmp(offset_dest - DATA_LOWER, EAX);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
-      if(left)
+      if(!left)
         Machine->Setle(offset_dest - DATA_LOWER);
       else
         Machine->Setge(offset_dest - DATA_LOWER);
@@ -1928,10 +1928,10 @@ void Crystal_Compiler::Gtr(unsigned dest, unsigned source, bool left)
     switch(resolve)
     {
     case CRY_INT:
-      Machine->Mov(EAX, offset_dest - DATA_LOWER);
+      Machine->Mov(EAX, offset_source - DATA_LOWER);
       Machine->Cmp(offset_dest - DATA_LOWER, EAX);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
-      if(!left)
+      if(left)
         Machine->Setl(offset_dest - DATA_LOWER);
       else
         Machine->Setg(offset_dest - DATA_LOWER);
@@ -2041,10 +2041,10 @@ void Crystal_Compiler::GtrEql(unsigned dest, unsigned source, bool left)
     switch(resolve)
     {
     case CRY_INT:
-      Machine->Mov(EAX, offset_dest - DATA_LOWER);
+      Machine->Mov(EAX, offset_source - DATA_LOWER);
       Machine->Cmp(offset_dest - DATA_LOWER, EAX);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
-      if(!left)
+      if(left)
         Machine->Setle(offset_dest - DATA_LOWER);
       else
         Machine->Setge(offset_dest - DATA_LOWER);
