@@ -81,6 +81,7 @@
 #define FPU_LOAD_VAR 0x45
 #define FPU_STORE 0x55
 #define FPU_PUSH 0x5D
+#define FPU_FSTP 0x5D
 #define FPU_ADD 0xC0
 #define FPU_MUL 0xC8
 #define FPU_SQRT 0xC8

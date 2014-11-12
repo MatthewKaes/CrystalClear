@@ -252,10 +252,6 @@ void l_to_str(__int64 object, std::string* value)
 }
 void d_to_str(double object, std::string* value)
 {    
-  //FPU overload?
-  __asm {
-    finit
-  }
   value->clear();  
   if(object < 0.000000001 && object > -0.000000001)
   {

@@ -906,7 +906,7 @@ void x86_Machine::FPU_Loadi(unsigned address)
 void x86_Machine::FPU_Store(unsigned address)
 {
   *p++ = FPU_DOUBLE_OP;
-  Put_Addr(address, FPU_STORE);
+  Put_Addr(address, FPU_FSTP);
 }
 void x86_Machine::FPU_Cmp(FPU_REGISTERS reg)
 {
