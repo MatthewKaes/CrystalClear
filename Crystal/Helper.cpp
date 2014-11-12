@@ -113,9 +113,17 @@ void Stack_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from)
     sym_from->type = CRY_TEXT;
     return;
   }
-  sym_stack->i64 = sym_from->i64;
-  sym_stack->ptr = sym_from->ptr;
-  sym_stack->type = sym_from->type;
+  else
+  {
+    sym_stack->i64 = sym_from->i64;
+    sym_stack->ptr = sym_from->ptr;
+    sym_stack->type = sym_from->type;
+    //Up ref count for symbols that need it.
+    if(sym_stack->type >= CRY_ARRAY)
+    {
+      sym_stack->ptr.sym->ref_cnt += 1;
+    }
+  }
 }
 void Power_Syms(Crystal_Symbol* syml, Crystal_Symbol* symr)
 {

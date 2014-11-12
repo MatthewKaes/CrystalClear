@@ -38,6 +38,8 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(rand, Crystal_Rand, 1);
   REGISTER_FUNCTION(time, Crystal_Time, 0);
   REGISTER_FUNCTION(input, Crystal_Input, 0);
+
+  //Math
   REGISTER_FUNCTION(cos, Crystal_Cos, 1);
   REGISTER_FUNCTION(sin, Crystal_Sin, 1);
 

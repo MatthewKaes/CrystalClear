@@ -13,6 +13,9 @@
 //Crystal Constants
 #define STRING_POOL 0xFFFF
 #define STACK_RESERVE 0xFF
+//Return Address should be the side of a symbol
+//This allows us to have cache alignment on the stack.
+//(stack frames are always multiples of 16)
 #define RETURN_ADDRESS 0x10
 #define CRY_NULL static_cast<unsigned>(-1)
 

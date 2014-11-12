@@ -1012,3 +1012,25 @@ void x86_Machine::Strcpy(REGISTERS dest, unsigned address, int length, bool raw_
   *p++ = REP;
   *p++ = MOVSB;
 }
+void x86_Machine::RefAdd()
+{
+  //Basic process to up the refcounter assuming eax
+  //has the address of the Crystal_Symbol and cx contains
+  //The value to add.
+  //asm equiv: add word ptr [eax+2],cx
+  *p++ = 0x66;
+  *p++ = 0x01;
+  *p++ = 0x48;
+  *p++ = 0x02;
+}
+void x86_Machine::RefCheck()
+{
+  //Basic process to check the refcounter assuming eax
+  //has the address of the Crystal_Symbol.
+  //asm equiv: cmp byte ptr [eax+2],0
+  *p++ = 0x80;
+  *p++ = 0x78;
+  *p++ = 0x02;
+  *p++ = 0x00;
+  
+}

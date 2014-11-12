@@ -174,6 +174,9 @@ public:
   // Special Functions
   //--------------------------
   virtual void Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address = false, bool extra_byte = false) = 0;
+  virtual void RefAdd() = 0;
+  virtual void RefCheck() = 0;
+  
   
   //--------------------------
   // Memory Functions

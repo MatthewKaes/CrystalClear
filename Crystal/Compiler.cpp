@@ -353,6 +353,19 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
       {
         Machine->Make_Label(label);
       }
+    }    
+    //Refrence counting for copies.
+    if(states[source].Order(CRY_ARRAY))
+    {
+      unsigned ref_label = Machine->Reserve_Label();
+      //Check if we need to ref count
+      Machine->Cmp(offset_source - DATA_TYPE, static_cast<int>(CRY_ARRAY));
+      Machine->Jl(ref_label);
+      //Add one to the ref count
+      Machine->Mov(EAX, offset_dest - DATA_PNTR);
+      Machine->Load_Register(ECX, 0x01);
+      Machine->RefAdd();
+      Machine->Make_Label(ref_label);
     }
   }
   Machine->Mov(EAX, offset_source - DATA_TYPE, true);
@@ -364,6 +377,8 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
 }
 void Crystal_Compiler::Swap(unsigned dest, unsigned source)
 {  
+  //It should be noted that no refrence counters are changed
+  //during a sawp as compared to 
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
@@ -383,7 +398,6 @@ void Crystal_Compiler::Swap(unsigned dest, unsigned source)
   
   if(states[dest].Order(CRY_STRING) || states[source].Order(CRY_STRING))
   {
-    Garbage_Collection(dest);
     Machine->Mov(EAX, offset_source - DATA_PNTR);
     Machine->Mov(EBX, offset_dest - DATA_PNTR);
     Machine->Mov(offset_dest - DATA_PNTR, EAX);
@@ -1948,7 +1962,7 @@ void Crystal_Compiler::Gtr(unsigned dest, unsigned source, bool left)
         Machine->FPU_Loadd(offset_dest - DATA_LOWER);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
       Machine->FPU_Cmp();
-      if(!left)
+      if(left)
         Machine->Setb(offset_dest - DATA_LOWER);
       else
         Machine->Seta(offset_dest - DATA_LOWER);
@@ -2061,7 +2075,7 @@ void Crystal_Compiler::GtrEql(unsigned dest, unsigned source, bool left)
         Machine->FPU_Loadd(offset_dest - DATA_LOWER);
       Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
       Machine->FPU_Cmp();
-      if(!left)
+      if(left)
         Machine->Setbe(offset_dest - DATA_LOWER);
       else
         Machine->Setae(offset_dest - DATA_LOWER);
@@ -2184,9 +2198,34 @@ void Crystal_Compiler::Garbage_Collection(unsigned var)
   if(states[var].Collection())
   {
     unsigned offset_dest = stack_size - var * VAR_SIZE;
-    unsigned label = Machine->New_Label();
+    unsigned label = Machine->Reserve_Label();
+    //Early exit if we don't have any data to collect
     Machine->Cmp(offset_dest - DATA_PNTR, 0);
     Machine->Je(label);
+    //Ref counter handling
+    //(Arrays or higher order)
+    if(states[var].Order(CRY_ARRAY))
+    {
+      unsigned ref_label = Machine->Reserve_Label();
+      //Check if we need to ref count
+      Machine->Cmp(offset_dest - DATA_TYPE, static_cast<int>(CRY_ARRAY));
+      Machine->Jl(ref_label);
+      //Sub one form the ref count
+      Machine->Mov(EAX, offset_dest - DATA_PNTR);
+      Machine->Load_Register(ECX, 0xFFFF);
+      Machine->RefAdd();
+      //Test for cleanup
+      Machine->RefCheck();
+      Machine->Jne(label);
+      //Push the pointer unto the stack and free it.
+      Machine->Push(EAX);
+      Machine->Call(free);
+      Machine->Load_Mem(offset_dest - DATA_PNTR, 0);
+      //Exit cleanup
+      Machine->Jmp(label);
+      Machine->Make_Label(ref_label);
+    }
+    //Standard clean up code (strings)
     Machine->Mov(EAX, offset_dest - DATA_PNTR);
     Machine->Push(EAX);
     Call(free);
