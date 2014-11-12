@@ -345,7 +345,7 @@ void Crystal_Const_Append_T(Crystal_Symbol* symd, const char* str, unsigned leng
 }
 void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned length)
 {  
-  std::string val_left("0xffcc");
+  std::string val_left;
   Parse_String(symd, &val_left);
 
   char* new_buffer = static_cast<char*>(malloc(val_left.size() + length + 1));

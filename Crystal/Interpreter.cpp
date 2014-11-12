@@ -13,7 +13,9 @@
   new_package.function = Func; \
   built_in[#Name] = new_package; } 
 
-typedef int (*CRY_EXPORT)(std::unordered_map<std::string, Package_Info>*);
+typedef int (*CRY_EXPORT)(std::unordered_map<std::string, Package_Info>*, const char*);
+
+extern const char* CRY_ROOT;
 
 std::vector<HINSTANCE> Crystal_Interpreter::Extension_Libs;
 
@@ -92,7 +94,7 @@ void Crystal_Interpreter::Populate_BIP()
           {
             //Call the CrystalExports function which contains all the REGISTER_FUNCTION
             //calls that builds up the built_in object;
-            import(&built_in);
+            import(&built_in, CRY_ROOT);
             //Add the library to save it
             Extension_Libs.push_back(Crystal_Lib);
           }

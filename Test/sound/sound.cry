@@ -1,6 +1,6 @@
 def main()
   #set to some absolute path to a mp3 or other music file.
-  print_color("Input absolute path to a music file", 11)
+  print_color("Input absolute or relative path to a music file", 11)
   x = input()
   while(x)
     result = play_bgm(x)

@@ -92,11 +92,8 @@ def main()
   
   print_color("Swap Operations:", 14)
   x = "New " + "string"
-  y = 10.54
+  y = 10.546
   print("x: " + x)
-  print(x)
-  print(y)
-  print(y)
   print("y: " + y + "\n")
   x <> y
   print("x: " + x)
