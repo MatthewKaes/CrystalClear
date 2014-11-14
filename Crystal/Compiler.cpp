@@ -329,6 +329,10 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
       Machine->Mov(EAX, offset_source - DATA_UPPER);
       Machine->Mov(offset_dest - DATA_UPPER, EAX);
     }
+    if(states[dest].Order(CRY_STRING))
+    {
+      Garbage_Collection(dest);
+    }
     if(states[source].Test(CRY_STRING))
     {
       unsigned label = Machine->New_Label();
@@ -362,7 +366,8 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
       Machine->Cmp(offset_source - DATA_TYPE, static_cast<int>(CRY_ARRAY));
       Machine->Jl(ref_label);
       //Add one to the ref count
-      Machine->Mov(EAX, offset_dest - DATA_PNTR);
+      Machine->Mov(EAX, offset_source - DATA_PNTR);
+      Machine->Mov(offset_dest - DATA_PNTR, EAX);
       Machine->Load_Register(ECX, 0x01);
       Machine->RefAdd();
       Machine->Make_Label(ref_label);
