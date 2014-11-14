@@ -59,9 +59,12 @@ void x86_Machine::Make_Label(unsigned label)
       if(static_cast<int>(distance) < ADDER_S)
       {
         (walker->loc)[0] = distance - 1;
-        (walker->loc)[1] = 0x90;
-        (walker->loc)[2] = 0x90;
-        (walker->loc)[3] = 0x90;
+        if(*(walker->loc - 1) != CODE_JMP)
+        {    
+          (walker->loc)[1] = 0x90;
+          (walker->loc)[2] = 0x90;
+          (walker->loc)[3] = 0x90;
+        }
       }
       else
       {  

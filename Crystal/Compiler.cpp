@@ -230,16 +230,19 @@ void Crystal_Compiler::While(unsigned var)
 {
   unsigned offset_dest = stack_size - var * VAR_SIZE;
   CryLookup new_lookup = lookups.back();
-  if(!(states[var].Test(CRY_NIL) && states[var].Size() == 1))
+  //Loops have to obscure all their symbols because we don't know what state they
+  //will be in when we jump back
+  for(unsigned i = 0; i < (locals_count + stack_depth + 1); i++)
   {
-    Machine->Cmp(offset_dest - DATA_LOWER, 0);
-    Machine->Je(new_lookup.lable_id);
+    states[i].Obscurity();
   }
-  if(states[var].Test(CRY_NIL))
-  {
-    Machine->Cmp(offset_dest - DATA_TYPE, static_cast<char>(CRY_NIL));
-    Machine->Je(new_lookup.lable_id);
-  }
+  //No special checking because a symbol could be nil or whatever
+  //at any possible time.
+  Machine->Cmp(offset_dest - DATA_LOWER, 0);
+  Machine->Je(new_lookup.lable_id);
+  Machine->Cmp(offset_dest - DATA_TYPE, static_cast<char>(CRY_NIL));
+  Machine->Je(new_lookup.lable_id);
+  
 }
 void Crystal_Compiler::If(unsigned var)
 {
@@ -319,6 +322,10 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   unsigned offset_source = stack_size - source * VAR_SIZE;
+  if(states[dest].Order(CRY_STRING))
+  {
+    Garbage_Collection(dest);
+  }
   if(!(states[source].Size() == 1 && states[source].Test(CRY_NIL)))
   {
     Machine->Mov(EAX, offset_source - DATA_LOWER);
@@ -328,10 +335,6 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
     {
       Machine->Mov(EAX, offset_source - DATA_UPPER);
       Machine->Mov(offset_dest - DATA_UPPER, EAX);
-    }
-    if(states[dest].Order(CRY_STRING))
-    {
-      Garbage_Collection(dest);
     }
     if(states[source].Test(CRY_STRING))
     {
@@ -2223,6 +2226,7 @@ void Crystal_Compiler::Garbage_Collection(unsigned var)
       Machine->RefCheck();
       Machine->Jne(label);
       //Push the pointer unto the stack and free it.
+      Machine->Mov(EAX, offset_dest - DATA_PNTR);
       Machine->Push(EAX);
       Machine->Call(free);
       Machine->Load_Mem(offset_dest - DATA_PNTR, 0);
