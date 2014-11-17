@@ -251,6 +251,12 @@ void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   case CRY_TEXT:
   case CRY_STRING:
+    if(dest->type != source->type)
+    {
+      dest->b = false;
+      dest->type = CRY_BOOL;
+      return;
+    }
     dest->b = Fast_strcmp(dest, source);
     dest->type = CRY_BOOL;
     return;
