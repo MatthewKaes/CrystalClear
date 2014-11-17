@@ -15,17 +15,9 @@ void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
 void Crystal_Rand(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
 void Crystal_Print(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
 void Crystal_PrintColor(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbol* color);
+void Crystal_Size(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
 
 //Python
 void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
-
-
-//No BIP (built in package) functions.
-void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms);
-void Crystal_Text_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms);
-void Crystal_Text_Append_C(Crystal_Symbol* symd, const char* str, unsigned length);
-void Crystal_Text_Append_CR(Crystal_Symbol* symd, const char* str, unsigned length);
-void Crystal_Const_Append_T(Crystal_Symbol* symd, const char* str, unsigned length);
-void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned length);
 
 #endif

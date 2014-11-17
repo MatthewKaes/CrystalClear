@@ -137,3 +137,20 @@ void Power_SymsR(Crystal_Symbol* syml, Crystal_Symbol* symr)
   double r = symr->type == CRY_DOUBLE ? symr->d : symr->i32;
   syml->d = pow(r, l);
 }
+void Garbage_Collection(Crystal_Symbol* sym)
+{
+  if(sym->ptr.str != 0)
+  {
+    if(sym->type > CRY_STRING)
+    {
+      sym->ptr.sym->ref_cnt -= 1;
+      if(sym->ptr.sym->ref_cnt == 0)
+      {
+      free(sym->ptr.sym);
+      }
+    }
+    else
+      free(sym->ptr.str);
+    sym->ptr.sym = 0;
+  }
+}

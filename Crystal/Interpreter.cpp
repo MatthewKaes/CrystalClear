@@ -40,6 +40,7 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(rand, Crystal_Rand, 1);
   REGISTER_FUNCTION(time, Crystal_Time, 0);
   REGISTER_FUNCTION(input, Crystal_Input, 0);
+  REGISTER_FUNCTION(size, Crystal_Size, 1);
 
   //Math
   REGISTER_FUNCTION(cos, Crystal_Cos, 1);

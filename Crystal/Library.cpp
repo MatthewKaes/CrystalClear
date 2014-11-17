@@ -137,13 +137,12 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   std::string conv;
   //Save the expensive operation if we can!
+  Garbage_Collection(ret_sym);
   if(ret_sym->type == CRY_STRING && ret_sym == sym)
     return;
   ret_sym->type = CRY_STRING;
   if(sym->type == CRY_TEXT)
   {
-    if(ret_sym->ptr.str != 0)
-      free(ret_sym->ptr.str);
     int size = strlen(sym->text) + 1;
     ret_sym->ptr.str = static_cast<char*>(malloc(size));
     ret_sym->size = size;
@@ -166,8 +165,6 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   {
     conv.assign("nil");
   }
-  if(ret_sym->ptr.str != 0)
-    free(ret_sym->ptr.str);
   ret_sym->ptr.str = static_cast<char*>(malloc(conv.size() + 1));
   ret_sym->size = conv.size() + 1;
   strcpy(ret_sym->ptr.str, conv.c_str());
@@ -230,6 +227,23 @@ void Crystal_PrintColor(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Sy
   Crystal_Print(ret_sym, sym);
   SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
+void Crystal_Size(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  if(sym->type == CRY_STRING || sym->type == CRY_TEXT)
+  {
+    ret_sym->i32 = strlen(sym->ptr.str);
+    ret_sym->type = CRY_INT;
+  }
+  else if(sym->type == CRY_ARRAY)
+  {
+    ret_sym->i32 = sym->ptr.sym->size;
+    ret_sym->type = CRY_INT;
+  }
+  else
+  {
+    ret_sym->type = CRY_NIL;
+  }
+}
 
 #if INCLUDE_PYTHON
 #include <boost\python.hpp>
@@ -273,85 +287,3 @@ void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   ret_sym->type = CRY_NIL;
 }
 #endif
-
-
-void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)
-{
-  std::string val_left;
-  Parse_String(symd, &val_left);
-
-  std::string val_right;
-  Parse_String(syms, &val_right);
-
-  char* new_buffer = static_cast<char*>(malloc(val_left.size() + val_right.size() + 1));
-  strcpy(new_buffer, val_left.c_str());
-  strcpy(new_buffer + val_left.size(), val_right.c_str());
-  if(symd->ptr.str)
-    free(symd->ptr.str);
-  symd->ptr.str = new_buffer;
-  symd->size = val_left.size() + val_right.size() + 1;
-}
-void Crystal_Text_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
-{
-  std::string val_left;
-  Parse_String(symd, &val_left);
-
-  std::string val_right;
-  Parse_String(syms, &val_right);
-
-  char* new_buffer = static_cast<char*>(malloc(val_left.size() + val_right.size() + 1));
-  strcpy(new_buffer, val_right.c_str());
-  strcpy(new_buffer + val_right.size(), val_left.c_str());
-  if(symd->ptr.str)
-    free(symd->ptr.str);
-  symd->ptr.str = new_buffer;
-  symd->size = val_left.size() + val_right.size() + 1;
-}
-
-void Crystal_Text_Append_C(Crystal_Symbol* symd, const char* str, unsigned length)
-{
-  char* new_buffer = static_cast<char*>(malloc(symd->size + length + 1));
-  strcpy(new_buffer, symd->ptr.str);
-  strcpy(new_buffer + strlen(symd->ptr.str), str);
-
-  free(symd->ptr.str);
-
-  symd->ptr.str = new_buffer;
-  symd->size = symd->size + length;
-}
-void Crystal_Text_Append_CR(Crystal_Symbol* symd, const char* str, unsigned length)
-{
-  char* new_buffer = static_cast<char*>(malloc(symd->size + length + 1));
-  strcpy(new_buffer, str);
-  strcpy(new_buffer + length, symd->ptr.str);
-
-  free(symd->ptr.str);
-
-  symd->ptr.str = new_buffer;
-  symd->size = symd->size + length;
-}
-
-void Crystal_Const_Append_T(Crystal_Symbol* symd, const char* str, unsigned length)
-{  
-  std::string val_left;
-  Parse_String(symd, &val_left);
-
-  char* new_buffer = static_cast<char*>(malloc(val_left.size() + length + 1));
-  strcpy(new_buffer, val_left.c_str());
-  strcpy(new_buffer + val_left.size(), str);
-
-  symd->ptr.str = new_buffer;
-  symd->size = val_left.size() + length;
-}
-void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned length)
-{  
-  std::string val_left;
-  Parse_String(symd, &val_left);
-
-  char* new_buffer = static_cast<char*>(malloc(val_left.size() + length + 1));
-  strcpy(new_buffer, str);
-  strcpy(new_buffer + length, val_left.c_str());
-
-  symd->ptr.str = new_buffer;
-  symd->size = val_left.size() + length;
-}
