@@ -151,3 +151,11 @@ bool Swap_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_
   target->Swap(MEM((*syms)[0]), MEM((*syms)[1]));
   return true;
 }
+
+bool Array_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  //Create array
+  target->Allocate(syms->size());
+  target->Make_Array(MEMR(result), syms->size());
+  return true;
+}

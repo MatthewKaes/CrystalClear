@@ -1,10 +1,14 @@
 #include "Syntax_Tree.h"
 #include "Reductions.h"
+#include "Lexicon.h"
 
 Syntax_Node::Syntax_Node(std::vector<Syntax_Node*>* pool, Syntax_Tree* tree)
 {
   tree_ = tree;
   pool_ = pool;
+  //Store default left and right
+  params.push_back(0);
+  params.push_back(0);
 }
 void Syntax_Node::Process(Syntax_Node* node)
 {
@@ -13,7 +17,11 @@ void Syntax_Node::Process(Syntax_Node* node)
     node->sym.type == DAT_OP && node->sym.str[0] == ',' && node->priority == priority + 1)
   {
     index += 1;
-    if(index >= sym.i32)
+    if(index >= params.size())
+    {
+      params.push_back(0);
+    }
+    if(index >= static_cast<unsigned>(sym.i32))
     {
       printf("WARNING: \"%s\" does not take %d arguments.", sym.str.c_str(), index + 1);
     }
@@ -29,6 +37,13 @@ void Syntax_Node::Process(Syntax_Node* node)
     {
       RIGHT_CHILD = node;
       node->parent = this;
+      // If an array is a ternimating leaf we need to
+      // treat the array as an object.
+      if(!node->sym.str.compare("["))
+      {
+        node->priority = Get_Precedence(NULL) - Get_Precedence("[");
+        node->index = 0;
+      }
     }
   }
   else
@@ -49,7 +64,7 @@ void Syntax_Node::Process(Syntax_Node* node)
 void Syntax_Node::Reduce()
 {
   bool eval = false;
-  for(int i = 0; i < MAX_ARGS; i++)
+  for(unsigned i = 0; i < params.size(); i++)
   {
     if(params[i])
     {
@@ -62,7 +77,7 @@ void Syntax_Node::Reduce()
 
   if(Reduction(&sym, params[0]->Acquire(), params[1]->Acquire()))
   {  
-    for(int i = 0; i < MAX_ARGS; i++)
+    for(unsigned i = 0; i < params.size(); i++)
     {
       if(params[i])
       {
@@ -83,7 +98,7 @@ bool Syntax_Node::Evaluate()
   }
   bool evaluation = false;
   Bytecode new_code;
-  for(int i = 0; i < MAX_ARGS; i++)
+  for(unsigned i = 0; i < params.size(); i++)
   {
     if(params[i])
     {
@@ -95,7 +110,7 @@ bool Syntax_Node::Evaluate()
     }
   }
   
-  if(sym.type != DAT_FUNCTION && sym.type != DAT_BIFUNCTION  && sym.type != DAT_STATEMENT && !evaluation)
+  if(sym.type != DAT_FUNCTION && sym.type != DAT_BIFUNCTION  && sym.type != DAT_STATEMENT && sym.type != DAT_OP && !evaluation)
     return true;
 
   new_code.code_gen = Resolve_Genorator(&sym);
@@ -120,7 +135,7 @@ bool Syntax_Node::Evaluate()
   }
 
   std::vector<bool>* regptr = tree_->Get_Registers();
-  for(int i = 0; i < MAX_ARGS; i++)
+  for(unsigned i = 0; i < params.size(); i++)
   {
     if(params[i])
     {
@@ -161,7 +176,7 @@ bool Syntax_Node::Evaluate()
 }
 void Syntax_Node::Remove()
 {
-  for(int i = 0; i < MAX_ARGS; i++)
+  for(unsigned i = 0; i < params.size(); i++)
     if(params[i])
     {
       params[i]->Remove();
@@ -177,7 +192,7 @@ void Syntax_Node::Finalize()
 {  
   R_Assoc = false;
   parent = NULL;
-  for(int i = 0; i < MAX_ARGS; i++)
+  for(unsigned i = 0; i < params.size(); i++)
   {
     params[i] = NULL;
   }
@@ -200,7 +215,7 @@ void Syntax_Node::Finalize()
 }
 void Syntax_Node::Force_Memory(Bytecode* code)
 {
-  for(int i = 0; i < MAX_ARGS; i++)
+  for(unsigned i = 0; i < params.size(); i++)
   {
     if(params[i])
     {

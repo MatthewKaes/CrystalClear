@@ -346,3 +346,78 @@ void Reverse_Str(std::string* value)
     (*value)[value->size() - (i + 1)] = copy;
   }
 }
+
+unsigned Get_Precedence(const char* sym)
+{
+  if(!sym)
+  {
+    return 13;
+  }
+  //assignments
+  switch(sym[0])
+  {
+  case '+':
+  case '-':
+  case '*':
+  case '^':
+  case '/':
+  case '%':
+  case '|':
+  case '&':
+    if(sym[1] == '=')
+      return 2;
+  }
+  //general
+  switch(sym[0])
+  {
+  case '(':
+    return -1;
+  case ')':
+    return -2;
+  case 'f':
+  case '[':
+    return 11;
+  case ':':
+    return 9;
+  case '^':
+    return 8;
+  case '*':
+  case '/':
+    return 7;
+  case '+':
+  case '-':
+    return 6;
+  case '%':
+    return 5;
+  case '.':
+    if(sym[1] == '.' && sym[2] == '.')
+    {
+      return 5;
+    }
+    else if(sym[1] == '\0')
+    {
+      return 10;
+    }
+  case '|':
+  case '&':
+    return 3;
+  case '<':
+    if(sym[1] == '>')
+      return 2;
+  case '>':
+    return 4;
+  case '!':
+    if(sym[1] == '=')
+      return 4;
+    return 9;
+  case '=':
+    if(sym[1] == '=')
+      return 4;
+    return 2;
+  case 'k':
+  case ',':
+    return 1;
+  default:
+    return 13;
+  }
+}

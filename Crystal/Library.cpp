@@ -215,9 +215,8 @@ void Crystal_Rand(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 }
 void Crystal_Print(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
-  std::string val;
-  Parse_String(sym, &val);
-  ret_sym->i32 = printf("%s\n", val.c_str()) - 1;
+  ret_sym->i32 = Printer(sym);
+  printf("\n");
   ret_sym->type = CRY_INT;
 }
 

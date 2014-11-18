@@ -14,4 +14,6 @@ void Crystal_Text_Append_CR(Crystal_Symbol* symd, const char* str, unsigned leng
 void Crystal_Const_Append_T(Crystal_Symbol* symd, const char* str, unsigned length);
 void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned length);
 
+void Construct_Array(Crystal_Symbol* symd, unsigned size, Crystal_Symbol* ary);
+
 #endif

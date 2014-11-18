@@ -89,3 +89,14 @@ void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned len
   symd->ptr.str = new_buffer;
   symd->size = val_left.size() + length;
 }
+void Construct_Array(Crystal_Symbol* symd, unsigned size, Crystal_Symbol* ary)
+{
+  symd->ptr.sym = reinterpret_cast<Crystal_Symbol*>(calloc(1, sizeof(Crystal_Symbol)));
+  symd->ptr.sym->size = size;
+  if(size < 0x20)
+    symd->ptr.sym->capacity = 0x20;
+  else
+    symd->ptr.sym->capacity = size;
+  symd->ptr.sym->ptr.sym = ary;
+  symd->type = CRY_ARRAY;
+}

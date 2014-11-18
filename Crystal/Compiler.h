@@ -13,6 +13,7 @@
 //Crystal Constants
 #define STRING_POOL 0xFFFF
 #define STACK_RESERVE 0xFF
+#define MIN_BLOCK_SIZE 0x20
 //Return Address should be the side of a symbol
 //This allows us to have cache alignment on the stack.
 //(stack frames are always multiples of 16)
@@ -74,6 +75,8 @@ public:
   void Call(void* function);
   void Call(void* function, unsigned reg);
   void Call(const char* cry_function, unsigned reg = CRY_NULL);
+  void Allocate(unsigned sym_count);
+  void Make_Array(unsigned var, unsigned size);
   void Push(unsigned var);
   void Pop(unsigned args);
   void Return(unsigned var);

@@ -154,3 +154,27 @@ void Garbage_Collection(Crystal_Symbol* sym)
     sym->ptr.sym = 0;
   }
 }
+int Printer(Crystal_Symbol* sym)
+{
+  int counter = 0;
+  if(sym->type == CRY_ARRAY)
+  {
+    counter += printf("[");
+    for(unsigned i = 0; i < sym->ptr.sym->size; i++)
+    {
+      counter += Printer(&sym->ptr.sym[i]);
+      if(i != sym->ptr.sym->size - 1)
+      {
+        counter += printf(", ");
+      }
+    }
+    counter += printf("]");
+  }
+  else
+  {
+    std::string val;
+    Parse_String(sym, &val);
+    counter += printf("%s", val.c_str()) - 1;
+  }
+  return counter;
+}

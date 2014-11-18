@@ -5,13 +5,8 @@
 #include <stdio.h>
 #include <string>
 
-//void Process_Code(FILE* program_feed, DA_String* temp_line);
-//
 bool is_symbol(char object);
 bool is_number(char object);
-//unsigned get_symbol(const char* stream, DA_String* fill);
-//bool arithmetic_operation(const char* object);
-//int arithmetic_priority(const char* object);
 
 void Create_Symbol(const char** stream, Crystal_Data* sym);
 void Resolve_Type(Crystal_Data* sym);
@@ -26,5 +21,7 @@ void d_to_str(double object, std::string* value);
 void b_to_str(bool object, std::string* value);
 
 void Reverse_Str(std::string* value);
+
+unsigned Get_Precedence(const char* sym);
 
 #endif

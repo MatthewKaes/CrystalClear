@@ -16,5 +16,6 @@ void Power_Syms(Crystal_Symbol* syml, Crystal_Symbol* symr);
 void Power_SymsR(Crystal_Symbol* syml, Crystal_Symbol* symr);
 
 void Garbage_Collection(Crystal_Symbol* sym);
+int Printer(Crystal_Symbol* sym);
 
 #endif

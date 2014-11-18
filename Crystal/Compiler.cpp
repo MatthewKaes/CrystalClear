@@ -156,6 +156,38 @@ void Crystal_Compiler::Call(const char* cry_function, unsigned var)
     states[var].Obscurity();
   }
 }
+void Crystal_Compiler::Allocate(unsigned sym_count)
+{
+  //Calloc Memory
+  Machine->Push(static_cast<int>(VAR_SIZE));
+  //Allocation is expensive. Get a somewhat useful
+  //block size
+  if(sym_count < MIN_BLOCK_SIZE)
+    Machine->Push(static_cast<int>(MIN_BLOCK_SIZE));
+  else
+    Machine->Push(static_cast<int>(sym_count));
+  Machine->Call(calloc);
+  Machine->Pop(sizeof(int) * 2);
+  //Push it for later use
+  Machine->Push(EAX);
+}
+void Crystal_Compiler::Make_Array(unsigned var, unsigned size)
+{
+  if(states[var].Order(CRY_STRING))
+  {
+    Garbage_Collection(var);
+  }
+  //Creation of the array object
+  Machine->Push(static_cast<int>(size));
+  Push(var);
+  Machine->Call(Construct_Array);
+  Machine->Pop(sizeof(int) * 3);
+  //Set up types for compiler use
+  states[var].Set(CRY_ARRAY);
+  //Corrupt the state of the object
+  if(lookups.size())
+    lookups.back().corruptions[var] = true;
+}
 void Crystal_Compiler::Push(unsigned var)
 {
   unsigned offset = stack_size - var * VAR_SIZE;

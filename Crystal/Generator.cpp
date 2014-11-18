@@ -99,6 +99,9 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
     else
       return Power_Gen;
     break;
+  case '[':
+    return Array_Gen;
+    break;
   }
   return Null_Gen;
 }
