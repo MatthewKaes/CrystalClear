@@ -93,10 +93,11 @@ void Construct_Array(Crystal_Symbol* symd, unsigned size, Crystal_Symbol* ary)
 {
   symd->ptr.sym = reinterpret_cast<Crystal_Symbol*>(calloc(1, sizeof(Crystal_Symbol)));
   symd->ptr.sym->size = size;
+  symd->ptr.sym->ptr.sym = ary;
+  symd->ptr.sym->ref_cnt = 1;
   if(size < 0x20)
     symd->ptr.sym->capacity = 0x20;
   else
     symd->ptr.sym->capacity = size;
-  symd->ptr.sym->ptr.sym = ary;
   symd->type = CRY_ARRAY;
 }

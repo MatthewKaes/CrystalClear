@@ -173,7 +173,7 @@ void Crystal_Compiler::Allocate(unsigned sym_count)
 }
 void Crystal_Compiler::Make_Array(unsigned var, unsigned size)
 {
-  if(states[var].Order(CRY_STRING))
+  if(states[var].Collection())
   {
     Garbage_Collection(var);
   }
@@ -321,6 +321,7 @@ void Crystal_Compiler::End()
 }
 void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
 {
+  Garbage_Collection(var);
   unsigned offset = stack_size - VAR_SIZE * var;
   switch(val.type)
   {
@@ -354,7 +355,7 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   unsigned offset_source = stack_size - source * VAR_SIZE;
-  if(states[dest].Order(CRY_STRING))
+  if(states[dest].Collection())
   {
     Garbage_Collection(dest);
   }
@@ -394,7 +395,7 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
       }
     }    
     //Refrence counting for copies.
-    if(states[source].Order(CRY_ARRAY))
+    if(states[source].Refrenced())
     {
       unsigned ref_label = Machine->Reserve_Label();
       //Check if we need to ref count
@@ -2244,7 +2245,7 @@ void Crystal_Compiler::Garbage_Collection(unsigned var)
     Machine->Je(label);
     //Ref counter handling
     //(Arrays or higher order)
-    if(states[var].Order(CRY_ARRAY))
+    if(states[var].Refrenced())
     {
       unsigned ref_label = Machine->Reserve_Label();
       //Check if we need to ref count
