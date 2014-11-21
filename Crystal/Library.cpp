@@ -233,7 +233,7 @@ void Crystal_Size(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
     ret_sym->i32 = strlen(sym->ptr.str);
     ret_sym->type = CRY_INT;
   }
-  else if(sym->type == CRY_ARRAY)
+  else if(sym->type == CRY_POINTER)
   {
     ret_sym->i32 = sym->ptr.sym->size;
     ret_sym->type = CRY_INT;

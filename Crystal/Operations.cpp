@@ -1,5 +1,7 @@
 #include "Operations.h"
+#include "Helper.h"
 #include <functional>
+
 
 typedef void (Crystal_Compiler::*OPERATION)(unsigned, unsigned, bool);
 typedef void (Crystal_Compiler::*OPERATION_C)(unsigned, CRY_ARG, bool);
@@ -156,6 +158,43 @@ bool Array_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal
 {
   //Create array
   target->Allocate(syms->size());
+  for(unsigned i = 0; i < syms->size(); i++)
+  {
+    target->Push_C(static_cast<int>(i));
+    switch((*syms)[i].type)
+    {
+    case DAT_NIL:
+      target->Call(Array_Add_Nil);
+      target->Pop(1);
+      break;
+    case DAT_BOOL:
+      target->Push_C(static_cast<int>((*syms)[i].b));
+      target->Call(Array_Add_Bool);
+      target->Pop(2);
+      break;
+    case DAT_INT:
+      target->Push_C((*syms)[i].i32);
+      target->Call(Array_Add_Int);
+      target->Pop(2);
+      break;
+    case DAT_DOUBLE:
+      target->Push_C((*syms)[i].d);
+      target->Call(Array_Add_Double);
+      target->Pop(3);
+      break;
+    case DAT_STRING:
+      target->Push_C((*syms)[i].str.c_str());
+      target->Call(Array_Add_Text);
+      target->Pop(2);
+      break;
+    case DAT_REGISTRY:
+    case DAT_LOCAL:
+      target->Push(MEM((*syms)[i]));
+      target->Call(Array_Add_Stack);
+      target->Pop(2);
+      break;
+    }
+  }
   target->Make_Array(MEMR(result), syms->size());
   return true;
 }

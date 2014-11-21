@@ -183,7 +183,7 @@ void Crystal_Compiler::Make_Array(unsigned var, unsigned size)
   Machine->Call(Construct_Array);
   Machine->Pop(sizeof(int) * 3);
   //Set up types for compiler use
-  states[var].Set(CRY_ARRAY);
+  states[var].Set(CRY_POINTER);
   //Corrupt the state of the object
   if(lookups.size())
     lookups.back().corruptions[var] = true;
@@ -192,6 +192,21 @@ void Crystal_Compiler::Push(unsigned var)
 {
   unsigned offset = stack_size - var * VAR_SIZE;
   Machine->Push_Adr(offset);
+}
+void Crystal_Compiler::Push_C(CRY_ARG var)
+{
+  switch(var.type)
+  {
+  case CRY_INT:
+    Machine->Push(var.num_);
+    return;
+  case CRY_DOUBLE:
+    Machine->Push(var.dec_);
+    return;
+  case CRY_TEXT:
+    Machine->Push(reinterpret_cast<int>(var.str_));
+    return;
+  }
 }
 void Crystal_Compiler::Pop(unsigned args)
 {
@@ -207,7 +222,7 @@ void Crystal_Compiler::Return(unsigned var)
   //Load the data into the ptr value
   Machine->Load_Ptr(RETURN_ADDRESS);
   //Mark memory as collected and pass it back for use.
-  if(states[var].Test(CRY_STRING) || states[var].Test(CRY_ARRAY))
+  if(states[var].Order(CRY_STRING))
   {
     states[var].Collected();
     Machine->MovP(offset - DATA_PNTR, DATA_PNTR);
@@ -399,7 +414,7 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
     {
       unsigned ref_label = Machine->Reserve_Label();
       //Check if we need to ref count
-      Machine->Cmp(offset_source - DATA_TYPE, static_cast<int>(CRY_ARRAY));
+      Machine->Cmp(offset_source - DATA_TYPE, static_cast<int>(CRY_POINTER));
       Machine->Jl(ref_label);
       //Add one to the ref count
       Machine->Mov(EAX, offset_source - DATA_PNTR);
@@ -464,7 +479,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
     //null operation
     Clarity_Filter except(CRY_TEXT);
     except.Dilute(CRY_STRING);
-    except.Dilute(CRY_ARRAY);
+    except.Dilute(CRY_POINTER);
     if(Null_Op(states[dest], states[source], dest, except))
       return;
 
@@ -564,7 +579,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
     //null operation 
     Clarity_Filter except(CRY_TEXT);
     except.Dilute(CRY_STRING);
-    except.Dilute(CRY_ARRAY);
+    except.Dilute(CRY_POINTER);
     if(Null_Op(states[dest], const_.filt, dest, except))
       return;
 
@@ -2249,7 +2264,7 @@ void Crystal_Compiler::Garbage_Collection(unsigned var)
     {
       unsigned ref_label = Machine->Reserve_Label();
       //Check if we need to ref count
-      Machine->Cmp(offset_dest - DATA_TYPE, static_cast<int>(CRY_ARRAY));
+      Machine->Cmp(offset_dest - DATA_TYPE, static_cast<int>(CRY_POINTER));
       Machine->Jl(ref_label);
       //Sub one form the ref count
       Machine->Mov(EAX, offset_dest - DATA_PNTR);

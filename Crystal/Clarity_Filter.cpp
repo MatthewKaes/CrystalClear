@@ -96,7 +96,7 @@ void Clarity_Filter::Dynamic(Symbol_Type flag)
 void Clarity_Filter::Refrence(Symbol_Type flag)
 {
   //Text is the highest non collected object.
-  if(flag >= CRY_ARRAY)
+  if(flag >= CRY_POINTER)
   {
     ref_counted = true;
   }

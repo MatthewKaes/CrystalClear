@@ -78,6 +78,7 @@ public:
   void Allocate(unsigned sym_count);
   void Make_Array(unsigned var, unsigned size);
   void Push(unsigned var);
+  void Push_C(CRY_ARG var);
   void Pop(unsigned args);
   void Return(unsigned var);
   void Return();

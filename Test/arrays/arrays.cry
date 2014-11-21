@@ -1,4 +1,7 @@
 def main()
-  x = []
+  val = "World"
+  x = [2, 4, true, "Hello", 6.10, nil, false, val]
+  print_color("Array X:", 11)
   print(x)
+  print("Size: " + size(x))
 end

@@ -94,8 +94,8 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
 bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr)
 {
   int i = 0;
-  char* l = syml->type == CRY_TEXT ? syml->text : syml->ptr.str;
-  char* r = symr->type == CRY_TEXT ? symr->text : symr->ptr.str;
+  const char* l = syml->type == CRY_TEXT ? syml->text : syml->ptr.str;
+  const char* r = symr->type == CRY_TEXT ? symr->text : symr->ptr.str;
   while(*(l + i) || *(r + i))
   {
     if(*(l + i) != *(r + i))
@@ -119,7 +119,7 @@ void Stack_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from)
     sym_stack->ptr = sym_from->ptr;
     sym_stack->type = sym_from->type;
     //Up ref count for symbols that need it.
-    if(sym_stack->type >= CRY_ARRAY)
+    if(sym_stack->type >= CRY_POINTER)
     {
       sym_stack->ptr.sym->ref_cnt += 1;
     }
@@ -137,6 +137,64 @@ void Power_SymsR(Crystal_Symbol* syml, Crystal_Symbol* symr)
   double r = symr->type == CRY_DOUBLE ? symr->d : symr->i32;
   syml->d = pow(r, l);
 }
+void Cry_Derefrence(Crystal_Symbol** sym)
+{
+  if((*sym)->type == CRY_POINTER)
+  {
+    *sym = (*sym)->ptr.sym;
+  }
+}
+//Array functions
+void Array_Add_Nil(int index, Crystal_Symbol* ary)
+{
+  ary[index].type = CRY_NIL;
+}
+void Array_Add_Bool(int num, int index, Crystal_Symbol* ary)
+{
+  ary[index].type = CRY_BOOL;
+  ary[index].i32 = num;
+}
+void Array_Add_Int(int num, int index,  Crystal_Symbol* ary)
+{
+  ary[index].type = CRY_INT;
+  ary[index].i32 = num;
+}
+void Array_Add_Double(double dec, int index,  Crystal_Symbol* ary)
+{
+  ary[index].type = CRY_DOUBLE;
+  ary[index].d = dec;
+}
+void Array_Add_Text(const char* text, int index,  Crystal_Symbol* ary)
+{
+  ary[index].type = CRY_TEXT;
+  ary[index].text = text;
+}
+void Array_Add_Var(Crystal_Symbol* sym, int index, Crystal_Symbol* ary)
+{
+  Stack_Copy(ary->ptr.sym + index, sym);
+}
+void Array_Add_Stack(Crystal_Symbol* sym_stack, int index, Crystal_Symbol* ary)
+{
+  if(sym_stack->type == CRY_STRING)
+  {
+    ary[index].size = sym_stack->size;
+    ary[index].text = sym_stack->ptr.str;
+    ary[index].type = CRY_TEXT;
+    return;
+  }
+  else
+  {
+    ary[index].i64 = sym_stack->i64;
+    ary[index].ptr = sym_stack->ptr;
+    ary[index].type = sym_stack->type;
+    //Up ref count for symbols that need it.
+    if(sym_stack->type >= CRY_POINTER)
+    {
+      sym_stack->ptr.sym->ref_cnt += 1;
+    }
+  }
+}
+
 void Garbage_Collection(Crystal_Symbol* sym)
 {
   if(sym->ptr.str != 0)
@@ -157,13 +215,17 @@ void Garbage_Collection(Crystal_Symbol* sym)
 int Printer(Crystal_Symbol* sym)
 {
   int counter = 0;
-  if(sym->type == CRY_ARRAY)
+  if(sym->type == CRY_POINTER)
+  {
+    counter += Printer(sym->ptr.sym);
+  }
+  else if(sym->type == CRY_ARRAY)
   {
     counter += printf("[");
-    for(unsigned i = 0; i < sym->ptr.sym->size; i++)
+    for(unsigned i = 0; i < sym->size; i++)
     {
       counter += Printer(&sym->ptr.sym[i]);
-      if(i != sym->ptr.sym->size - 1)
+      if(i != sym->size - 1)
       {
         counter += printf(", ");
       }
