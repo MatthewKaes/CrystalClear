@@ -110,7 +110,7 @@ void x86_Machine::Cmp(unsigned address, ARG argument)
     }
     else
     {
-      *p++ = CMP_WORDL;
+      *p++ = CMP_BYTE;
       *p++ = CMP_MEM + WORD_VARIANT;
       (int&)p[0] = two_complement_32(address); p+= sizeof(int);
       *p++ = (unsigned char)argument.chr_;

@@ -11,8 +11,7 @@ def main()
   print_color("Fuction value testing", 11)
   test_value(true, false)
   print_color("Extended Function", 11)
-  #extended_func(1,2,3,4,5,6,7,8,9,10)
-  extended_func(1,2,3,4,5)
+  extended_func(1,2,3,4,5,6,7,8,9,10)
 end
 
 def print_var(x)
@@ -37,18 +36,15 @@ def test_value(bool, bad_bool)
     print("CORRECT")
   end
 end
-#def extended_func(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10)
-def extended_func(v1, v2, v3, v4, v5)
+def extended_func(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10)
   print("v1: " + v1)
   print("v2: " + v2)
   print("v3: " + v3)
   print("v4: " + v4)
   print("v5: " + v5)
-  #Looks like jumps aren't resolving right with large stacks
-  #Look into string addition
-  #print("v6: " + v6)
-  #print("v7: " + v7)
-  #print("v8: " + v8)
-  #print("v9: " + v9)
-  #print("v10: " + v10)
+  print("v6: " + v6)
+  print("v7: " + v7)
+  print("v8: " + v8)
+  print("v9: " + v9)
+  print("v10: " + v10)
 end
