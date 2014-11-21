@@ -44,7 +44,10 @@ void Crystal_Interpreter::Populate_BIP()
 
   //Math
   REGISTER_FUNCTION(cos, Crystal_Cos, 1);
-  REGISTER_FUNCTION(sin, Crystal_Sin, 1);
+  REGISTER_FUNCTION(sin, Crystal_Sin, 1)
+  REGISTER_FUNCTION(log, Crystal_Log, 1);
+  REGISTER_FUNCTION(ln, Crystal_NatrualLog, 1);
+  REGISTER_FUNCTION(abs, Crystal_Abs, 1);
 
   //Hooks to other langauges
   REGISTER_FUNCTION(python, Crystal_Python, 1);
@@ -450,6 +453,11 @@ void Crystal_Interpreter::Special_Processing(Crystal_Data* sym)
     {
       sym->type = DAT_DOUBLE;
       sym->d = PI;
+    }
+    else if(!sym->str.compare("E"))
+    {
+      sym->type = DAT_DOUBLE;
+      sym->d = C_E;
     }
     else if(!sym->str.compare("and"))
     {
