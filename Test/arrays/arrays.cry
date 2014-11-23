@@ -4,4 +4,5 @@ def main()
   print_color("Array X:", 11)
   print(x)
   print("Size: " + size(x))
+  return x
 end

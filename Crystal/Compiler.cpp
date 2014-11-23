@@ -214,7 +214,7 @@ void Crystal_Compiler::Pop(unsigned args)
 }
 void Crystal_Compiler::Return(unsigned var)
 {
-  unsigned label = Machine->New_Label();
+  unsigned label = Machine->Reserve_Label();
   unsigned offset = stack_size - VAR_SIZE * var;
   //Check to see if eax was loaded with something
   Machine->CmpF(RETURN_ADDRESS, 0);
@@ -222,7 +222,7 @@ void Crystal_Compiler::Return(unsigned var)
   //Load the data into the ptr value
   Machine->Load_Ptr(RETURN_ADDRESS);
   //Mark memory as collected and pass it back for use.
-  if(states[var].Order(CRY_STRING))
+  if(states[var].Order(CRY_POINTER))
   {
     states[var].Collected();
     Machine->MovP(offset - DATA_PNTR, DATA_PNTR);
@@ -242,7 +242,7 @@ void Crystal_Compiler::Return(unsigned var)
 }
 void Crystal_Compiler::Return()
 {
-  unsigned label = Machine->New_Label();
+  unsigned label = Machine->Reserve_Label();
   //Check to see if eax was loaded with something
   Machine->CmpF(RETURN_ADDRESS, 0);
   Machine->Je(label);
@@ -384,31 +384,31 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
       Machine->Mov(EAX, offset_source - DATA_UPPER);
       Machine->Mov(offset_dest - DATA_UPPER, EAX);
     }
-    if(states[source].Test(CRY_STRING))
-    {
-      unsigned label = Machine->New_Label();
-      //If we can be more then just a string then we need to check
-      //our current state as a string.
-      if(states[source].Size() > 1)
-      {
-        Machine->Cmp(offset_source - DATA_TYPE, static_cast<char>(CRY_STRING));
-        Machine->Jne(label);
-      }
-      //Copy over if we are currently a string.
-      Machine->Mov(EBX, offset_source - DATA_LOWER);
-      Machine->Inc(EBX);
-      Machine->Push(EBX);
-      Machine->Call(malloc);
-      Machine->Pop(4);
-      Machine->Strcpy(EAX, offset_source - DATA_PNTR, offset_source - DATA_LOWER, false, true);
-      Machine->Mov(offset_dest - DATA_PNTR, EAX);
-      Machine->Mov(offset_dest - DATA_LOWER, EBX);
-      //Create end label for jumping
-      if(states[source].Size() > 1)
-      {
-        Machine->Make_Label(label);
-      }
-    }    
+    //if(states[source].Test(CRY_STRING))
+    //{
+    //  unsigned label = Machine->New_Label();
+    //  //If we can be more then just a string then we need to check
+    //  //our current state as a string.
+    //  if(states[source].Size() > 1)
+    //  {
+    //    Machine->Cmp(offset_source - DATA_TYPE, static_cast<char>(CRY_STRING));
+    //    Machine->Jne(label);
+    //  }
+    //  //Copy over if we are currently a string.
+    //  Machine->Mov(EBX, offset_source - DATA_LOWER);
+    //  Machine->Inc(EBX);
+    //  Machine->Push(EBX);
+    //  Machine->Call(malloc);
+    //  Machine->Pop(4);
+    //  Machine->Strcpy(EAX, offset_source - DATA_PNTR, offset_source - DATA_LOWER, false, true);
+    //  Machine->Mov(offset_dest - DATA_PNTR, EAX);
+    //  Machine->Mov(offset_dest - DATA_LOWER, EBX);
+    //  //Create end label for jumping
+    //  if(states[source].Size() > 1)
+    //  {
+    //    Machine->Make_Label(label);
+    //  }
+    //}    
     //Refrence counting for copies.
     if(states[source].Refrenced())
     {
@@ -2259,35 +2259,18 @@ void Crystal_Compiler::Garbage_Collection(unsigned var)
     Machine->Cmp(offset_dest - DATA_PNTR, 0);
     Machine->Je(label);
     //Ref counter handling
-    //(Arrays or higher order)
-    if(states[var].Refrenced())
-    {
-      unsigned ref_label = Machine->Reserve_Label();
-      //Check if we need to ref count
-      Machine->Cmp(offset_dest - DATA_TYPE, static_cast<int>(CRY_POINTER));
-      Machine->Jl(ref_label);
-      //Sub one form the ref count
-      Machine->Mov(EAX, offset_dest - DATA_PNTR);
-      Machine->Load_Register(ECX, 0xFFFF);
-      Machine->RefAdd();
-      //Test for cleanup
-      Machine->RefCheck();
-      Machine->Jne(label);
-      //Push the pointer unto the stack and free it.
-      Machine->Mov(EAX, offset_dest - DATA_PNTR);
-      Machine->Push(EAX);
-      Machine->Call(free);
-      Machine->Load_Mem(offset_dest - DATA_PNTR, 0);
-      //Exit cleanup
-      Machine->Jmp(label);
-      Machine->Make_Label(ref_label);
-    }
-    //Standard clean up code (strings)
+    //Sub one form the ref count
     Machine->Mov(EAX, offset_dest - DATA_PNTR);
-    Machine->Push(EAX);
-    Call(free);
-    Machine->Pop(4);
     Machine->Load_Mem(offset_dest - DATA_PNTR, 0);
+    Machine->Load_Register(ECX, 0xFFFF);
+    Machine->RefAdd();
+    //Test for cleanup
+    Machine->RefCheck();
+    Machine->Jne(label);
+    //Push the pointer unto the stack and free it.
+    Machine->Push(EAX);
+    Machine->Call(free);
+    //Exit
     Machine->Make_Label(label);
     states[var].Collected();
   }
