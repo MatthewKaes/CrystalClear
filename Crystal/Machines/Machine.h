@@ -114,13 +114,13 @@ public:
   virtual void And(unsigned address, REGISTERS source) = 0;
   virtual void Cmp(unsigned address, ARG argument) = 0;
   virtual void CmpF(unsigned address, ARG argument) = 0;
-  virtual void Jmp(unsigned label) = 0;
-  virtual void Je(unsigned label) = 0;
-  virtual void Jne(unsigned label) = 0;
-  virtual void Jle(unsigned label) = 0;
-  virtual void Jl(unsigned label) = 0;
-  virtual void Jg(unsigned label) = 0;
-  virtual void Jge(unsigned label) = 0;
+  virtual void Jmp(unsigned label, bool short_jump = false) = 0;
+  virtual void Je(unsigned label, bool short_jump = false) = 0;
+  virtual void Jne(unsigned label, bool short_jump = false) = 0;
+  virtual void Jle(unsigned label, bool short_jump = false) = 0;
+  virtual void Jl(unsigned label, bool short_jump = false) = 0;
+  virtual void Jg(unsigned label, bool short_jump = false) = 0;
+  virtual void Jge(unsigned label, bool short_jump = false) = 0;
   //Sets
   virtual void Sete(unsigned address) = 0;
   virtual void Setne(unsigned address) = 0;

@@ -1282,11 +1282,11 @@ void Crystal_Compiler::Pow(unsigned dest, unsigned source, bool left)
       Machine->Make_Label(labletop);
       Machine->Inc(EAX);
       Machine->Cmp((left ? offset_source : offset_dest) - DATA_LOWER, EAX);
-      Machine->Jge(lablebottom);
+      Machine->Jge(lablebottom, true);
 
       Machine->Imul(EBX, (left ? offset_dest : offset_source) - DATA_LOWER);
 
-      Machine->Jmp(labletop);
+      Machine->Jmp(labletop, true);
       Machine->Make_Label(lablebottom);
 
       Machine->Mov(offset_dest - DATA_LOWER, EBX);
@@ -1351,11 +1351,11 @@ void Crystal_Compiler::PowC(unsigned dest, CRY_ARG const_, bool left)
         Machine->Cmp((stack_size - Addr_Reg(stack_depth) * VAR_SIZE) - DATA_LOWER, EAX);
       else
         Machine->Cmp(offset_dest - DATA_LOWER, EAX);
-      Machine->Jge(lablebottom);
+      Machine->Jge(lablebottom, true);
 
       Machine->Imul(EBX, (left ? offset_dest : stack_size - Addr_Reg(stack_depth) * VAR_SIZE) - DATA_LOWER);
 
-      Machine->Jmp(labletop);
+      Machine->Jmp(labletop, true);
       Machine->Make_Label(lablebottom);
 
       Machine->Mov(offset_dest - DATA_LOWER, EBX);
@@ -2257,7 +2257,7 @@ void Crystal_Compiler::Garbage_Collection(unsigned var)
     unsigned label = Machine->Reserve_Label();
     //Early exit if we don't have any data to collect
     Machine->Cmp(offset_dest - DATA_PNTR, 0);
-    Machine->Je(label);
+    Machine->Je(label, true);
     //Ref counter handling
     //Sub one form the ref count
     Machine->Mov(EAX, offset_dest - DATA_PNTR);
@@ -2266,7 +2266,7 @@ void Crystal_Compiler::Garbage_Collection(unsigned var)
     Machine->RefAdd();
     //Test for cleanup
     Machine->RefCheck();
-    Machine->Jne(label);
+    Machine->Jne(label, true);
     //Push the pointer unto the stack and free it.
     Machine->Push(EAX);
     Machine->Call(free);

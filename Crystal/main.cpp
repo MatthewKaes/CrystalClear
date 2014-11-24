@@ -93,6 +93,12 @@ int main(int argc, const char **argv)
     //Print the exit sym
     printf("\nCrystal Clear exited with symbol:\n");
     Crystal_Print(&ret_sym, &exit_sym);
+
+    //Clean up Crystal Leftovers
+    if(exit_sym.type == CRY_POINTER)
+    {
+      free(exit_sym.ptr.sym);
+    }
   }
   else
   {

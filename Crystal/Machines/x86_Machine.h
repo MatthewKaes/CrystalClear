@@ -77,13 +77,13 @@ public:
   void And(unsigned address, REGISTERS source);
   void Cmp(unsigned address, ARG argument);
   void CmpF(unsigned address, ARG argument);
-  void Jmp(unsigned label);
-  void Je(unsigned label);
-  void Jne(unsigned label);
-  void Jle(unsigned label);
-  void Jl(unsigned label);
-  void Jg(unsigned label);
-  void Jge(unsigned label);
+  void Jmp(unsigned label, bool short_jump = false);
+  void Je(unsigned label, bool short_jump = false);
+  void Jne(unsigned label, bool short_jump = false);
+  void Jle(unsigned label, bool short_jump = false);
+  void Jl(unsigned label, bool short_jump = false);
+  void Jg(unsigned label, bool short_jump = false);
+  void Jge(unsigned label, bool short_jump = false);
   void Sete(unsigned address);
   void Setne(unsigned address);
   void Setl(unsigned address);
@@ -158,7 +158,7 @@ private:
   unsigned two_complement_32(unsigned id);
   //Addressing functions used for AOT execution mode.
   //Linker functions
-  void Label_Management(unsigned label);
+  void Label_Management(unsigned label, bool short_jump = false);
   int Add_Double(double dec);
   int Add_Float(float dec);
   int Add_String(const char* str);

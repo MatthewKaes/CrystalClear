@@ -58,7 +58,7 @@ void x86_Machine::Make_Label(unsigned label)
       unsigned distance = l.adr - walker->adr - BYTES_1;
       if(static_cast<int>(distance) < ADDER_S)
       {
-        if(*(walker->loc - 1) != CODE_JMP)
+        if(*(walker->loc - 2) == 0x90)
         {    
           (walker->loc)[0] = distance - 1;
           (walker->loc)[1] = 0x90;
@@ -176,40 +176,40 @@ void x86_Machine::CmpF(unsigned address, ARG argument)
     break;
   }
 }
-void x86_Machine::Jmp(unsigned label)
+void x86_Machine::Jmp(unsigned label, bool short_jump)
 {
   *p++ = CODE_JMP;  
-  Label_Management(label);
+  Label_Management(label, short_jump);
 }
-void x86_Machine::Je(unsigned label)
+void x86_Machine::Je(unsigned label, bool short_jump)
 {
   *p++ = CODE_JE;
-  Label_Management(label);
+  Label_Management(label, short_jump);
 }
-void x86_Machine::Jne(unsigned label)
+void x86_Machine::Jne(unsigned label, bool short_jump)
 {
   *p++ = CODE_JNE;
-  Label_Management(label);
+  Label_Management(label, short_jump);
 }
-void x86_Machine::Jle(unsigned label)
+void x86_Machine::Jle(unsigned label, bool short_jump)
 {
   *p++ = CODE_JLE;
-  Label_Management(label);
+  Label_Management(label, short_jump);
 }
-void x86_Machine::Jl(unsigned label)
+void x86_Machine::Jl(unsigned label, bool short_jump)
 {
   *p++ = CODE_JL;
-  Label_Management(label);
+  Label_Management(label, short_jump);
 }
-void x86_Machine::Jg(unsigned label)
+void x86_Machine::Jg(unsigned label, bool short_jump)
 {
   *p++ = CODE_JG;
-  Label_Management(label);
+  Label_Management(label, short_jump);
 }
-void x86_Machine::Jge(unsigned label)
+void x86_Machine::Jge(unsigned label, bool short_jump)
 {
   *p++ = CODE_JGE;
-  Label_Management(label);
+  Label_Management(label, short_jump);
 }
 void x86_Machine::Sete(unsigned address)
 {
@@ -794,7 +794,7 @@ int x86_Machine::Add_String(const char* str)
   esp.push_back(var);
   return (int)(esp.back().name.c_str());
 }
-void x86_Machine::Label_Management(unsigned label)
+void x86_Machine::Label_Management(unsigned label, bool short_jump)
 {
    std::vector<AOT_Var>::iterator walker;
   //search lables for backwards jumps
@@ -820,7 +820,7 @@ void x86_Machine::Label_Management(unsigned label)
   AOT_Var var;
   var.lab = label;
   var.adr = (unsigned)p;
-  if(*(p - 1) != CODE_JMP)
+  if(!short_jump)
   {    
     var.loc = p + 1;
     cjs.push_back(var);
