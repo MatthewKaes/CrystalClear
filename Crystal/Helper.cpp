@@ -106,23 +106,13 @@ bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr)
 }
 void Stack_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from)
 {
-  if(sym_from->type == CRY_STRING)
+  sym_stack->i64 = sym_from->i64;
+  sym_stack->ptr = sym_from->ptr;
+  sym_stack->type = sym_from->type;
+  //Up ref count for symbols that need it.
+  if(sym_stack->type >= CRY_POINTER)
   {
-    sym_stack->size = sym_from->size;
-    sym_stack->text = sym_from->ptr.str;
-    sym_from->type = CRY_TEXT;
-    return;
-  }
-  else
-  {
-    sym_stack->i64 = sym_from->i64;
-    sym_stack->ptr = sym_from->ptr;
-    sym_stack->type = sym_from->type;
-    //Up ref count for symbols that need it.
-    if(sym_stack->type >= CRY_POINTER)
-    {
-      sym_stack->ptr.sym->ref_cnt += 1;
-    }
+    sym_stack->ptr.sym->ref_cnt += 1;
   }
 }
 void Power_Syms(Crystal_Symbol* syml, Crystal_Symbol* symr)
@@ -199,18 +189,20 @@ void Garbage_Collection(Crystal_Symbol* sym)
 {
   if(sym->ptr.str != 0)
   {
-    if(sym->type > CRY_STRING)
+    sym->ptr.sym->ref_cnt -= 1;
+    if(sym->ptr.sym->ref_cnt == 0)
     {
-      sym->ptr.sym->ref_cnt -= 1;
-      if(sym->ptr.sym->ref_cnt == 0)
-      {
-      free(sym->ptr.sym);
-      }
+      Crystal_Free(sym->ptr.sym);
     }
-    else
-      free(sym->ptr.str);
     sym->ptr.sym = 0;
   }
+}
+void Crystal_Free(Crystal_Symbol* sym)
+{
+  //Free contents
+  free(sym->ptr.sym);
+  //Free actual symbol
+  free(sym);
 }
 int Printer(Crystal_Symbol* sym)
 {
@@ -218,6 +210,10 @@ int Printer(Crystal_Symbol* sym)
   if(sym->type == CRY_POINTER)
   {
     counter += Printer(sym->ptr.sym);
+  }
+  else if(sym->type == CRY_STRING)
+  {
+    counter += printf("%s", sym->ptr.str);
   }
   else if(sym->type == CRY_ARRAY)
   {

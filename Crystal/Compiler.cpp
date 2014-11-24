@@ -384,32 +384,6 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
       Machine->Mov(EAX, offset_source - DATA_UPPER);
       Machine->Mov(offset_dest - DATA_UPPER, EAX);
     }
-    //if(states[source].Test(CRY_STRING))
-    //{
-    //  unsigned label = Machine->New_Label();
-    //  //If we can be more then just a string then we need to check
-    //  //our current state as a string.
-    //  if(states[source].Size() > 1)
-    //  {
-    //    Machine->Cmp(offset_source - DATA_TYPE, static_cast<char>(CRY_STRING));
-    //    Machine->Jne(label);
-    //  }
-    //  //Copy over if we are currently a string.
-    //  Machine->Mov(EBX, offset_source - DATA_LOWER);
-    //  Machine->Inc(EBX);
-    //  Machine->Push(EBX);
-    //  Machine->Call(malloc);
-    //  Machine->Pop(4);
-    //  Machine->Strcpy(EAX, offset_source - DATA_PNTR, offset_source - DATA_LOWER, false, true);
-    //  Machine->Mov(offset_dest - DATA_PNTR, EAX);
-    //  Machine->Mov(offset_dest - DATA_LOWER, EBX);
-    //  //Create end label for jumping
-    //  if(states[source].Size() > 1)
-    //  {
-    //    Machine->Make_Label(label);
-    //  }
-    //}    
-    //Refrence counting for copies.
     if(states[source].Refrenced())
     {
       unsigned ref_label = Machine->Reserve_Label();
@@ -434,7 +408,7 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
 void Crystal_Compiler::Swap(unsigned dest, unsigned source)
 {  
   //It should be noted that no refrence counters are changed
-  //during a sawp as compared to 
+  //during a sawp unlike a copy
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
@@ -452,7 +426,7 @@ void Crystal_Compiler::Swap(unsigned dest, unsigned source)
     Machine->Mov(offset_source - DATA_UPPER, EBX);
   }
   
-  if(states[dest].Order(CRY_STRING) || states[source].Order(CRY_STRING))
+  if(states[dest].Order(CRY_POINTER) || states[source].Order(CRY_POINTER))
   {
     Machine->Mov(EAX, offset_source - DATA_PNTR);
     Machine->Mov(EBX, offset_dest - DATA_PNTR);
@@ -528,8 +502,11 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
         Machine->Pop(4);
         Machine->Strcpy(EAX, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER);
         Machine->Strcpy(EDI, offset_source - DATA_UPPER, offset_source - DATA_LOWER, false, true);
-        Machine->Mov(offset_dest - DATA_PNTR, EAX);
-        Machine->Mov(offset_dest - DATA_LOWER, EBX);
+        Machine->Push(EBX);
+        Machine->Push(EAX);
+        Push(dest);
+        Machine->Call(Construct_String);
+        resolve = CRY_STRING;
       }
       //complex slower text handling:
       else
@@ -662,8 +639,10 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
           Machine->Strcpy(EAX, static_cast<unsigned>(Machine->String_Address(converted.c_str())), converted.length(), true);
           Machine->Strcpy(EDI, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER, false, true);
         }
-        Machine->Mov(offset_dest - DATA_PNTR, EAX);
-        Machine->Mov(offset_dest - DATA_LOWER, EBX);
+        Machine->Push(EBX);
+        Machine->Push(EAX);
+        Push(dest);
+        Machine->Call(Construct_String);
       }
       else
       {
@@ -2245,8 +2224,10 @@ void Crystal_Compiler::Runtime_Resovle(unsigned dest, Symbol_Type resolve)
 {
   if(states[dest].Size() != 1 || !states[dest].Test(resolve))
   {
-    Machine->Load_Mem(stack_size - VAR_SIZE * dest - DATA_TYPE, static_cast<char>(resolve));
     states[dest].Set(resolve);
+    if(resolve > CRY_POINTER)
+      resolve = CRY_POINTER;
+    Machine->Load_Mem(stack_size - VAR_SIZE * dest - DATA_TYPE, static_cast<char>(resolve));
   }
 }
 void Crystal_Compiler::Garbage_Collection(unsigned var)
@@ -2269,7 +2250,7 @@ void Crystal_Compiler::Garbage_Collection(unsigned var)
     Machine->Jne(label, true);
     //Push the pointer unto the stack and free it.
     Machine->Push(EAX);
-    Machine->Call(free);
+    Machine->Call(Crystal_Free);
     //Exit
     Machine->Make_Label(label);
     states[var].Collected();

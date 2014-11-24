@@ -22,8 +22,10 @@ void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)
   char* new_buffer = static_cast<char*>(malloc(val_left.size() + val_right.size() + 1));
   strcpy(new_buffer, val_left.c_str());
   strcpy(new_buffer + val_left.size(), val_right.c_str());
-  if(symd->ptr.str)
-    free(symd->ptr.str);
+  
+  //Garbage Collect the old string
+  Garbage_Collection(symd);
+
   symd->ptr.str = new_buffer;
   symd->size = val_left.size() + val_right.size() + 1;
 }
@@ -40,8 +42,10 @@ void Crystal_Text_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
   char* new_buffer = static_cast<char*>(malloc(val_left.size() + val_right.size() + 1));
   strcpy(new_buffer, val_right.c_str());
   strcpy(new_buffer + val_right.size(), val_left.c_str());
-  if(symd->ptr.str)
-    free(symd->ptr.str);
+
+  //Garbage Collect the old string
+  Garbage_Collection(symd);
+
   symd->ptr.str = new_buffer;
   symd->size = val_left.size() + val_right.size() + 1;
 }
@@ -51,8 +55,9 @@ void Crystal_Text_Append_C(Crystal_Symbol* symd, const char* str, unsigned lengt
   char* new_buffer = static_cast<char*>(malloc(symd->ptr.sym->size + length + 1));
   strcpy(new_buffer, symd->ptr.sym->ptr.str);
   strcpy(new_buffer + strlen(symd->ptr.sym->ptr.str), str);
-
-  free(symd->ptr.str);
+  
+  //Garbage Collect the old string
+  Garbage_Collection(symd);
 
   symd->ptr.sym->ptr.str = new_buffer;
   symd->ptr.sym->size = symd->size + length;
@@ -62,8 +67,9 @@ void Crystal_Text_Append_CR(Crystal_Symbol* symd, const char* str, unsigned leng
   char* new_buffer = static_cast<char*>(malloc(symd->ptr.sym->size + length + 1));
   strcpy(new_buffer, str);
   strcpy(new_buffer + length, symd->ptr.sym->ptr.str);
-
-  free(symd->ptr.sym->ptr.str);
+  
+  //Garbage Collect the old string
+  Garbage_Collection(symd);
 
   symd->ptr.sym->ptr.str = new_buffer;
   symd->ptr.sym->size = symd->size + length;
@@ -77,6 +83,9 @@ void Crystal_Const_Append_T(Crystal_Symbol* symd, const char* str, unsigned leng
   char* new_buffer = static_cast<char*>(malloc(val_left.size() + length + 1));
   strcpy(new_buffer, val_left.c_str());
   strcpy(new_buffer + val_left.size(), str);
+  
+  //Garbage Collect the old string
+  Garbage_Collection(symd);
 
   symd->ptr.sym->ptr.str = new_buffer;
   symd->ptr.sym->size = val_left.size() + length;
@@ -89,12 +98,17 @@ void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned len
   char* new_buffer = static_cast<char*>(malloc(val_left.size() + length + 1));
   strcpy(new_buffer, str);
   strcpy(new_buffer + length, val_left.c_str());
+  
+  //Garbage Collect the old string
+  Garbage_Collection(symd);
 
   symd->ptr.sym->ptr.str = new_buffer;
   symd->ptr.sym->size = val_left.size() + length;
 }
 void Construct_Array(Crystal_Symbol* symd, unsigned size, Crystal_Symbol* ary)
 {
+  Garbage_Collection(symd);
+
   symd->ptr.sym = reinterpret_cast<Crystal_Symbol*>(calloc(1, sizeof(Crystal_Symbol)));
   symd->ptr.sym->type = CRY_ARRAY;
   symd->ptr.sym->size = size;
@@ -104,5 +118,16 @@ void Construct_Array(Crystal_Symbol* symd, unsigned size, Crystal_Symbol* ary)
     symd->ptr.sym->capacity = 0x20;
   else
     symd->ptr.sym->capacity = size;
+  symd->type = CRY_POINTER;
+}
+void Construct_String(Crystal_Symbol* symd,  char* str, unsigned size)
+{
+  Garbage_Collection(symd);
+
+  symd->ptr.sym = reinterpret_cast<Crystal_Symbol*>(calloc(1, sizeof(Crystal_Symbol)));
+  symd->ptr.sym->type = CRY_STRING;
+  symd->ptr.sym->size = size;
+  symd->ptr.sym->ptr.str = str;
+  symd->ptr.sym->ref_cnt = 1;
   symd->type = CRY_POINTER;
 }

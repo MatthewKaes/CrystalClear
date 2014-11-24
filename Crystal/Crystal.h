@@ -17,7 +17,7 @@ typedef unsigned char BYTE;
 
 //Controls Higherarchy
 enum Symbol_Type : char { CRY_NIL = 0, CRY_BOOL, CRY_INT, CRY_INT64, CRY_DOUBLE, CRY_TEXT, 
-                           CRY_STRING, CRY_POINTER, CRY_ARRAY,  CRY_CLASS_OBJ, CRY_SYMS };
+                           CRY_POINTER, CRY_STRING, CRY_ARRAY,  CRY_CLASS_OBJ, CRY_SYMS };
 
 enum Data_Type : char { DAT_NIL, DAT_LOOKUP, DAT_INT, DAT_INT64, DAT_DOUBLE, DAT_BOOL, 
                         DAT_LOCAL, DAT_STRING, DAT_OP, DAT_FUNCTION, DAT_BIFUNCTION, DAT_ARRAY, 
