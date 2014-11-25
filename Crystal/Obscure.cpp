@@ -49,7 +49,6 @@ void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source)
   case CRY_TEXT:
   case CRY_STRING:
     Crystal_Text_Append(dest, source);
-    dest->type = CRY_STRING;
     return;
   default:
     dest->type = CRY_NIL;
@@ -471,7 +470,6 @@ void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
   case CRY_TEXT:
   case CRY_STRING:
     Crystal_Text_AppendR(dest, source);
-    dest->type = CRY_STRING;
     return;
   default:
     dest->type = CRY_NIL;

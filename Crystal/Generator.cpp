@@ -134,9 +134,15 @@ bool Function_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
     target->Push(Mem_Conv(target, &(*syms)[i + syms->size() / 2]));
   }
   if(result->type == DAT_NIL)
+  {
     target->Call(base->str.c_str());
+    target->Pop(static_cast<int>(syms->size() / 2));
+  }
   else
+  {
     target->Call(base->str.c_str(), MEM(*result));
+    target->Pop(static_cast<int>(syms->size() / 2) + 1);
+  }
 
   return true;
 }

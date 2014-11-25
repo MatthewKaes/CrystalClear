@@ -150,7 +150,6 @@ void Crystal_Compiler::Call(const char* cry_function, unsigned var)
   Machine->Push(EAX);
   //Call Crystal function
   Machine->Call(cry_function);
-  Machine->Pop(4);
   if(var != CRY_NULL)
   {
     states[var].Obscurity();
@@ -368,6 +367,9 @@ void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
 }
 void Crystal_Compiler::Copy(unsigned dest, unsigned source)
 {
+  if(dest == source)
+    return;
+
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   unsigned offset_source = stack_size - source * VAR_SIZE;
   if(states[dest].Collection())

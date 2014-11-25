@@ -100,7 +100,7 @@ def main()
   print("y: " + y + "\n")
   
   k = input
-  print("The type of input was a " + type(k))
+  print_color("The type of input was a " + type(k), 12)
   
   return "Done"
 end
