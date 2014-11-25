@@ -1,10 +1,9 @@
 def main()
   val = "World"
   x = [2, 4, true, "Hello", 6.10, nil, false, val]
-  print_color("Array X:", 11)
+  print_color("Array X:", 11) 
   print(x)
   print("Size: " + size(x))
-  test = "Hello"
-  print(test + val)
-  return test + val
+
+  return x
 end

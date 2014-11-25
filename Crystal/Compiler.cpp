@@ -624,7 +624,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
           converted.assign("nil");
         }
         Machine->Mov(EAX, offset_dest - DATA_LOWER);
-        Machine->Load_Register(EBX, static_cast<int>(converted.length() + 1));
+        Machine->Load_Register(EBX, static_cast<int>(converted.length()) + 1);
         Machine->Add(EBX, EAX);
         Machine->Push(EBX);
         Machine->Call(malloc);
@@ -632,13 +632,14 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
         if(left)
         {
           Machine->Strcpy(EAX, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER);
-          Machine->Strcpy(EDI, static_cast<unsigned>(Machine->String_Address(converted.c_str())), converted.length() + 1, true);
+          Machine->Strcpy(EDI, static_cast<unsigned>(Machine->String_Address(converted.c_str())), converted.length(), true, true);
         }
         else
         {
           Machine->Strcpy(EAX, static_cast<unsigned>(Machine->String_Address(converted.c_str())), converted.length(), true);
           Machine->Strcpy(EDI, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER, false, true);
         }
+        Machine->Dec(EBX);
         Machine->Push(EBX);
         Machine->Push(EAX);
         Push(dest);

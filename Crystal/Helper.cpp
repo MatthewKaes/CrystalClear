@@ -187,7 +187,7 @@ void Array_Add_Stack(Crystal_Symbol* sym_stack, int index, Crystal_Symbol* ary)
 
 void Garbage_Collection(Crystal_Symbol* sym)
 {
-  if(sym->ptr.str != 0)
+  if(sym->ptr.sym != 0)
   {
     sym->ptr.sym->ref_cnt -= 1;
     if(sym->ptr.sym->ref_cnt == 0)
@@ -200,7 +200,10 @@ void Garbage_Collection(Crystal_Symbol* sym)
 void Crystal_Free(Crystal_Symbol* sym)
 {
   //Free contents
-  free(sym->ptr.sym);
+  if(sym->type == CRY_STRING)
+    free(sym->ptr.str);
+  else
+    free(sym->ptr.sym);
   //Free actual symbol
   free(sym);
 }
