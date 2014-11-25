@@ -1,6 +1,7 @@
 #include "Library.h"
 #include "Helper.h"
 #include "Lexicon.h"
+#include "Function.h"
 #include <windows.h>
 #include <boost\date_time.hpp>
 
@@ -42,13 +43,9 @@ void Crystal_Input(Crystal_Symbol* ret_sym)
     }
   else
   {
-    if(ret_sym->ptr.str)
-      free(ret_sym->ptr.str);
-    ret_sym->type = CRY_STRING;
     char* value = (char*)malloc(str.size() + 1);
     strcpy(value, str.c_str());
-    ret_sym->ptr.str = value;
-    ret_sym->size = str.size() + 1;
+    Construct_String(ret_sym, value, str.size());
   }
 }
 void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbol* conversion)
@@ -185,11 +182,13 @@ void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   case CRY_DOUBLE:
     ret_sym->text = "DOUBLE";
     break;
-  case CRY_ARRAY:
-    ret_sym->text = "ARRAY";
-    break;
   case CRY_POINTER:
-    ret_sym->text = "OBJECT";
+    if(sym->ptr.sym->type == CRY_STRING)
+      ret_sym->text = "STRING";
+    else if(sym->ptr.sym->type == CRY_ARRAY)
+      ret_sym->text = "ARRAY";
+    else
+      ret_sym->text = "OBJECT";
     break;
   case CRY_CLASS_OBJ:
     ret_sym->text = "CLASS";
@@ -199,9 +198,6 @@ void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
     break;
   case CRY_TEXT:
     ret_sym->text = "TEXT";
-    break;
-  case CRY_STRING:
-    ret_sym->text = "STRING";
     break;
   }
   ret_sym->size = strlen(ret_sym->text);

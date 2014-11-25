@@ -2252,6 +2252,7 @@ void Crystal_Compiler::Garbage_Collection(unsigned var)
     //Push the pointer unto the stack and free it.
     Machine->Push(EAX);
     Machine->Call(Crystal_Free);
+    Pop(1);
     //Exit
     Machine->Make_Label(label);
     states[var].Collected();
