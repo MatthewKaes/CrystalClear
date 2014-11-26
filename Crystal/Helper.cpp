@@ -203,7 +203,20 @@ void Crystal_Free(Crystal_Symbol* sym)
   if(sym->type == CRY_STRING)
     free(sym->ptr.str);
   else
+  {
+    for(unsigned i = 0; i < sym->size; i++)
+    {
+      if(sym->ptr.sym[i].ptr.sym != 0)
+      {
+        sym->ptr.sym[i].ptr.sym->ref_cnt -= 1;
+        if(sym->ptr.sym[i].ptr.sym->ref_cnt == 0)
+        {
+          Crystal_Free(sym->ptr.sym[i].ptr.sym);
+        }
+      }
+    }
     free(sym->ptr.sym);
+  }
   //Free actual symbol
   free(sym);
 }

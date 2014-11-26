@@ -5,6 +5,7 @@
 #include "Compiler.h"
 #include "Interpreter.h"
 #include "Lexicon.h"
+#include "Helper.h"
 
 #if INCLUDE_PYTHON
 #include <boost\python.hpp>
@@ -95,10 +96,7 @@ int main(int argc, const char **argv)
     Crystal_Print(&ret_sym, &exit_sym);
 
     //Clean up Crystal Leftovers
-    if(exit_sym.type == CRY_POINTER)
-    {
-      free(exit_sym.ptr.sym);
-    }
+    Garbage_Collection(&exit_sym);
   }
   else
   {

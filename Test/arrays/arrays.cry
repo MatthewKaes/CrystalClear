@@ -1,5 +1,6 @@
 def main()
-  val = "World"
+  val = "Crystal"
+  val += " " + "Clear"
   x = [2, 4, true, "Hello", 6.10, nil, false, val]
   print_color("Array X:", 11) 
   print(x)
