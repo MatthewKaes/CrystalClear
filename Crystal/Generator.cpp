@@ -56,6 +56,12 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
       return Equal_Gen;
     }
     break;
+  case '.':
+    if(sym->str.c_str()[1] == '.' && sym->str.c_str()[2] == '.')
+    {
+      return Range_Gen;
+    }
+    break;
   case '!':
     switch(sym->str.c_str()[1])
     {

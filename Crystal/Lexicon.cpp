@@ -97,7 +97,10 @@ void Resolve_Type(Crystal_Data* sym)
   }
   else if(sym->str.find('.', 1) != std::string::npos)
   {
-    sym->type = DAT_DOUBLE;
+    if(sym->str[0] == '.')
+      sym->type = DAT_OP;
+    else
+      sym->type = DAT_DOUBLE;
     sym->d = str_to_d(&sym->str);
   }
   else if(!sym->str.compare("true") || !sym->str.compare("false"))

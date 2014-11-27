@@ -34,4 +34,5 @@ bool Exponent_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
 
 bool Swap_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result);
 bool Array_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result);
+bool Range_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result);
 #endif

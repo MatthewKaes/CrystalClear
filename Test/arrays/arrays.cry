@@ -5,6 +5,12 @@ def main()
   print_color("Array X:", 11) 
   print(x)
   print("Size: " + size(x))
+  print("")
+
+  y = 10 ... 100.0 / 2.3
+  print_color("Range Y:", 11) 
+  print(y)
+  print("Size: " + size(y))
 
   return x
 end

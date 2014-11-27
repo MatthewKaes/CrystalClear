@@ -915,6 +915,20 @@ void x86_Machine::FPU_Store(unsigned address)
   *p++ = FPU_DOUBLE_OP;
   Put_Addr(address, FPU_FSTP);
 }
+void x86_Machine::FPU_Store()
+{
+  //Make room
+  *p++ = STK_POP;
+  *p++ = SUB_ESP;
+  *p++ = BYTES_8;
+
+  //store on stack
+  //double
+  *p++ = FPU_DOUBLE_OP;
+  *p++ = FPU_ADR;
+  *p++ = LEA_EAX;
+  pushed_bytes += BYTES_4;
+}
 void x86_Machine::FPU_Cmp(FPU_REGISTERS reg)
 {
   *p++ = FPU_COMIP;

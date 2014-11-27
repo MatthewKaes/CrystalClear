@@ -99,6 +99,31 @@ void Construct_Array(Crystal_Symbol* symd, unsigned size, Crystal_Symbol* ary)
     symd->ptr.sym->capacity = size;
   symd->type = CRY_POINTER;
 }
+void Construct_Range(Crystal_Symbol* symd, int left, int right)
+{
+  Garbage_Collection(symd);
+
+  int size = right - left;
+  if(size < 0)
+    size = 0;
+
+  Crystal_Symbol* ary = reinterpret_cast<Crystal_Symbol*>(calloc(size, sizeof(Crystal_Symbol)));
+  for(int size = left; size < right; size++)
+  {
+    ary[size - left].type = CRY_INT;
+    ary[size - left].i32 = size;
+  }
+  symd->ptr.sym = reinterpret_cast<Crystal_Symbol*>(calloc(1, sizeof(Crystal_Symbol)));
+  symd->ptr.sym->type = CRY_ARRAY;
+  symd->ptr.sym->size = size;
+  symd->ptr.sym->ptr.sym = ary;
+  symd->ptr.sym->ref_cnt = 1;
+  if(size < 0x20)
+    symd->ptr.sym->capacity = 0x20;
+  else
+    symd->ptr.sym->capacity = size;
+  symd->type = CRY_POINTER;
+}
 void Construct_String(Crystal_Symbol* symd,  char* str, unsigned size)
 {
   Garbage_Collection(symd);

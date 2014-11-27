@@ -84,7 +84,8 @@ int main(int argc, const char **argv)
     //========================
     //variable in x
     Crystal_Symbol exit_sym;
-    Crystal_Symbol ret_sym;
+    memset(&exit_sym, 0, sizeof(exit_sym));
+
     if(comp.Execute(&exit_sym))
     {
       printf("CRYSTAL ERROR: could not file entry point.\nA file needs to include a \"main\" package.\n");
@@ -93,7 +94,7 @@ int main(int argc, const char **argv)
 
     //Print the exit sym
     printf("\nCrystal Clear exited with symbol:\n");
-    Crystal_Print(&ret_sym, &exit_sym);
+    Crystal_Print(&exit_sym, &exit_sym);
 
     //Clean up Crystal Leftovers
     Garbage_Collection(&exit_sym);

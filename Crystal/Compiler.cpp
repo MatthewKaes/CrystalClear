@@ -155,6 +155,23 @@ void Crystal_Compiler::Call(const char* cry_function, unsigned var)
     states[var].Obscurity();
   }
 }
+void Crystal_Compiler::Convert(unsigned reg, Symbol_Type type)
+{
+  Push(reg);
+  switch(type)
+  {
+  case CRY_INT:
+    Call(Parse_Int);
+    Pop(1);
+    Push(EAX);
+    break;
+  case CRY_DOUBLE:
+    Call(Parse_Double);
+    Pop(1);
+    Machine->FPU_Store();
+    break;
+  }
+}
 void Crystal_Compiler::Allocate(unsigned sym_count)
 {
   //Calloc Memory
@@ -180,6 +197,18 @@ void Crystal_Compiler::Make_Array(unsigned var, unsigned size)
   Machine->Push(static_cast<int>(size));
   Push(var);
   Machine->Call(Construct_Array);
+  Machine->Pop(sizeof(int) * 3);
+  //Set up types for compiler use
+  states[var].Set(CRY_POINTER);
+  //Corrupt the state of the object
+  if(lookups.size())
+    lookups.back().corruptions[var] = true;
+}
+void Crystal_Compiler::Make_Range(unsigned var)
+{
+  //Creation of the array object
+  Push(var);
+  Machine->Call(Construct_Range);
   Machine->Pop(sizeof(int) * 3);
   //Set up types for compiler use
   states[var].Set(CRY_POINTER);

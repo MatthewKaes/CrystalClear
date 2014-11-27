@@ -198,3 +198,56 @@ bool Array_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal
   target->Make_Array(MEMR(result), syms->size());
   return true;
 }
+bool Range_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  //Value Right
+  switch((*syms)[1].type)
+  {
+  case DAT_NIL:
+    target->Push_C(0);
+    break;
+  case DAT_BOOL:
+    target->Push_C(static_cast<int>((*syms)[1].b));
+    break;
+  case DAT_INT:
+    target->Push_C((*syms)[1].i32);
+    break;
+  case DAT_DOUBLE:
+    target->Push_C(static_cast<int>((*syms)[1].d));
+    break;
+  case DAT_STRING:
+    target->Push_C(atoi((*syms)[1].str.c_str()));
+    break;
+  case DAT_REGISTRY:
+  case DAT_LOCAL:
+    target->Convert(MEM((*syms)[1]), CRY_INT);
+    break;
+  }
+
+  //Value Left
+  switch((*syms)[0].type)
+  {
+  case DAT_NIL:
+    target->Push_C(0);
+    break;
+  case DAT_BOOL:
+    target->Push_C(static_cast<int>((*syms)[0].b));
+    break;
+  case DAT_INT:
+    target->Push_C((*syms)[0].i32);
+    break;
+  case DAT_DOUBLE:
+    target->Push_C(static_cast<int>((*syms)[0].d));
+    break;
+  case DAT_STRING:
+    target->Push_C(atoi((*syms)[0].str.c_str()));
+    break;
+  case DAT_REGISTRY:
+  case DAT_LOCAL:
+    target->Convert(MEM((*syms)[0]), CRY_INT);
+    break;
+  }
+
+  target->Make_Range(MEMR(result));
+  return true;
+}

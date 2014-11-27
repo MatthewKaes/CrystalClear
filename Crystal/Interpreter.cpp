@@ -216,6 +216,12 @@ void Crystal_Interpreter::Format_Code()
       {
         code_out.push_back(*code_ptr++);
       }
+    case '.':
+      while(*code_ptr == '.')
+      {
+        code_out.push_back(*code_ptr++);
+      }
+      break;
     case '=':    
     case '|':
     case '&':   
@@ -241,6 +247,10 @@ void Crystal_Interpreter::Format_Code()
         {
           if(*code_ptr == '.')
           {
+            if(!is_number(*(code_ptr + 1)))
+            {
+              break;
+            }
             dot = true;
           }
           code_out.push_back(*code_ptr++);

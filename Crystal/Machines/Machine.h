@@ -146,6 +146,7 @@ public:
   virtual void FPU_Loadd(unsigned address) = 0;
   virtual void FPU_Loadi(unsigned address) = 0;
   virtual void FPU_Store(unsigned address) = 0;
+  virtual void FPU_Store() = 0;
   //OP instructions
   virtual void FPU_Cmp(FPU_REGISTERS reg = ST1) = 0;
   //Pop instructions
