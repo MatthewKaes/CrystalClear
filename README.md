@@ -11,7 +11,7 @@ These are just some of the factors that make dynamic languages.
 
 ##Performance First Language
 
-Crystal Clear solves these problems by breaking it down into two responsibilities: Crystal responsibiliites and Clear responsibilities. Crystal is responsable for compileing code and managing memory  to tackle points 1 and 2. Clear is responsible for resolving the minimum control paths required to execute dynamic code. By doing this Crystal Clear aims to be a performance first language doing the best it can to preform operations as fast as possible. In order to bridge the performance gap between statically compiled languages like C/C++ and traditional high level dynamic languages a number of methods are used.
+Crystal Clear solves these problems by breaking it down into two responsibilities: Crystal responsibilities and Clear responsibilities. Crystal is responsible for compiling code and managing memory to tackle points 1 and 2. Clear is responsible for resolving the minimum control paths required to execute dynamic code. By doing this Crystal Clear aims to be a performance first language doing the best it can to preform operations as fast as possible. In order to bridge the performance gap between statically compiled languages like C/C++ and traditional high level dynamic languages a number of methods are used.
 
 ##The "Crystal"
 
@@ -21,7 +21,7 @@ The key feature of Crystal is its use of an AOT (Ahead of Time) Compiler to turn
 
 ###Resource Acquisition Is Initialization
 
-Variables have function scooping rather than standard scooping techniques making it so variables are easy to construct and destruct. Rather than standard garbage collection variables are compiled to know their lifetime using clarity filters so they are only cleaned up when dynamic data reaches it's lifetime. Dynamic data is always created when it's aquired and cleaned up only when necessary to minimize the footprint of memory management on the program.
+Variables have function scooping rather than standard scooping techniques making it so variables are easy to construct and destruct. Rather than standard garbage collection variables are compiled to know their lifetime using clarity filters so they are only cleaned up when dynamic data reaches its lifetime. Dynamic data is always created when it's acquired and cleaned up only when necessary to minimize the footprint of memory management on the program.
 
 ##The "Clear"
 
@@ -29,7 +29,7 @@ Variables have function scooping rather than standard scooping techniques making
 
 Clarity Filters are the main part of what enables Crystal to run as fast as possible. Clarity Filters are used to keep track of all possible states a variable or symbol can take. This allows the compiler to only produce the minimum amount of machine code to resolve any symbol operation at runtime. In some cases this even allows for static compiling when symbols only ever take on a single type at any time. 
 
-An example snippit of how clarity filters work under the hood can be found on my blog [here](http://crystalclearprogramming.blogspot.com/2014/06/clarity-im-going-insane.html).
+An example snippet of how clarity filters work under the hood can be found on my blog [here](http://crystalclearprogramming.blogspot.com/2014/06/clarity-im-going-insane.html).
 
 ###Clear Hooks
 
@@ -39,7 +39,7 @@ Sometimes the code you are looking to write already exist or you want more contr
 
 It is possible to extend the BIP (built in packages) of Crystal Clear by exporting a specially configured DLL. These DLL are automatically loaded and wired into the Interpreter. Clear Exports can manipulate Pre and Post build behavior along with execution behavior. Clear Exports allow for a "plug and play" model allowing end users to change the behavior of Crystal Clear without having to touch a bit of code. 
 
-As an exmaple, [Crystal Sound](https://github.com/MatthewKaes/CrystalSound) is a Clear Export used to wrap FMOD to bring audio functionallity to Crystal in a plugable way.
+As an example, [Crystal Sound](https://github.com/MatthewKaes/CrystalSound) is a Clear Export used to wrap FMOD to bring audio functionality to Crystal in a pluggable way.
 
 ###Python
 Crystal also has hooks for Python using [Boost.Python](http://www.boost.org/doc/libs/1_56_0/libs/python/doc/). If a version of python is installed and the python libraries are built for boost then scripts can be run directly from Crystal. 
@@ -51,7 +51,7 @@ Crystal is built in the hopes to merge the abilities of high level languages lik
 
 ##Requirements
 
-Crystal Clear requires [Boost 1.56 or newer to build](http://sourceforge.net/projects/boost/files/boost/1.56.0/). If you choose to use the visual studio 2010 solution then make sure to set up boost in C:\Program Files\boost\boost_1_56_0\. You can find out more about building boost [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html). Crystal Clear currently has several dependencies on Windows but in the future Crystal will be made to run on any operating system. The only machine currently implemented for Crystal is the x86 machine. Other Archetectures are not supported at this time.
+Crystal Clear requires [Boost 1.56 or newer to build](http://sourceforge.net/projects/boost/files/boost/1.56.0/). If you choose to use the visual studio 2010 solution then make sure to set up boost in C:\Program Files\boost\boost_1_56_0\. You can find out more about building boost [here](http://www.boost.org/doc/libs/1_56_0/more/getting_started/windows.html). Crystal Clear currently has several dependencies on Windows but in the future Crystal will be made to run on any operating system. The only machine currently implemented for Crystal is the x86 machine. Other architectures are not supported at this time.
 
 For a quick setup using MSVC 10 (Visual studios 2010) you can build boost with the following command in a command window in the boost directory:
 b2 toolset=msvc-10.0 link=static threading=multi variant=release,debug runtime-link=static
