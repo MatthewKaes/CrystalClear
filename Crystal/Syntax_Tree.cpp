@@ -12,8 +12,8 @@ Syntax_Node::Syntax_Node(std::vector<Syntax_Node*>* pool, Syntax_Tree* tree)
 }
 void Syntax_Node::Process(Syntax_Node* node)
 {
-  if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION) &&
-    node->sym.type == DAT_OP && node->sym.str[0] == ',' && node->priority == priority + 1)
+  if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.str[0] == '[') &&
+    node->sym.type == DAT_OP && node->sym.str[0] == ',' && node->priority < priority + Get_Precedence(NULL))
   {
     index += 1;
     if(index >= params.size())
@@ -23,16 +23,6 @@ void Syntax_Node::Process(Syntax_Node* node)
     if(index >= static_cast<unsigned>(sym.i32))
     {
       printf("WARNING: \"%s\" does not take %d arguments.", sym.str.c_str(), index + 1);
-    }
-    return;
-  }
-  else if(sym.type == DAT_OP && sym.str[0] == '[' &&
-          node->sym.type == DAT_OP && node->priority == priority + 12)
-  {
-    index += 1;
-    if(index >= params.size())
-    {
-      params.push_back(0);
     }
     return;
   }
@@ -50,8 +40,8 @@ void Syntax_Node::Process(Syntax_Node* node)
       // treat the array as an object.
       if(!node->sym.str.compare("["))
       {
-        node->priority = Get_Precedence(NULL) - Get_Precedence("[");
         node->index = 0;
+        node->sym.i32 = -1;
       }
     }
   }

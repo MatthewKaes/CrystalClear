@@ -248,7 +248,7 @@ int Printer(Crystal_Symbol* sym)
   {
     std::string val;
     Parse_String(sym, &val);
-    counter += printf("%s", val.c_str()) - 1;
+    counter += printf("%s", val.c_str());
   }
   return counter;
 }

@@ -360,6 +360,11 @@ void Crystal_Interpreter::Process_Package(const char* code)
       {
         precedence++;
         sym.type = DAT_OP;
+
+        //If the i32 segment remains zero it's a bracket operator
+        //if it is set to -1 in the syntax tree it's an array
+        //constructor.
+        sym.i32 = 0;
       }
       else if(sym.str[0] == '(')
       {
@@ -389,38 +394,8 @@ void Crystal_Interpreter::Process_Package(const char* code)
     Special_Processing(&sym);
     
     //Look up nodes that need are unknown
-    if(sym.type == DAT_LOOKUP)
-    {
-      //Crystal package call
-      if(packages.find(sym.str.c_str()) != packages.end())
-      {
-        if(packages[sym.str.c_str()].pt == PGK_EXE)
-        {
-          sym.type = DAT_FUNCTION;
-          sym.i32 = packages[sym.str.c_str()].info.arguments;
-        }
-      }
-      else if(built_in.find(sym.str.c_str()) != built_in.end())
-      {
-        if(built_in[sym.str.c_str()].pt == PGK_EXE)
-        {
-          sym.type = DAT_BIFUNCTION;
-          sym.i32 = built_in[sym.str.c_str()].info.arguments;
-          sym.external = built_in[sym.str.c_str()].function;
-        }
-      }
-      else if(local_map.find(sym.str.c_str()) != local_map.end())
-      {
-        sym.type = DAT_LOCAL;
-        sym.i32 = local_map[sym.str.c_str()];
-      }
-      else
-      {
-        sym.type = DAT_LOCAL;
-        sym.i32 = local_map.size();
-        local_map[sym.str.c_str()] = sym.i32;
-      }
-    }
+    Lookup_Processing(&sym, &local_map);
+
     //Creating the node
     Syntax_Node* new_node = syntax.Acquire_Node();
     *new_node->Acquire() = sym;
@@ -428,6 +403,8 @@ void Crystal_Interpreter::Process_Package(const char* code)
     //Precedence
     if(sym.type == DAT_OP)
       new_node->priority = Get_Precedence(sym.str.c_str()) + Get_Precedence(NULL) * precedence;
+    else if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
+      new_node->priority = Get_Precedence("f") + Get_Precedence(NULL) * precedence;
     else if(sym.type == DAT_STATEMENT)
       new_node->priority = Get_Precedence("k") + Get_Precedence(NULL) * precedence;
     else
@@ -445,6 +422,41 @@ void Crystal_Interpreter::Process_Package(const char* code)
   }
   comp->End_Encode();
   syntax.Reset();
+}
+void Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_map<std::string, unsigned>* local_map)
+{
+  if(sym->type == DAT_LOOKUP)
+  {
+    //Crystal package call
+    if(packages.find(sym->str.c_str()) != packages.end())
+    {
+      if(packages[sym->str.c_str()].pt == PGK_EXE)
+      {
+        sym->type = DAT_FUNCTION;
+        sym->i32 = packages[sym->str.c_str()].info.arguments;
+      }
+    }
+    else if(built_in.find(sym->str.c_str()) != built_in.end())
+    {
+      if(built_in[sym->str.c_str()].pt == PGK_EXE)
+      {
+        sym->type = DAT_BIFUNCTION;
+        sym->i32 = built_in[sym->str.c_str()].info.arguments;
+        sym->external = built_in[sym->str.c_str()].function;
+      }
+    }
+    else if(local_map->find(sym->str.c_str()) != local_map->end())
+    {
+      sym->type = DAT_LOCAL;
+      sym->i32 = (*local_map)[sym->str.c_str()];
+    }
+    else
+    {
+      sym->type = DAT_LOCAL;
+      sym->i32 = local_map->size();
+      (*local_map)[sym->str.c_str()] = sym->i32;
+    }
+  }
 }
 void Crystal_Interpreter::Special_Processing(Crystal_Data* sym)
 {

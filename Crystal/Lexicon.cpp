@@ -378,8 +378,10 @@ unsigned Get_Precedence(const char* sym)
   case ')':
     return -2;
   case 'f':
-  case '[':
     return 11;
+  case '[':
+    //Piority fix for brackets
+    return 11 - Get_Precedence(NULL);
   case ':':
     return 9;
   case '^':
