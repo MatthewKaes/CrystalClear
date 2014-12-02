@@ -47,9 +47,15 @@ void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = resolve;
     return;
   case CRY_TEXT:
-  case CRY_STRING:
     Crystal_Text_Append(dest, source);
     return;
+  case CRY_POINTER:
+    if((dest->type == CRY_POINTER && dest->ptr.sym->type == CRY_STRING) ||
+       (source->type == CRY_POINTER && source->ptr.sym->type == CRY_STRING))
+    {
+      Crystal_Text_Append(dest, source);
+      return;
+    }
   default:
     dest->type = CRY_NIL;
     return;
@@ -468,9 +474,17 @@ void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = resolve;
     return;
   case CRY_TEXT:
-  case CRY_STRING:
     Crystal_Text_AppendR(dest, source);
     return;
+  case CRY_POINTER:
+    Cry_Derefrence(&dest);
+    Cry_Derefrence(&source);
+    resolve = dest->type > source->type ? dest->type : source->type;
+    if(resolve == CRY_STRING)
+    {
+      Crystal_Text_AppendR(dest, source);
+      return;
+    }
   default:
     dest->type = CRY_NIL;
     return;

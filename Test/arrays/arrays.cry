@@ -1,16 +1,14 @@
 def main()
   val = "Crystal"
   val += " " + "Clear"
-  x = [[1, [false, val], 3], 4, true, "Hello", 6.10, nil, false, val]
+  x = [[1, [true, val], 3], 4, true, "Hello", 6.10, nil, false, val]
   print_color("Array X:", 11) 
   print(x)
-  print("Size: " + size(x))
-  #fix + "\n"
-  print("")
+  print("Size: " + size(x) + "\n")
 
   #unrolling an array
-  print_color("Unroll X:", 11) 
-  
+  print_color("Unroll X:", 11)
+
   index = 0
   while(index < size(x))
    print(x[index])
@@ -22,8 +20,7 @@ def main()
   y = 10 ... 100.0 / 6.3 + 5
   print_color("Range Y:", 11) 
   print(y)
-  print("Size: " + size(y))
-  print("")
+  print("Size: " + size(y) + "\n")
 
   #unrolling an array
   print_color("Unroll Y + 10:", 11) 

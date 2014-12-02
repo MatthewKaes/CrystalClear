@@ -3,29 +3,29 @@
 
 int Parse_Int(Crystal_Symbol* sym)
 {
-  if(sym->type == CRY_STRING)
+  switch(sym->type)
   {
-    std::string str(sym->ptr.str);
-    return str_to_i(&str);
-  }
-  if(sym->type == CRY_TEXT)
-  {
-    std::string str(sym->text);
-    return str_to_i(&str);
-  }
-  if(sym->type == CRY_INT)
-  {
+  case CRY_STRING:
+    {
+      std::string str(sym->ptr.str);
+      return str_to_i(&str);
+    }
+  case CRY_TEXT:
+    {
+      std::string str(sym->text);
+      return str_to_i(&str);
+    }
+  case CRY_INT:
     return sym->i32;
-  }
-  if(sym->type == CRY_BOOL)
-  {
+  case CRY_BOOL:
     return sym->b;
-  }
-  if(sym->type == CRY_DOUBLE)
-  {
+  case CRY_DOUBLE:
     return static_cast<int>(sym->d);
+  case CRY_POINTER:
+    return Parse_Int(sym->ptr.sym);
+  default:
+    return 0;
   }
-  return 0;
 }
 int Parse_Bool(Crystal_Symbol* sym)
 {
@@ -35,60 +35,59 @@ int Parse_Bool(Crystal_Symbol* sym)
 }
 double Parse_Double(Crystal_Symbol* sym)
 {
-  if(sym->type == CRY_STRING)
+  switch(sym->type)
   {
-    std::string str(sym->ptr.str);
-    return str_to_d(&str);
-  }
-  if(sym->type == CRY_TEXT)
-  {
-    std::string str(sym->text);
-    return str_to_d(&str);
-  }
-  if(sym->type == CRY_BOOL)
-  {
+  case CRY_STRING:
+    {
+      std::string str(sym->ptr.str);
+      return str_to_d(&str);
+    }
+  case CRY_TEXT:
+    {
+      std::string str(sym->text);
+      return str_to_d(&str);
+    }
+  case CRY_BOOL:
     return sym->b;
-  }
-  if(sym->type == CRY_DOUBLE)
-  {
+  case CRY_DOUBLE:
     return sym->d;
-  }
-  if(sym->type == CRY_INT)
-  {
+  case CRY_INT:
     return sym->i32;
+  case CRY_POINTER:
+    return Parse_Double(sym->ptr.sym);
+  default:
+    return 0.0;
   }
-  return 0.0;
 }
 void Parse_String(Crystal_Symbol* sym, std::string* str)
 {
   str->clear();
-  if(sym->type == CRY_STRING)
+  switch(sym->type)
   {
+  case CRY_STRING:
     str->assign(sym->ptr.str);
-  }
-  else if(sym->type == CRY_TEXT)
-  {
+    return;
+  case CRY_TEXT:
     str->assign(sym->text);
-  }
-  else if(sym->type == CRY_INT)
-  {
+    return;
+  case CRY_INT:
     i_to_str(sym->i32, str);
-  }
-  else if(sym->type == CRY_INT64)
-  {
+    return;
+  case CRY_INT64:
     l_to_str(sym->i64, str);
-  }
-  else if(sym->type == CRY_DOUBLE)
-  {
+    return;
+  case CRY_DOUBLE:
     d_to_str(sym->d, str);
-  }
-  else if(sym->type == CRY_BOOL)
-  {
+    return;
+  case CRY_BOOL:
     b_to_str(sym->b, str);
-  }
-  else if(sym->type == CRY_NIL)
-  {
+    return;
+  case CRY_POINTER:
+    Parse_String(sym->ptr.sym, str);
+    return;
+  case CRY_NIL:
     str->assign("nil");
+    return;
   }
 }
 bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr)
@@ -254,7 +253,8 @@ int Printer(Crystal_Symbol* sym)
 }
 void Copy_Ptr(Crystal_Symbol* res,  Crystal_Symbol* src, int index)
 {
-  Garbage_Collection(res);
+  if(res != src)
+    Garbage_Collection(res);
   *res = src->ptr.sym->ptr.sym[index];
   if(res->type >= CRY_POINTER)
   {
