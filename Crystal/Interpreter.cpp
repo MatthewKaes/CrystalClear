@@ -216,11 +216,14 @@ void Crystal_Interpreter::Format_Code()
       {
         code_out.push_back(*code_ptr++);
       }
+      code_out.push_back(*code_ptr++);
+      break;
     case '.':
       while(*code_ptr == '.')
       {
         code_out.push_back(*code_ptr++);
       }
+      code_out.push_back(*code_ptr++);
       break;
     case '=':    
     case '|':

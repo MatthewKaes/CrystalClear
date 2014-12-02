@@ -163,7 +163,7 @@ void Crystal_Compiler::Convert(unsigned reg, Symbol_Type type)
   case CRY_INT:
     Call(Parse_Int);
     Pop(1);
-    Push(EAX);
+    Machine->Push(EAX);
     break;
   case CRY_DOUBLE:
     Call(Parse_Double);

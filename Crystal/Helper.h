@@ -30,5 +30,6 @@ void Array_Add_Stack(Crystal_Symbol* sym_stack, int index, Crystal_Symbol* ary);
 void Garbage_Collection(Crystal_Symbol* sym);
 void Crystal_Free(Crystal_Symbol* sym);
 int Printer(Crystal_Symbol* sym);
+void Copy_Ptr(Crystal_Symbol* res,  Crystal_Symbol* src, int index);
 
 #endif

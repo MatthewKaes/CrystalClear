@@ -252,3 +252,12 @@ int Printer(Crystal_Symbol* sym)
   }
   return counter;
 }
+void Copy_Ptr(Crystal_Symbol* res,  Crystal_Symbol* src, int index)
+{
+  Garbage_Collection(res);
+  *res = src->ptr.sym->ptr.sym[index];
+  if(res->type >= CRY_POINTER)
+  {
+    res->ptr.sym->ref_cnt++;
+  }
+}

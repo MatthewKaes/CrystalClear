@@ -22,7 +22,7 @@ public:
 
   void Force_Memory(Bytecode* code);
 
-  int priority;
+  unsigned priority;
 
 private:
   Syntax_Node* parent;

@@ -5,12 +5,34 @@ def main()
   print_color("Array X:", 11) 
   print(x)
   print("Size: " + size(x))
+  #fix + "\n"
   print("")
 
-  y = 10 ... 100.0 / 2.3
+  #unrolling an array
+  print_color("Unroll X:", 11) 
+  
+  index = 0
+  while(index < size(x))
+   print(x[index])
+   index += 1
+  end
+
+  print("")
+
+  y = 10 ... 100.0 / 6.3 + 5
   print_color("Range Y:", 11) 
   print(y)
   print("Size: " + size(y))
+  print("")
+
+  #unrolling an array
+  print_color("Unroll Y + 10:", 11) 
+  
+  index = 0
+  while(index < size(y))
+   print(y[index] + 10)
+   index += 1
+  end
 
   return x
 end
