@@ -82,12 +82,12 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
     ret_sym->type = CRY_STRING;
     if(sym->type == CRY_TEXT)
     {
-      if(ret_sym->ptr.str != 0)
-        free(ret_sym->ptr.str);
+      if(ret_sym->str != 0)
+        free(ret_sym->str);
       int size = strlen(sym->text) + 1;
-      ret_sym->ptr.str = static_cast<char*>(malloc(size));
+      ret_sym->str = static_cast<char*>(malloc(size));
       ret_sym->size = size;
-      strcpy(ret_sym->ptr.str, sym->text);
+      strcpy(ret_sym->str, sym->text);
       return;
     }
     if(sym->type == CRY_BOOL)
@@ -106,11 +106,11 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
     {
       conv.assign("nil");
     }
-    if(ret_sym->ptr.str != 0)
-      free(ret_sym->ptr.str);
-    ret_sym->ptr.str = static_cast<char*>(malloc(conv.size() + 1));
+    if(ret_sym->str != 0)
+      free(ret_sym->str);
+    ret_sym->str = static_cast<char*>(malloc(conv.size() + 1));
     ret_sym->size = conv.size() + 1;
-    strcpy(ret_sym->ptr.str, conv.c_str());
+    strcpy(ret_sym->str, conv.c_str());
     return;
   }
   ret_sym->type = CRY_NIL;
@@ -141,9 +141,9 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   if(sym->type == CRY_TEXT)
   {
     int size = strlen(sym->text) + 1;
-    ret_sym->ptr.str = static_cast<char*>(malloc(size));
+    ret_sym->str = static_cast<char*>(malloc(size));
     ret_sym->size = size;
-    strcpy(ret_sym->ptr.str, sym->text);
+    strcpy(ret_sym->str, sym->text);
     return;
   }
   if(sym->type == CRY_BOOL)
@@ -162,9 +162,9 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   {
     conv.assign("nil");
   }
-  ret_sym->ptr.str = static_cast<char*>(malloc(conv.size() + 1));
+  ret_sym->str = static_cast<char*>(malloc(conv.size() + 1));
   ret_sym->size = conv.size() + 1;
-  strcpy(ret_sym->ptr.str, conv.c_str());
+  strcpy(ret_sym->str, conv.c_str());
 }
 void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
@@ -183,9 +183,9 @@ void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
     ret_sym->text = "DOUBLE";
     break;
   case CRY_POINTER:
-    if(sym->ptr.sym->type == CRY_STRING)
+    if(sym->sym->type == CRY_STRING)
       ret_sym->text = "STRING";
-    else if(sym->ptr.sym->type == CRY_ARRAY)
+    else if(sym->sym->type == CRY_ARRAY)
       ret_sym->text = "ARRAY";
     else
       ret_sym->text = "OBJECT";
@@ -226,7 +226,7 @@ void Crystal_Size(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   if(sym->type == CRY_POINTER)
   {
-    ret_sym->i32 = sym->ptr.sym->size;
+    ret_sym->i32 = sym->sym->size;
     ret_sym->type = CRY_INT;
   }
   else

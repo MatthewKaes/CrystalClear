@@ -25,7 +25,7 @@
 #define DATA_LOWER (unsigned)&(((Crystal_Symbol *)0)->LOWWER)
 #define DATA_UPPER (unsigned)&(((Crystal_Symbol *)0)->UPPER)
 #define DATA_TYPE (unsigned)&(((Crystal_Symbol *)0)->type)
-#define DATA_PNTR (unsigned)&(((Crystal_Symbol *)0)->ptr)
+#define DATA_PNTR (unsigned)&(((Crystal_Symbol *)0)->sym)
 
 struct CryPackage
 {

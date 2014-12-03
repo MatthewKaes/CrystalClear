@@ -45,7 +45,7 @@ public:
   union {
     Crystal_Symbol* sym;
     char* str;
-  } ptr;
+  };
   union {
     int i32;
     __int64 i64;

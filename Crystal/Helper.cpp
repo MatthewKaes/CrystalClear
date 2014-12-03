@@ -7,7 +7,7 @@ int Parse_Int(Crystal_Symbol* sym)
   {
   case CRY_STRING:
     {
-      std::string str(sym->ptr.str);
+      std::string str(sym->str);
       return str_to_i(&str);
     }
   case CRY_TEXT:
@@ -22,7 +22,7 @@ int Parse_Int(Crystal_Symbol* sym)
   case CRY_DOUBLE:
     return static_cast<int>(sym->d);
   case CRY_POINTER:
-    return Parse_Int(sym->ptr.sym);
+    return Parse_Int(sym->sym);
   default:
     return 0;
   }
@@ -39,7 +39,7 @@ double Parse_Double(Crystal_Symbol* sym)
   {
   case CRY_STRING:
     {
-      std::string str(sym->ptr.str);
+      std::string str(sym->str);
       return str_to_d(&str);
     }
   case CRY_TEXT:
@@ -54,7 +54,7 @@ double Parse_Double(Crystal_Symbol* sym)
   case CRY_INT:
     return sym->i32;
   case CRY_POINTER:
-    return Parse_Double(sym->ptr.sym);
+    return Parse_Double(sym->sym);
   default:
     return 0.0;
   }
@@ -65,7 +65,7 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
   switch(sym->type)
   {
   case CRY_STRING:
-    str->assign(sym->ptr.str);
+    str->assign(sym->str);
     return;
   case CRY_TEXT:
     str->assign(sym->text);
@@ -83,7 +83,7 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
     b_to_str(sym->b, str);
     return;
   case CRY_POINTER:
-    Parse_String(sym->ptr.sym, str);
+    Parse_String(sym->sym, str);
     return;
   case CRY_NIL:
     str->assign("nil");
@@ -93,8 +93,8 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
 bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr)
 {
   int i = 0;
-  const char* l = syml->type == CRY_TEXT ? syml->text : syml->ptr.str;
-  const char* r = symr->type == CRY_TEXT ? symr->text : symr->ptr.str;
+  const char* l = syml->type == CRY_TEXT ? syml->text : syml->str;
+  const char* r = symr->type == CRY_TEXT ? symr->text : symr->str;
   while(*(l + i) || *(r + i))
   {
     if(*(l + i) != *(r + i))
@@ -106,12 +106,12 @@ bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr)
 void Stack_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from)
 {
   sym_stack->i64 = sym_from->i64;
-  sym_stack->ptr = sym_from->ptr;
+  sym_stack->sym = sym_from->sym;
   sym_stack->type = sym_from->type;
   //Up ref count for symbols that need it.
   if(sym_stack->type >= CRY_POINTER)
   {
-    sym_stack->ptr.sym->ref_cnt += 1;
+    sym_stack->sym->ref_cnt += 1;
   }
 }
 void Power_Syms(Crystal_Symbol* syml, Crystal_Symbol* symr)
@@ -130,7 +130,7 @@ void Cry_Derefrence(Crystal_Symbol** sym)
 {
   if((*sym)->type == CRY_POINTER)
   {
-    *sym = (*sym)->ptr.sym;
+    *sym = (*sym)->sym;
   }
 }
 //Array functions
@@ -160,61 +160,61 @@ void Array_Add_Text(const char* text, int index,  Crystal_Symbol* ary)
 }
 void Array_Add_Var(Crystal_Symbol* sym, int index, Crystal_Symbol* ary)
 {
-  Stack_Copy(ary->ptr.sym + index, sym);
+  Stack_Copy(ary->sym + index, sym);
 }
 void Array_Add_Stack(Crystal_Symbol* sym_stack, int index, Crystal_Symbol* ary)
 {
   if(sym_stack->type == CRY_STRING)
   {
     ary[index].size = sym_stack->size;
-    ary[index].text = sym_stack->ptr.str;
+    ary[index].text = sym_stack->str;
     ary[index].type = CRY_TEXT;
     return;
   }
   else
   {
     ary[index].i64 = sym_stack->i64;
-    ary[index].ptr = sym_stack->ptr;
+    ary[index].sym = sym_stack->sym;
     ary[index].type = sym_stack->type;
     //Up ref count for symbols that need it.
     if(sym_stack->type >= CRY_POINTER)
     {
-      sym_stack->ptr.sym->ref_cnt += 1;
+      sym_stack->sym->ref_cnt += 1;
     }
   }
 }
 
 void Garbage_Collection(Crystal_Symbol* sym)
 {
-  if(sym->ptr.sym != 0)
+  if(sym->sym != 0)
   {
-    sym->ptr.sym->ref_cnt -= 1;
-    if(sym->ptr.sym->ref_cnt == 0)
+    sym->sym->ref_cnt -= 1;
+    if(sym->sym->ref_cnt == 0)
     {
-      Crystal_Free(sym->ptr.sym);
+      Crystal_Free(sym->sym);
     }
-    sym->ptr.sym = 0;
+    sym->sym = 0;
   }
 }
 void Crystal_Free(Crystal_Symbol* sym)
 {
   //Free contents
   if(sym->type == CRY_STRING)
-    free(sym->ptr.str);
+    free(sym->str);
   else
   {
     for(unsigned i = 0; i < sym->size; i++)
     {
-      if(sym->ptr.sym[i].ptr.sym != 0)
+      if(sym->sym[i].sym != 0)
       {
-        sym->ptr.sym[i].ptr.sym->ref_cnt -= 1;
-        if(sym->ptr.sym[i].ptr.sym->ref_cnt == 0)
+        sym->sym[i].sym->ref_cnt -= 1;
+        if(sym->sym[i].sym->ref_cnt == 0)
         {
-          Crystal_Free(sym->ptr.sym[i].ptr.sym);
+          Crystal_Free(sym->sym[i].sym);
         }
       }
     }
-    free(sym->ptr.sym);
+    free(sym->sym);
   }
   //Free actual symbol
   free(sym);
@@ -224,18 +224,18 @@ int Printer(Crystal_Symbol* sym)
   int counter = 0;
   if(sym->type == CRY_POINTER)
   {
-    counter += Printer(sym->ptr.sym);
+    counter += Printer(sym->sym);
   }
   else if(sym->type == CRY_STRING)
   {
-    counter += printf("%s", sym->ptr.str);
+    counter += printf("%s", sym->str);
   }
   else if(sym->type == CRY_ARRAY)
   {
     counter += printf("[");
     for(unsigned i = 0; i < sym->size; i++)
     {
-      counter += Printer(&sym->ptr.sym[i]);
+      counter += Printer(&sym->sym[i]);
       if(i != sym->size - 1)
       {
         counter += printf(", ");
@@ -255,9 +255,9 @@ void Copy_Ptr(Crystal_Symbol* res,  Crystal_Symbol* src, int index)
 {
   if(res != src)
     Garbage_Collection(res);
-  *res = src->ptr.sym->ptr.sym[index];
+  *res = src->sym->sym[index];
   if(res->type >= CRY_POINTER)
   {
-    res->ptr.sym->ref_cnt++;
+    res->sym->ref_cnt++;
   }
 }

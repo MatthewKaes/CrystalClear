@@ -50,8 +50,8 @@ void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source)
     Crystal_Text_Append(dest, source);
     return;
   case CRY_POINTER:
-    if((dest->type == CRY_POINTER && dest->ptr.sym->type == CRY_STRING) ||
-       (source->type == CRY_POINTER && source->ptr.sym->type == CRY_STRING))
+    if((dest->type == CRY_POINTER && dest->sym->type == CRY_STRING) ||
+       (source->type == CRY_POINTER && source->sym->type == CRY_STRING))
     {
       Crystal_Text_Append(dest, source);
       return;
