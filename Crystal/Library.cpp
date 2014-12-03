@@ -82,12 +82,11 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
     ret_sym->type = CRY_STRING;
     if(sym->type == CRY_TEXT)
     {
-      if(ret_sym->str != 0)
-        free(ret_sym->str);
-      int size = strlen(sym->text) + 1;
-      ret_sym->str = static_cast<char*>(malloc(size));
+      int size = strlen(sym->text);
+      char* str = static_cast<char*>(malloc(size + 1));
       ret_sym->size = size;
-      strcpy(ret_sym->str, sym->text);
+      strcpy(str, sym->text);
+      Construct_String(ret_sym, str, size);
       return;
     }
     if(sym->type == CRY_BOOL)
@@ -106,11 +105,10 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
     {
       conv.assign("nil");
     }
-    if(ret_sym->str != 0)
-      free(ret_sym->str);
-    ret_sym->str = static_cast<char*>(malloc(conv.size() + 1));
-    ret_sym->size = conv.size() + 1;
-    strcpy(ret_sym->str, conv.c_str());
+    char* str = static_cast<char*>(malloc(conv.size() + 1));
+    int size = conv.size();
+    strcpy(str, conv.c_str());
+    Construct_String(ret_sym, str, size);
     return;
   }
   ret_sym->type = CRY_NIL;
@@ -140,10 +138,11 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   ret_sym->type = CRY_STRING;
   if(sym->type == CRY_TEXT)
   {
-    int size = strlen(sym->text) + 1;
-    ret_sym->str = static_cast<char*>(malloc(size));
+    int size = strlen(sym->text);
+    char* str = static_cast<char*>(malloc(size + 1));
     ret_sym->size = size;
-    strcpy(ret_sym->str, sym->text);
+    strcpy(str, sym->text);
+    Construct_String(ret_sym, str, size);
     return;
   }
   if(sym->type == CRY_BOOL)
@@ -162,9 +161,10 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   {
     conv.assign("nil");
   }
-  ret_sym->str = static_cast<char*>(malloc(conv.size() + 1));
-  ret_sym->size = conv.size() + 1;
-  strcpy(ret_sym->str, conv.c_str());
+  char* str = static_cast<char*>(malloc(conv.size() + 1));
+  int size = conv.size();
+  strcpy(str, conv.c_str());
+  Construct_String(ret_sym, str, size);
 }
 void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
