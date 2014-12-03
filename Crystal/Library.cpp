@@ -140,7 +140,6 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   {
     int size = strlen(sym->text);
     char* str = static_cast<char*>(malloc(size + 1));
-    ret_sym->size = size;
     strcpy(str, sym->text);
     Construct_String(ret_sym, str, size);
     return;
@@ -263,11 +262,41 @@ void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   // Retrieve the main module's namespace
   boost::python::object global(main.attr("__dict__"));
   
-  //Execute the code
+  // Execute the code
 	boost::python::object result;
   result = boost::python::exec(code, global, global);
 
-  //Currently no conversion from Python->Crystal so return nil
+  // Here we try to pull out something useful for Crystal
+  // Integer Conversion
+  boost::python::extract<int> conv_int(result);
+  if (conv_int.check())
+  {
+    ret_sym->type = CRY_INT;
+    ret_sym->i32 = conv_int();
+    return;
+  }
+  
+  // Double Conversion
+  boost::python::extract<double> conv_double(result);
+  if (conv_double.check())
+  {
+    ret_sym->type = CRY_DOUBLE;
+    ret_sym->d = conv_double();
+    return;
+  }
+
+  // String Conversion
+  boost::python::extract<std::string> conv_string(result);
+  if (conv_string.check())
+  {
+    std::string val = conv_string();
+    char* str = static_cast<char*>(malloc(val.size() + 1));
+    strcpy(str, val.c_str());
+    Construct_String(ret_sym, str, val.size());
+    return;
+  }
+
+  //Failed to do any known conversions
   ret_sym->type = CRY_NIL;
 }
 #else

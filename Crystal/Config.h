@@ -7,7 +7,7 @@
 //=================================
 
 //Requires Python 2.2 or newer
-#define INCLUDE_PYTHON 0
+#define INCLUDE_PYTHON 1
 #define PYTHON_SCRIPT_SIZE 4096
 
 #endif

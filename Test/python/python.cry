@@ -2,7 +2,8 @@
 
 def main()
   print_color("Calling Python Script", 11)
-  python("script.py")
+  x = python("script.py")
+  print("result: " + x)
   print_color("First 10 fibonacci numbers", 10)
   python("fibonacci.py")
   return "Done"
