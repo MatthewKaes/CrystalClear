@@ -50,7 +50,7 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(abs, Crystal_Abs, 1);
 
   //Hooks to other langauges
-  REGISTER_FUNCTION(python, Crystal_Python, 1);
+  REGISTER_FUNCTION(python, Crystal_Python, 2);
   
 #if _DEBUG
   //Load extensions

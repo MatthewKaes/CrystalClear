@@ -236,64 +236,82 @@ void Crystal_Size(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 
 #if INCLUDE_PYTHON
 #include <boost\python.hpp>
-void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbol* func)
 {
-  //Get realitive path of the project, not where Crystal is
-  //running.
-  std::string val;
-  Parse_String(sym, &val);
-  val = CRY_ROOT + ("\\" + val);
+  try{
+    //Get realitive path of the project, not where Crystal is
+    //running.
+    std::string val;
+    Parse_String(sym, &val);
+    val = CRY_ROOT + ("\\" + val);
 
-  //Load the code
-  FILE* f = fopen(val.c_str(), "r");
-  char code[PYTHON_SCRIPT_SIZE];
-  unsigned code_size = fread(code, 1, PYTHON_SCRIPT_SIZE, f);
-  //Check if code is to large.
-  if(code_size > PYTHON_SCRIPT_SIZE)
-  {
-    printf("PYTHON FILE %s IS TO LARGE!\nIncrease Python side in Config.h", val.c_str());
-    ret_sym->type = CRY_NIL;
-    return;
-  }
-  code[code_size] = 0;
-  
-  // Retrieve the main module
-  boost::python::object main = boost::python::import("__main__");
-  // Retrieve the main module's namespace
-  boost::python::object global(main.attr("__dict__"));
-  
-  // Execute the code
-	boost::python::object result;
-  result = boost::python::exec(code, global, global);
+    std::string py_func;
+    Parse_String(func, &py_func);
+    if(!py_func.size())
+      py_func.assign("nil");
 
-  // Here we try to pull out something useful for Crystal
-  // Integer Conversion
-  boost::python::extract<int> conv_int(result);
-  if (conv_int.check())
-  {
-    ret_sym->type = CRY_INT;
-    ret_sym->i32 = conv_int();
-    return;
-  }
+    //Load the code
+    FILE* f = fopen(val.c_str(), "r");
+    char code[PYTHON_SCRIPT_SIZE];
+    unsigned code_size = fread(code, 1, PYTHON_SCRIPT_SIZE, f);
+    //Check if code is to large.
+    if(code_size > PYTHON_SCRIPT_SIZE)
+    {
+      printf("PYTHON FILE %s IS TO LARGE!\nIncrease Python side in Config.h", val.c_str());
+      ret_sym->type = CRY_NIL;
+      return;
+    }
+    code[code_size] = 0;
   
-  // Double Conversion
-  boost::python::extract<double> conv_double(result);
-  if (conv_double.check())
-  {
-    ret_sym->type = CRY_DOUBLE;
-    ret_sym->d = conv_double();
-    return;
-  }
+    // Retrieve the main namespace
+    boost::python::object main = boost::python::import("__main__");
+    // Retrieve the main module's dictionary
+    boost::python::object main_namespace = main.attr("__dict__");
+  
+    // Execute the code
+	  boost::python::object result;
+    result = boost::python::exec(code, main_namespace);
 
-  // String Conversion
-  boost::python::extract<std::string> conv_string(result);
-  if (conv_string.check())
+    // Now call the python function runPyProg with an argument
+    if(py_func.compare("nil"))
+    {
+      boost::python::object PyFunc = main.attr(py_func.c_str());
+      result = PyFunc();
+    }
+
+    // Here we try to pull out something useful for Crystal
+    // Integer Conversion
+    boost::python::extract<int> conv_int(result);
+    if (conv_int.check())
+    {
+      ret_sym->type = CRY_INT;
+      ret_sym->i32 = conv_int();
+      return;
+    }
+  
+    // Double Conversion
+    boost::python::extract<double> conv_double(result);
+    if (conv_double.check())
+    {
+      ret_sym->type = CRY_DOUBLE;
+      ret_sym->d = conv_double();
+      return;
+    }
+
+    // String Conversion
+    boost::python::extract<std::string> conv_string(result);
+    if (conv_string.check())
+    {
+      std::string val = conv_string();
+      char* str = static_cast<char*>(malloc(val.size() + 1));
+      strcpy(str, val.c_str());
+      Construct_String(ret_sym, str, val.size());
+      return;
+    }
+  }
+  catch(const boost::python::error_already_set&)
   {
-    std::string val = conv_string();
-    char* str = static_cast<char*>(malloc(val.size() + 1));
-    strcpy(str, val.c_str());
-    Construct_String(ret_sym, str, val.size());
-    return;
+    PyErr_Print();
   }
 
   //Failed to do any known conversions

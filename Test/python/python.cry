@@ -1,10 +1,30 @@
 #Simple crystal code for testing
 
 def main()
+  #simply execute a script with nothing fancy
   print_color("Calling Python Script", 11)
-  x = python("script.py")
-  print("result: " + x)
+  x = python("script.py", nil)
+  print("result: " + x + "\n")
+  
+  #Call a script calling into a global method
   print_color("First 10 fibonacci numbers", 10)
-  python("fibonacci.py")
-  return "Done"
+  x = python("fibonacci.py", "fibonacci")
+  print("result: " + x + "\n")
+  
+  #Get Several Return values
+  print_color("Syntax Errors", 13)
+  x = python("syntax_error.py", nil)
+  print("result: " + x + "\n")
+  
+  #Get Several Return values
+  print_color("Python Return Values", 12)
+  x = python("return_values.py", "Square_24")
+  print("result: " + x)
+  x = python("return_values.py", "Simple_PI")
+  print("result: " + x)
+  x = python("return_values.py", "Get_Status")
+  print("result: " + x + "\n")
+  
+  #exit the program
+  return "Last result: " + x
 end

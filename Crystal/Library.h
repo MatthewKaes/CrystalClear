@@ -18,6 +18,6 @@ void Crystal_PrintColor(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Sy
 void Crystal_Size(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
 
 //Python
-void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
+void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbol* func);
 
 #endif
