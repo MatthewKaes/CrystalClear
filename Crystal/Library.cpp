@@ -318,7 +318,7 @@ void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbol
   ret_sym->type = CRY_NIL;
 }
 #else
-void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+void Crystal_Python(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbol* func)
 {
   printf("PYTHON NOT SUPPORTED\n");
   ret_sym->type = CRY_NIL;

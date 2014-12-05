@@ -41,7 +41,7 @@ void Syntax_Node::Process(Syntax_Node* node)
       if(!node->sym.str.compare("["))
       {
         node->index = 0;
-        node->sym.i32 = -1;
+        node->sym.i32 = GETTER_ID;
       }
     }
   }
@@ -56,6 +56,13 @@ void Syntax_Node::Process(Syntax_Node* node)
     if(tree_->Get_Root() == this)
     {
       tree_->Set_Root(node);
+    }
+    // If we are doing an assignment to a special operator
+    // we need to set it as a reference.
+    if(!sym.str.compare("[") && !node->sym.str.compare("="))
+    {
+      node->index = 0;
+      sym.i32 = REFRENCE_ID;
     }
   }
 }
@@ -108,6 +115,10 @@ bool Syntax_Node::Evaluate()
       }
     }
   }
+
+  //Set up reference assignments
+  if(params[0] && !params[0]->Acquire()->str.compare("[") && sym.str.compare("="))
+    sym.i32 = REFRENCE_ID;
   
   if(sym.type != DAT_FUNCTION && sym.type != DAT_BIFUNCTION  && sym.type != DAT_STATEMENT && sym.type != DAT_OP && !evaluation)
     return true;

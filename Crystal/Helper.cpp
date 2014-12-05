@@ -261,3 +261,11 @@ void Copy_Ptr(Crystal_Symbol* res,  Crystal_Symbol* src, int index)
     res->sym->ref_cnt++;
   }
 }
+Crystal_Symbol* Get_Ptr(Crystal_Symbol* src, int index)
+{
+  return src->sym->sym + index;
+}
+void Cry_Assignment(Crystal_Symbol* dest, Crystal_Symbol* src)
+{
+
+}

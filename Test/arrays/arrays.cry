@@ -2,6 +2,7 @@ def main()
   val = "Crystal"
   val += " " + "Clear"
   x = [[1, [true, val], 3], 4, true, "Hello", 6.10, nil, false, val]
+  x[1] = 5
   print_color("Array X:", 11) 
   print(x)
   print("Size: " + size(x) + "\n")

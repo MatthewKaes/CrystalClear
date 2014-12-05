@@ -117,6 +117,14 @@ bool Generic_Assignment(Crystal_Compiler* target, Crystal_Data* base, std::vecto
 }
 bool Assignment_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
+  if(base->i32 == REFRENCE_ID)
+  {
+    target->Push(MEM((*syms)[1]));
+    target->Push(MEM((*syms)[0]));
+    return true;
+  }
+
+  //Normal Assignment
   if((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY)
     target->Copy(MEM((*syms)[0]), MEM((*syms)[1]));
   else
@@ -156,7 +164,7 @@ bool Swap_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_
 
 bool Array_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  if(base->i32 == -1)
+  if(base->i32 == GETTER_ID)
   {
     //Create array
     target->Allocate(syms->size());
@@ -225,9 +233,18 @@ bool Array_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal
       break;
     }
     target->Push(MEM((*syms)[0]));
-    target->Push(MEMR(result));
-    target->Call(Copy_Ptr);
-    target->Pop(3);
+
+    if(base->i32 == REFRENCE_ID)
+    {
+      target->Call(Get_Ptr);
+      target->Pop(2);
+    }
+    else
+    {
+      target->Push(MEMR(result));
+      target->Call(Copy_Ptr);
+      target->Pop(3);
+    }
   }
   return true;
 }

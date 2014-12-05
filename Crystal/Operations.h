@@ -3,6 +3,9 @@
 
 #include "Compiler.h"
 
+#define GETTER_ID -1
+#define REFRENCE_ID -2
+
 #define MEM(sym) Mem_Conv(target, &sym)
 #define MEMR(sym) Mem_Conv(target, sym)
 
