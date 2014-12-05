@@ -236,6 +236,10 @@ void Crystal_Compiler::Push_C(CRY_ARG var)
     return;
   }
 }
+void Crystal_Compiler::Push_Reg()
+{
+  Machine->Push(EAX);
+}
 void Crystal_Compiler::Pop(unsigned args)
 {
   Machine->Pop(args * 4);

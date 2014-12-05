@@ -27,6 +27,14 @@ void Array_Add_Text(const char* text, int index, Crystal_Symbol* ary);
 void Array_Add_Var(Crystal_Symbol* sym, int index, Crystal_Symbol* ary);
 void Array_Add_Stack(Crystal_Symbol* sym_stack, int index, Crystal_Symbol* ary);
 
+//Refrence functions
+void Ref_Nil(Crystal_Symbol* sym);
+void Ref_Int(int num, Crystal_Symbol* sym);
+void Ref_Double(double dec, Crystal_Symbol* sym);
+void Ref_Text(const char* text, Crystal_Symbol* sym);
+void Ref_Variable( Crystal_Symbol* src, Crystal_Symbol* dest);
+
+
 void Garbage_Collection(Crystal_Symbol* sym);
 void Crystal_Free(Crystal_Symbol* sym);
 int Printer(Crystal_Symbol* sym);

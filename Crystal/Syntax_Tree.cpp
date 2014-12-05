@@ -61,7 +61,7 @@ void Syntax_Node::Process(Syntax_Node* node)
     // we need to set it as a reference.
     if(!sym.str.compare("[") && !node->sym.str.compare("="))
     {
-      node->index = 0;
+      node->sym.i32 = REFRENCE_ID;
       sym.i32 = REFRENCE_ID;
     }
   }

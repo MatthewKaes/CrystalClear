@@ -184,6 +184,38 @@ void Array_Add_Stack(Crystal_Symbol* sym_stack, int index, Crystal_Symbol* ary)
   }
 }
 
+//Refrence functions
+void Ref_Nil(Crystal_Symbol* sym)
+{
+  sym->type = CRY_NIL;
+}
+void Ref_Int(int num, Crystal_Symbol* sym)
+{
+  sym->type = CRY_INT;
+  sym->i32 = num;
+}
+void Ref_Double(double dec, Crystal_Symbol* sym)
+{
+  sym->type = CRY_DOUBLE;
+  sym->d = dec;
+}
+void Ref_Text(const char* text, Crystal_Symbol* sym)
+{
+  sym->type = CRY_TEXT;
+  sym->text = text;
+}
+void Cry_Assignment(Crystal_Symbol* src, Crystal_Symbol* dest)
+{
+  if(dest == src)
+    return;
+  if(src->type == CRY_POINTER)
+  {
+    Garbage_Collection(dest);
+    src->sym->ref_cnt += 1;
+  }
+  *dest = *src;
+}
+
 void Garbage_Collection(Crystal_Symbol* sym)
 {
   if(sym->sym != 0)
@@ -264,8 +296,4 @@ void Copy_Ptr(Crystal_Symbol* res,  Crystal_Symbol* src, int index)
 Crystal_Symbol* Get_Ptr(Crystal_Symbol* src, int index)
 {
   return src->sym->sym + index;
-}
-void Cry_Assignment(Crystal_Symbol* dest, Crystal_Symbol* src)
-{
-
 }

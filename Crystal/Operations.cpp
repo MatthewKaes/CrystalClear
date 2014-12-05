@@ -118,9 +118,41 @@ bool Generic_Assignment(Crystal_Compiler* target, Crystal_Data* base, std::vecto
 bool Assignment_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   if(base->i32 == REFRENCE_ID)
-  {
-    target->Push(MEM((*syms)[1]));
-    target->Push(MEM((*syms)[0]));
+  {    
+    switch((*syms)[1].type)
+    {
+    case DAT_NIL:
+      target->Push_Reg();
+      target->Call(Ref_Nil);
+      target->Pop(1);
+      break;
+    case DAT_BOOL:
+      target->Push_C(static_cast<int>((*syms)[1].b));
+      target->Call(Ref_Int);
+      target->Pop(2);
+      break;
+    case DAT_INT:
+      target->Push_C((*syms)[1].i32);
+      target->Call(Ref_Int);
+      target->Pop(2);
+      break;
+    case DAT_DOUBLE:
+      target->Push_C((*syms)[1].d);
+      target->Call(Ref_Double);
+      target->Pop(3);
+      break;
+    case DAT_STRING:
+      target->Push_C((*syms)[1].str.c_str());
+      target->Call(Ref_Text);
+      target->Pop(2);
+      break;
+    case DAT_REGISTRY:
+    case DAT_LOCAL:
+      target->Push(MEM((*syms)[1]));
+      target->Call(Cry_Assignment);
+      target->Pop(2);
+      break;
+    }
     return true;
   }
 
@@ -238,6 +270,7 @@ bool Array_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal
     {
       target->Call(Get_Ptr);
       target->Pop(2);
+      target->Push_Reg();
     }
     else
     {

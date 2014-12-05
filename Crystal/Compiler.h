@@ -81,6 +81,7 @@ public:
   void Make_Range(unsigned var);
   void Push(unsigned var);
   void Push_C(CRY_ARG var);
+  void Push_Reg();
   void Pop(unsigned args);
   void Return(unsigned var);
   void Return();
