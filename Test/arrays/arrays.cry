@@ -2,7 +2,7 @@ def main()
   val = "Crystal"
   val += " " + "Clear"
   x = [2, nil, true, "Hello", 6.10, nil, val]
-  x[1] = [1, [true, val], 3]
+  x[1] = [[true, [val, "Hello"]], 3]
   print_color("Array X:", 11) 
   print(x)
   print("Size: " + size(x) + "\n")
@@ -26,11 +26,11 @@ def main()
   #unrolling an array
   print_color("Unroll Y + 10:", 11) 
   
-  index = 0
-  while(index < size(y))
-   print(y[index] + 10)
-   index += 1
-  end
+  #index = 0
+  #while(index < size(y))
+  # print(y[index] + 10)
+  # index += 1
+  #end
 
   return x
 end

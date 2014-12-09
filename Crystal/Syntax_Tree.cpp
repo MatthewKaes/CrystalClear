@@ -115,10 +115,6 @@ bool Syntax_Node::Evaluate()
       }
     }
   }
-
-  //Set up reference assignments
-  if(params[0] && !params[0]->Acquire()->str.compare("[") && sym.str.compare("="))
-    sym.i32 = REFRENCE_ID;
   
   if(sym.type != DAT_FUNCTION && sym.type != DAT_BIFUNCTION  && sym.type != DAT_STATEMENT && sym.type != DAT_OP && !evaluation)
     return true;
