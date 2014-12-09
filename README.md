@@ -11,7 +11,7 @@ These are just some of the factors that make dynamic languages.
 
 ##Performance First Language
 
-Crystal Clear solves these problems by breaking it down into two responsibilities: Crystal responsibilities and Clear responsibilities. Crystal is responsible for compiling code and managing memory to tackle points 1 and 2. Clear is responsible for resolving the minimum control paths required to execute dynamic code. By doing this Crystal Clear aims to be a performance first language doing the best it can to preform operations as fast as possible. In order to bridge the performance gap between statically compiled languages like C/C++ and traditional high level dynamic languages a number of methods are used.
+Crystal Clear solves these problems by breaking it down into two responsibilities: Crystal responsibilities and Clear responsibilities. Crystal is responsible for compiling code and managing memory to tackle points 1 and 2. Clear is responsible for resolving the minimum control paths required to execute dynamic code. By doing this Crystal Clear aims to be a performance first language doing the best it can to perform operations as fast as possible. In order to bridge the performance gap between statically compiled languages like C/C++ and traditional high level dynamic languages a number of methods are used.
 
 ##The "Crystal"
 
