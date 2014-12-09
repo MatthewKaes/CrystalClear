@@ -128,7 +128,7 @@ bool Assignment_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cr
       break;
     case DAT_BOOL:
       target->Push_C(static_cast<int>((*syms)[1].b));
-      target->Call(Ref_Int);
+      target->Call(Ref_Bool);
       target->Pop(2);
       break;
     case DAT_INT:

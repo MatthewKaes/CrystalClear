@@ -189,6 +189,11 @@ void Ref_Nil(Crystal_Symbol* sym)
 {
   sym->type = CRY_NIL;
 }
+void Ref_Bool(int num, Crystal_Symbol* sym)
+{
+  sym->type = CRY_BOOL;
+  sym->i32 = num;
+}
 void Ref_Int(int num, Crystal_Symbol* sym)
 {
   sym->type = CRY_INT;

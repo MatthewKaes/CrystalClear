@@ -29,6 +29,7 @@ void Array_Add_Stack(Crystal_Symbol* sym_stack, int index, Crystal_Symbol* ary);
 
 //Refrence functions
 void Ref_Nil(Crystal_Symbol* sym);
+void Ref_Bool(int num, Crystal_Symbol* sym);
 void Ref_Int(int num, Crystal_Symbol* sym);
 void Ref_Double(double dec, Crystal_Symbol* sym);
 void Ref_Text(const char* text, Crystal_Symbol* sym);
