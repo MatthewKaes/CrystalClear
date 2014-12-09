@@ -152,6 +152,18 @@ void Crystal_Interpreter::Format_Code()
     switch(*code_ptr)
     {
     case '\n':
+      if(code_out[code_out.size() - 2] == '_')
+      {
+        code_out.pop_back();
+        code_out.pop_back();
+        code_ptr++;
+        continue;
+      }
+      if(code_out[code_out.size() - 2] == ',')
+      {
+        code_ptr++;
+        continue;
+      }
       if(code_out.size() > 1 && code_out[code_out.size() - 2] == '\n')
       {
         code_ptr++;

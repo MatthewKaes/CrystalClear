@@ -1,9 +1,14 @@
 def main()
+  print([1, 2, 3,
+         4, 5, 6,
+		 7, 8, 9])
+  
   val = "Crystal"
   val += " " + "Clear"
   x = [2, nil, true, "Hello", 6.10, nil, val]
   x[1] = [[true, [val, "Hello"]], 3]
-  print_color("Array X:", 11) 
+  print_color("Array X:" _
+			 , 11) 
   print(x)
   print("Size: " + size(x) + "\n")
 
