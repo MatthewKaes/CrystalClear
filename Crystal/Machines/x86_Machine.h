@@ -136,8 +136,6 @@ public:
   // Special Functions
   //--------------------------
   void Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address = false, bool extra_byte = false);
-  void RefAdd();
-  void RefCheck();
 
   //--------------------------
   // Memory Functions

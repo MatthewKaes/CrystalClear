@@ -132,9 +132,9 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   std::string conv;
   //Save the expensive operation if we can!
-  Garbage_Collection(ret_sym);
   if(ret_sym->type == CRY_STRING && ret_sym == sym)
     return;
+
   ret_sym->type = CRY_STRING;
   if(sym->type == CRY_TEXT)
   {

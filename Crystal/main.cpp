@@ -97,7 +97,7 @@ int main(int argc, const char **argv)
     Crystal_Print(&exit_sym, &exit_sym);
 
     //Clean up Crystal Leftovers
-    Garbage_Collection(&exit_sym);
+    //Garbage_Collection(&exit_sym);
   }
   else
   {

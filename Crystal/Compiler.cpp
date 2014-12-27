@@ -189,10 +189,6 @@ void Crystal_Compiler::Allocate(unsigned sym_count)
 }
 void Crystal_Compiler::Make_Array(unsigned var, unsigned size)
 {
-  if(states[var].Collection())
-  {
-    Garbage_Collection(var);
-  }
   //Creation of the array object
   Machine->Push(static_cast<int>(size));
   Push(var);
@@ -253,22 +249,15 @@ void Crystal_Compiler::Return(unsigned var)
   Machine->Je(label);
   //Load the data into the ptr value
   Machine->Load_Ptr(RETURN_ADDRESS);
+
   //Mark memory as collected and pass it back for use.
-  if(states[var].Order(CRY_POINTER))
-  {
-    states[var].Collected();
-    Machine->MovP(offset - DATA_PNTR, DATA_PNTR);
-  }
+  Machine->MovP(offset - DATA_PNTR, DATA_PNTR);
+
   Machine->MovP(offset - DATA_LOWER, DATA_LOWER);
   Machine->MovP(offset - DATA_UPPER, DATA_UPPER);
   Machine->MovP(offset - DATA_TYPE, DATA_TYPE, true);
   //Finalize return
   Machine->Make_Label(label);
-  //cleanup 
-  for(unsigned i = 0; i < (locals_count + stack_depth); i++)
-  {
-    Garbage_Collection(i);
-  }
 
   Machine->Return();
 }
@@ -283,11 +272,7 @@ void Crystal_Compiler::Return()
   Machine->Load_Ptr(RETURN_ADDRESS);
   Machine->MovP(stack_size - VAR_SIZE * Addr_Reg(0) - DATA_TYPE, DATA_TYPE, true);
   Machine->Make_Label(label);
-  //cleanup 
-  for(unsigned i = 0; i < (locals_count + stack_depth); i++)
-  {
-    Garbage_Collection(i);
-  }
+
   Machine->Return();
 }
 void Crystal_Compiler::Loop()
@@ -368,7 +353,6 @@ void Crystal_Compiler::End()
 }
 void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
 {
-  Garbage_Collection(var);
   unsigned offset = stack_size - VAR_SIZE * var;
   switch(val.type)
   {
@@ -405,10 +389,7 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
 
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   unsigned offset_source = stack_size - source * VAR_SIZE;
-  if(states[dest].Collection())
-  {
-    Garbage_Collection(dest);
-  }
+
   if(!(states[source].Size() == 1 && states[source].Test(CRY_NIL)))
   {
     Machine->Mov(EAX, offset_source - DATA_LOWER);
@@ -419,18 +400,15 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
       Machine->Mov(EAX, offset_source - DATA_UPPER);
       Machine->Mov(offset_dest - DATA_UPPER, EAX);
     }
-    if(states[source].Refrenced())
+    
+    if(states[source].Order(CRY_POINTER))
     {
-      unsigned ref_label = Machine->Reserve_Label();
-      //Check if we need to ref count
-      Machine->Cmp(offset_source - DATA_TYPE, static_cast<int>(CRY_POINTER));
-      Machine->Jl(ref_label);
-      //Add one to the ref count
       Machine->Mov(EAX, offset_source - DATA_PNTR);
       Machine->Mov(offset_dest - DATA_PNTR, EAX);
-      Machine->Load_Register(ECX, 0x01);
-      Machine->RefAdd();
-      Machine->Make_Label(ref_label);
+    }
+    else if(states[dest].Order(CRY_POINTER))
+    {
+      Machine->Load_Mem(offset_dest - DATA_PNTR, NULL);
     }
   }
   Machine->Mov(EAX, offset_source - DATA_TYPE, true);
@@ -2264,32 +2242,5 @@ void Crystal_Compiler::Runtime_Resovle(unsigned dest, Symbol_Type resolve)
     if(resolve > CRY_POINTER)
       resolve = CRY_POINTER;
     Machine->Load_Mem(stack_size - VAR_SIZE * dest - DATA_TYPE, static_cast<char>(resolve));
-  }
-}
-void Crystal_Compiler::Garbage_Collection(unsigned var)
-{
-  if(states[var].Collection())
-  {
-    unsigned offset_dest = stack_size - var * VAR_SIZE;
-    unsigned label = Machine->Reserve_Label();
-    //Early exit if we don't have any data to collect
-    Machine->Cmp(offset_dest - DATA_PNTR, 0);
-    Machine->Je(label, true);
-    //Ref counter handling
-    //Sub one form the ref count
-    Machine->Mov(EAX, offset_dest - DATA_PNTR);
-    Machine->Load_Mem(offset_dest - DATA_PNTR, 0);
-    Machine->Load_Register(ECX, 0xFFFF);
-    Machine->RefAdd();
-    //Test for cleanup
-    Machine->RefCheck();
-    Machine->Jne(label, true);
-    //Push the pointer unto the stack and free it.
-    Machine->Push(EAX);
-    Machine->Call(Crystal_Free);
-    Pop(1);
-    //Exit
-    Machine->Make_Label(label);
-    states[var].Collected();
   }
 }

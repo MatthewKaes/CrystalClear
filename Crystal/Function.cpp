@@ -86,13 +86,10 @@ void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned len
 }
 void Construct_Array(Crystal_Symbol* symd, unsigned size, Crystal_Symbol* ary)
 {
-  Garbage_Collection(symd);
-
   symd->sym = reinterpret_cast<Crystal_Symbol*>(calloc(1, sizeof(Crystal_Symbol)));
   symd->sym->type = CRY_ARRAY;
   symd->sym->size = size;
   symd->sym->sym = ary;
-  symd->sym->ref_cnt = 1;
   if(size < 0x20)
     symd->sym->capacity = 0x20;
   else
@@ -101,8 +98,6 @@ void Construct_Array(Crystal_Symbol* symd, unsigned size, Crystal_Symbol* ary)
 }
 void Construct_Range(Crystal_Symbol* symd, int left, int right)
 {
-  Garbage_Collection(symd);
-
   int size = right - left;
   if(size < 0)
     size = 0;
@@ -113,11 +108,11 @@ void Construct_Range(Crystal_Symbol* symd, int left, int right)
     ary[size - left].type = CRY_INT;
     ary[size - left].i32 = size;
   }
+
   symd->sym = reinterpret_cast<Crystal_Symbol*>(calloc(1, sizeof(Crystal_Symbol)));
   symd->sym->type = CRY_ARRAY;
   symd->sym->size = size;
   symd->sym->sym = ary;
-  symd->sym->ref_cnt = 1;
   if(size < 0x20)
     symd->sym->capacity = 0x20;
   else
@@ -126,12 +121,9 @@ void Construct_Range(Crystal_Symbol* symd, int left, int right)
 }
 void Construct_String(Crystal_Symbol* symd,  char* str, unsigned size)
 {
-  Garbage_Collection(symd);
-
   symd->sym = reinterpret_cast<Crystal_Symbol*>(calloc(1, sizeof(Crystal_Symbol)));
   symd->sym->type = CRY_STRING;
   symd->sym->size = size;
   symd->sym->str = str;
-  symd->sym->ref_cnt = 1;
   symd->type = CRY_POINTER;
 }

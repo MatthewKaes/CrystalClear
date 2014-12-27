@@ -35,9 +35,6 @@ void Ref_Double(double dec, Crystal_Symbol* sym);
 void Ref_Text(const char* text, Crystal_Symbol* sym);
 void Ref_Variable( Crystal_Symbol* src, Crystal_Symbol* dest);
 
-
-void Garbage_Collection(Crystal_Symbol* sym);
-void Crystal_Free(Crystal_Symbol* sym);
 int Printer(Crystal_Symbol* sym);
 void Copy_Ptr(Crystal_Symbol* res, Crystal_Symbol* src, int index);
 Crystal_Symbol* Get_Ptr(Crystal_Symbol* src, int index);

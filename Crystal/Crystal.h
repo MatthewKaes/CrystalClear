@@ -35,13 +35,12 @@ union CryProg {
   BYTE* load;
 };
 
-
 class Crystal_Symbol
 {
 public:
   Symbol_Type type;
   unsigned char ex_data;
-  unsigned short ref_cnt;
+  unsigned short blank;
   union {
     Crystal_Symbol* sym;
     char* str;

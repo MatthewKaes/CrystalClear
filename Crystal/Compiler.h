@@ -130,7 +130,6 @@ private:
   bool Null_Op(Clarity_Filter& l, Clarity_Filter& r, unsigned dest, Clarity_Filter Exceptions = Clarity_Filter(CRY_NIL));
   void Runtime_Resovle(unsigned dest, Symbol_Type resolve);
   void Safe_Set_Pointer(unsigned var, CRY_ARG val);
-  void Garbage_Collection(unsigned var);
 
   //==========================
   // Machine Code

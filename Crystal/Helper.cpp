@@ -108,11 +108,6 @@ void Stack_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from)
   sym_stack->i64 = sym_from->i64;
   sym_stack->sym = sym_from->sym;
   sym_stack->type = sym_from->type;
-  //Up ref count for symbols that need it.
-  if(sym_stack->type >= CRY_POINTER)
-  {
-    sym_stack->sym->ref_cnt += 1;
-  }
 }
 void Power_Syms(Crystal_Symbol* syml, Crystal_Symbol* symr)
 {
@@ -176,11 +171,6 @@ void Array_Add_Stack(Crystal_Symbol* sym_stack, int index, Crystal_Symbol* ary)
     ary[index].i64 = sym_stack->i64;
     ary[index].sym = sym_stack->sym;
     ary[index].type = sym_stack->type;
-    //Up ref count for symbols that need it.
-    if(sym_stack->type >= CRY_POINTER)
-    {
-      sym_stack->sym->ref_cnt += 1;
-    }
   }
 }
 
@@ -211,51 +201,9 @@ void Ref_Text(const char* text, Crystal_Symbol* sym)
 }
 void Cry_Assignment(Crystal_Symbol* src, Crystal_Symbol* dest)
 {
-  if(dest == src)
-    return;
-  if(src->type == CRY_POINTER)
-  {
-    Garbage_Collection(dest);
-    src->sym->ref_cnt += 1;
-  }
   *dest = *src;
 }
 
-void Garbage_Collection(Crystal_Symbol* sym)
-{
-  if(sym->sym != 0)
-  {
-    sym->sym->ref_cnt -= 1;
-    if(sym->sym->ref_cnt == 0)
-    {
-      Crystal_Free(sym->sym);
-    }
-    sym->sym = 0;
-  }
-}
-void Crystal_Free(Crystal_Symbol* sym)
-{
-  //Free contents
-  if(sym->type == CRY_STRING)
-    free(sym->str);
-  else
-  {
-    for(unsigned i = 0; i < sym->size; i++)
-    {
-      if(sym->sym[i].sym != 0)
-      {
-        sym->sym[i].sym->ref_cnt -= 1;
-        if(sym->sym[i].sym->ref_cnt == 0)
-        {
-          Crystal_Free(sym->sym[i].sym);
-        }
-      }
-    }
-    free(sym->sym);
-  }
-  //Free actual symbol
-  free(sym);
-}
 int Printer(Crystal_Symbol* sym)
 {
   int counter = 0;
@@ -290,13 +238,7 @@ int Printer(Crystal_Symbol* sym)
 }
 void Copy_Ptr(Crystal_Symbol* res,  Crystal_Symbol* src, int index)
 {
-  if(res != src)
-    Garbage_Collection(res);
   *res = src->sym->sym[index];
-  if(res->type >= CRY_POINTER)
-  {
-    res->sym->ref_cnt++;
-  }
 }
 Crystal_Symbol* Get_Ptr(Crystal_Symbol* src, int index)
 {

@@ -6,6 +6,7 @@ def main()
   x[1][1] = false
   print_color("Array X:" , 11) 
   print(x)
+  print(x)
   print("Size: " + size(x) + "\n")
 
   #unrolling an array
