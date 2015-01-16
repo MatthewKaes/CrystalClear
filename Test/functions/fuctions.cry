@@ -3,13 +3,14 @@ def main()
   print_color("Calling Single Variable Function:", 11)
   print_var(x)
   print_color("Calling Multi Variable Function:", 11)
-  y = "Hello"
   z = 80.8
+  y = "Hello" + z
   print_vars(x, y, z)
+  print("Y: " + y)
   print_color("Calling Fuction with Constants:", 11)
   print_vars("var1", nil, true)
   print_color("Fuction value testing", 11)
-  test_value(true, false, 13)
+  test_value(true, false, 13 + z)
   print_color("Extended Function", 11)
   extended_func(1,2,3,4,5,6,7,8,9,10, 11.0, 12.0, 13.0, 14.2)
 end
@@ -32,10 +33,12 @@ def test_value(bool, bad_bool, number)
   if(bool)
     print_color("CORRECT", 2)
   end
+
   if(bad_bool == false)
     print_color("CORRECT", 2)
   end
-  if(number > 10)
+
+  if(number > 10 and number < 100)
     print_color("CORRECT", 2)
   end
 end
