@@ -90,6 +90,9 @@
     <ClCompile Include="Math.cpp">
       <Filter>Extensions</Filter>
     </ClCompile>
+    <ClCompile Include="Garbage_Collector.cpp">
+      <Filter>Core Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Crystal.h">
@@ -151,6 +154,9 @@
     </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>Extensions\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Garbage_Collector.h">
+      <Filter>Core Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

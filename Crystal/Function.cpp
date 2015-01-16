@@ -1,5 +1,6 @@
 #include "Function.h"
 #include "Helper.h"
+#include "Garbage_Collector.h"
 
 int Crystal_And(Crystal_Symbol* left, Crystal_Symbol* right)
 {
@@ -86,7 +87,7 @@ void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned len
 }
 void Construct_Array(Crystal_Symbol* symd, unsigned size, Crystal_Symbol* ary)
 {
-  symd->sym = reinterpret_cast<Crystal_Symbol*>(calloc(1, sizeof(Crystal_Symbol)));
+  symd->sym = GC_Allocate();
   symd->sym->type = CRY_ARRAY;
   symd->sym->size = size;
   symd->sym->sym = ary;
@@ -99,29 +100,33 @@ void Construct_Array(Crystal_Symbol* symd, unsigned size, Crystal_Symbol* ary)
 void Construct_Range(Crystal_Symbol* symd, int left, int right)
 {
   int size = right - left;
+  int capacity = right - left;
+
   if(size < 0)
     size = 0;
 
-  Crystal_Symbol* ary = reinterpret_cast<Crystal_Symbol*>(calloc(size, sizeof(Crystal_Symbol)));
+  if(size < 0x20)
+    capacity = 0x20;
+  else
+    capacity = size;
+
+  Crystal_Symbol* ary = reinterpret_cast<Crystal_Symbol*>(calloc(capacity, sizeof(Crystal_Symbol)));
   for(int size = left; size < right; size++)
   {
     ary[size - left].type = CRY_INT;
     ary[size - left].i32 = size;
   }
 
-  symd->sym = reinterpret_cast<Crystal_Symbol*>(calloc(1, sizeof(Crystal_Symbol)));
+  symd->sym = GC_Allocate();
   symd->sym->type = CRY_ARRAY;
   symd->sym->size = size;
+  symd->sym->capacity = capacity;
   symd->sym->sym = ary;
-  if(size < 0x20)
-    symd->sym->capacity = 0x20;
-  else
-    symd->sym->capacity = size;
   symd->type = CRY_POINTER;
 }
 void Construct_String(Crystal_Symbol* symd,  char* str, unsigned size)
 {
-  symd->sym = reinterpret_cast<Crystal_Symbol*>(calloc(1, sizeof(Crystal_Symbol)));
+  symd->sym = GC_Allocate();
   symd->sym->type = CRY_STRING;
   symd->sym->size = size;
   symd->sym->str = str;

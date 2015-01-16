@@ -6,6 +6,7 @@
 #include "Interpreter.h"
 #include "Lexicon.h"
 #include "Helper.h"
+#include "Garbage_Collector.h"
 
 #if INCLUDE_PYTHON
 #include <boost\python.hpp>
@@ -15,6 +16,8 @@
 #include "Machines\x86_Machine.h"
 
 const char* CRY_ROOT = 0;
+
+extern GC global_gc;
 
 typedef void (*CRY_EXPORT)();
 
@@ -56,14 +59,18 @@ int Process_Root(Crystal_Compiler* comp, const char* rootdir)
   return 0;
  }
 
+#include <list>
+
 int main(int argc, const char **argv)
 {
   //Set up random
   srand(static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds()));
+  
   //Set up Python
 #if INCLUDE_PYTHON
   Py_Initialize();
 #endif
+
   if(argc > 1)
   {
     Crystal_Compiler comp(new x86_Machine);

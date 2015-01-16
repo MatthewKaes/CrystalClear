@@ -3,6 +3,7 @@
 #include "Obscure.h"
 #include "Helper.h"
 #include "Function.h"
+#include "Garbage_Collector.h"
 
 int CRY_ARG::poolindex = 0;
 char CRY_ARG::strpool[STRING_POOL] = {0};
@@ -78,6 +79,9 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
     Pop(2);
     states[i].Obscurity();
   }
+
+  //set up a new generation for the garbage collector.
+  Machine->Call(GC_Branch);
 
   //tidy up lookup data.
   lookups.clear();
@@ -244,26 +248,43 @@ void Crystal_Compiler::Return(unsigned var)
 {
   unsigned label = Machine->Reserve_Label();
   unsigned offset = stack_size - VAR_SIZE * var;
+
   //Check to see if eax was loaded with something
   Machine->CmpF(RETURN_ADDRESS, 0);
   Machine->Je(label);
   //Load the data into the ptr value
   Machine->Load_Ptr(RETURN_ADDRESS);
 
-  //Mark memory as collected and pass it back for use.
+  //Load return pointer with all the proper data.
   Machine->MovP(offset - DATA_PNTR, DATA_PNTR);
 
   Machine->MovP(offset - DATA_LOWER, DATA_LOWER);
   Machine->MovP(offset - DATA_UPPER, DATA_UPPER);
   Machine->MovP(offset - DATA_TYPE, DATA_TYPE, true);
+
+  //Set up garbage Collection
+  if(states[var].Order(CRY_POINTER))
+  {
+    Machine->Cmp(offset - DATA_TYPE, static_cast<char>(CRY_POINTER));
+    Machine->Jne(label);
+
+    Push(var);
+    Machine->Call(GC_Extend_Generation);
+    Pop(1);
+  }
+
   //Finalize return
   Machine->Make_Label(label);
+
+  //Collect garbage
+  Machine->Call(GC_Collect);
 
   Machine->Return();
 }
 void Crystal_Compiler::Return()
 {
   unsigned label = Machine->Reserve_Label();
+
   //Check to see if eax was loaded with something
   Machine->CmpF(RETURN_ADDRESS, 0);
   Machine->Je(label);
@@ -272,6 +293,9 @@ void Crystal_Compiler::Return()
   Machine->Load_Ptr(RETURN_ADDRESS);
   Machine->MovP(stack_size - VAR_SIZE * Addr_Reg(0) - DATA_TYPE, DATA_TYPE, true);
   Machine->Make_Label(label);
+  
+  //Clean up accumulated garbage
+  Machine->Call(GC_Collect);
 
   Machine->Return();
 }

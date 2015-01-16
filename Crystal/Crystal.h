@@ -15,6 +15,7 @@
 typedef int (*FuncPtr)(void *);
 typedef unsigned char BYTE;
 
+
 //Controls Higherarchy
 enum Symbol_Type : char { CRY_NIL = 0, CRY_BOOL, CRY_INT, CRY_INT64, CRY_DOUBLE, CRY_TEXT, 
                            CRY_POINTER, CRY_STRING, CRY_ARRAY,  CRY_CLASS_OBJ, CRY_SYMS };
@@ -39,8 +40,8 @@ class Crystal_Symbol
 {
 public:
   Symbol_Type type;
-  unsigned char ex_data;
-  unsigned short blank;
+  bool sweep;
+  unsigned short generation;
   union {
     Crystal_Symbol* sym;
     char* str;
