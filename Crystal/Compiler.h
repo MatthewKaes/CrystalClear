@@ -88,6 +88,7 @@ public:
   void Loop();
   void While(unsigned var);
   void If(unsigned var);
+  void Else();
   void End();
   
   void Load(unsigned var, CRY_ARG val = CRY_ARG());

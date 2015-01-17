@@ -122,7 +122,9 @@ GENERATOR_CODE Resolve_Statement(Crystal_Data* sym)
   case 'w':
     return While_Gen;
   case 'e':
-    return End_Gen;
+    if(!sym->str.compare("end"))
+      return End_Gen;
+    return Else_Gen;
   }
   return Null_Gen;
 }
@@ -189,6 +191,11 @@ bool If_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Da
   if((*syms)[0].type != DAT_LOCAL && (*syms)[0].type != DAT_REGISTRY)
     target->Load(Mem_Conv(target, &(*syms)[1]), &(*syms)[0]);
   target->If(Mem_Conv(target, &(*syms)[1]));
+  return true;
+}
+bool Else_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  target->Else();
   return true;
 }
 bool While_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)

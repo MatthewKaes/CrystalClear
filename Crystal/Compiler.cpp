@@ -357,6 +357,28 @@ void Crystal_Compiler::If(unsigned var)
   }
   lookups.push_back(new_lookup);
 }
+void Crystal_Compiler::Else()
+{
+  CryLookup new_lookup;
+
+  CryLookup from_lookup = lookups.back();
+  lookups.pop_back();
+
+  //setup lookups
+  new_lookup.corruptions.reserve(locals_count + stack_depth + 1);
+  for(unsigned i = 0; i < (locals_count + stack_depth + 1); i++)
+  {
+    new_lookup.corruptions.push_back(false);
+  }
+  new_lookup.loop_back_lable = -1;
+  new_lookup.lable_id = Machine->Reserve_Label();
+
+  //Else procedure
+  Machine->Jmp(new_lookup.lable_id);
+  Machine->Make_Label(from_lookup.lable_id);
+
+  lookups.push_back(new_lookup);
+}
 void Crystal_Compiler::End()
 {
   if(lookups.back().loop_back_lable >= 0)
