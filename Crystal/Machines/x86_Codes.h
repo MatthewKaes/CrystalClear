@@ -67,6 +67,7 @@
 #define CMP_WORDL 0x81
 #define CMP_MEM 0x7D
 #define CMP_REG 0x3B
+#define CODE_FAR_JMP 0xE9
 #define CODE_JMP 0xEB
 #define CODE_JE 0x74
 #define CODE_JNE 0x75

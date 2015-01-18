@@ -89,6 +89,8 @@ public:
   void While(unsigned var);
   void If(unsigned var);
   void Else();
+  void ElseIf_Pre();
+  void ElseIf(unsigned var);
   void End();
   
   void Load(unsigned var, CRY_ARG val = CRY_ARG());

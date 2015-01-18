@@ -95,13 +95,24 @@ void Syntax_Node::Reduce()
 }
 bool Syntax_Node::Evaluate()
 {  
-  //Setup labels for loops
-  if(sym.type == DAT_STATEMENT && !sym.str.compare("while"))
+  //Setup labels for prefaced control statements
+  if(sym.type == DAT_STATEMENT)
   {
-    Bytecode loop_code;
-    loop_code.code_gen = Loop_Gen;
-    tree_->Get_Bytecodes()->push_back(loop_code);
+    if(!sym.str.compare("while"))
+    {
+      Bytecode loop_code;
+      loop_code.code_gen = Loop_Gen;
+      tree_->Get_Bytecodes()->push_back(loop_code); 
+    }
+    
+    if(!sym.str.compare("elsif"))
+    {
+      Bytecode loop_code;
+      loop_code.code_gen = ElseIf_Preface_Gen;
+      tree_->Get_Bytecodes()->push_back(loop_code); 
+    }
   }
+
   bool evaluation = false;
   Bytecode new_code;
   for(unsigned i = 0; i < params.size(); i++)
@@ -119,7 +130,7 @@ bool Syntax_Node::Evaluate()
   if(sym.type != DAT_FUNCTION && sym.type != DAT_BIFUNCTION  && sym.type != DAT_STATEMENT && sym.type != DAT_OP && !evaluation)
     return true;
 
-  new_code.code_gen = Resolve_Genorator(&sym);
+  new_code.code_gen = Resolve_Generator(&sym);
   new_code.base = sym;
   new_code.result.type = DAT_NIL;
   if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
@@ -136,8 +147,11 @@ bool Syntax_Node::Evaluate()
   }
   if(sym.type == DAT_STATEMENT)
   {
-    if(!sym.str.compare("return") || !sym.str.compare("if") || !sym.str.compare("while"))
+    if(!sym.str.compare("return") || !sym.str.compare("if") ||
+      !sym.str.compare("while") || !sym.str.compare("elsif"))
+    {
       Force_Memory(&new_code);
+    }
   }
 
   std::vector<bool>* regptr = tree_->Get_Registers();

@@ -1,6 +1,6 @@
 #include "Generator.h"
 
-GENERATOR_CODE Resolve_Genorator(Crystal_Data* sym)
+GENERATOR_CODE Resolve_Generator(Crystal_Data* sym)
 {
   switch(sym->type)
   {
@@ -124,6 +124,8 @@ GENERATOR_CODE Resolve_Statement(Crystal_Data* sym)
   case 'e':
     if(!sym->str.compare("end"))
       return End_Gen;
+    if(!sym->str.compare("elsif"))
+      return ElseIf_Gen;
     return Else_Gen;
   }
   return Null_Gen;
@@ -131,7 +133,7 @@ GENERATOR_CODE Resolve_Statement(Crystal_Data* sym)
 
 bool Null_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 { 
-  return false; 
+  return false;
 }
 bool Function_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
@@ -196,6 +198,18 @@ bool If_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Da
 bool Else_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   target->Else();
+  return true;
+}
+bool ElseIf_Preface_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  target->ElseIf_Pre();
+  return true;
+}
+bool ElseIf_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  if((*syms)[0].type != DAT_LOCAL && (*syms)[0].type != DAT_REGISTRY)
+    target->Load(Mem_Conv(target, &(*syms)[1]), &(*syms)[0]);
+  target->ElseIf(Mem_Conv(target, &(*syms)[1]));
   return true;
 }
 bool While_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)

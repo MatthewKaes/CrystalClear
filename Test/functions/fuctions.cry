@@ -10,7 +10,7 @@ def main()
   print_color("Calling Fuction with Constants:", 11)
   print_vars("var1", nil, true)
   print_color("Fuction value testing", 11)
-  test_value(nil, false, 13 + z)
+  test_value(2, false, 13 + z)
   print_color("Extended Function", 11)
   extended_func(1,2,3,4,5,6,7,8,9,10, 11.0, 12.0, 13.0, 14.2)
 end
@@ -30,22 +30,27 @@ def print_vars(x, y, z)
 end
 
 def test_value(bool, bad_bool, number)
-  if(bool)
-    print_color("CORRECT", 2)
+  #stacked else-if statements
+  if(bool == true)
+    print_color("CORRECT1", 2)
+  elsif(bool == false)
+    print_color("INCORRECT1", 4)
+  elsif(bool != nil)
+    print_color("INCORRECT1 TYPE", 4)
   else
-    print_color("INCORRECT", 4)
+    print_color("INVALID1", 3)
   end
 
   if(bad_bool == false)
-    print_color("CORRECT", 2)
+    print_color("CORRECT2", 2)
   else
-    print_color("INCORRECT", 4)
+    print_color("INCORRECT2", 4)
   end
 
   if(number > 10 and number < 100)
-    print_color("CORRECT", 2)
+    print_color("CORRECT3", 2)
   else
-    print_color("INCORRECT", 4)
+    print_color("INCORRECT3", 4)
   end
 end
 def extended_func(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14)

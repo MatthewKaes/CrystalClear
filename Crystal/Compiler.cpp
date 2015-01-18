@@ -310,6 +310,8 @@ void Crystal_Compiler::Loop()
   }
   new_lookup.loop_back_lable = Machine->Reserve_Label();
   new_lookup.lable_id = Machine->Reserve_Label();
+  new_lookup.lable_block_id = new_lookup.lable_id;
+
   //While procedure
   Machine->Make_Label(new_lookup.loop_back_lable);
   lookups.push_back(new_lookup);
@@ -342,8 +344,9 @@ void Crystal_Compiler::If(unsigned var)
   {
     new_lookup.corruptions.push_back(false);
   }
-  new_lookup.loop_back_lable = -1;
+  new_lookup.loop_back_lable = CryLookup::NO_LABLE;
   new_lookup.lable_id = Machine->Reserve_Label();
+  new_lookup.lable_block_id = Machine->Reserve_Label();
   //IF procedure
   if(!(states[var].Test(CRY_NIL) && states[var].Size() == 1))
   {
@@ -360,7 +363,6 @@ void Crystal_Compiler::If(unsigned var)
 void Crystal_Compiler::Else()
 {
   CryLookup new_lookup;
-
   CryLookup from_lookup = lookups.back();
   lookups.pop_back();
 
@@ -370,21 +372,70 @@ void Crystal_Compiler::Else()
   {
     new_lookup.corruptions.push_back(false);
   }
-  new_lookup.loop_back_lable = -1;
-  new_lookup.lable_id = Machine->Reserve_Label();
+  new_lookup.loop_back_lable = CryLookup::NO_LABLE;
+  new_lookup.lable_block_id = from_lookup.lable_block_id;
+  new_lookup.lable_id = from_lookup.lable_block_id;
 
   //Else procedure
-  Machine->Jmp(new_lookup.lable_id);
+  Machine->Jmp(new_lookup.lable_block_id);
   Machine->Make_Label(from_lookup.lable_id);
 
   lookups.push_back(new_lookup);
 }
+void Crystal_Compiler::ElseIf_Pre()
+{
+  CryLookup new_lookup;
+  CryLookup from_lookup = lookups.back();
+  lookups.pop_back();
+
+  //setup lookups
+  new_lookup.corruptions.reserve(locals_count + stack_depth + 1);
+  for(unsigned i = 0; i < (locals_count + stack_depth + 1); i++)
+  {
+    new_lookup.corruptions.push_back(false);
+  }
+  new_lookup.loop_back_lable = CryLookup::NO_LABLE;
+  new_lookup.lable_block_id = from_lookup.lable_block_id;
+  new_lookup.lable_id = Machine->Reserve_Label();
+
+  ////Else procedure
+  Machine->Jmp(new_lookup.lable_block_id);
+  Machine->Make_Label(from_lookup.lable_id);
+
+  lookups.push_back(new_lookup);
+}
+void Crystal_Compiler::ElseIf(unsigned var)
+{
+  CryLookup new_lookup = lookups.back();
+
+  //Else-IF procedure
+  unsigned offset_dest = stack_size - var * VAR_SIZE;
+  if(!(states[var].Test(CRY_NIL) && states[var].Size() == 1))
+  {
+    Machine->Cmp(offset_dest - DATA_LOWER, 0);
+    Machine->Je(new_lookup.lable_id);
+  }
+  if(states[var].Test(CRY_NIL))
+  {
+    Machine->Cmp(offset_dest - DATA_TYPE, static_cast<char>(CRY_NIL));
+    Machine->Je(new_lookup.lable_id);
+  }
+}
+
 void Crystal_Compiler::End()
 {
-  if(lookups.back().loop_back_lable >= 0)
+  // Create Loop backs for loops
+  if(lookups.back().loop_back_lable != CryLookup::NO_LABLE)
   {
     Machine->Jmp(lookups.back().loop_back_lable);
   }
+  
+  // Create block ends for multi block statement.
+  if(lookups.back().lable_block_id != lookups.back().lable_id)
+  {
+    Machine->Make_Label(lookups.back().lable_block_id);
+  }
+
   Machine->Make_Label(lookups.back().lable_id);
   
   //obscure corruptions

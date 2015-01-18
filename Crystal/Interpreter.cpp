@@ -403,7 +403,7 @@ void Crystal_Interpreter::Process_Package(const char* code)
         scope += 1;
         sym.type = DAT_STATEMENT;
       }
-      else if(!sym.str.compare("else"))
+      else if(!sym.str.compare("else") || !sym.str.compare("elsif"))
       {
         sym.type = DAT_STATEMENT;
       }

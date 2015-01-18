@@ -72,8 +72,15 @@ void x86_Machine::Make_Label(unsigned label)
       }
       else
       {  
-        *(walker->loc - 1) = *(walker->loc - 1) + 0x10;
-        *(walker->loc - 2) = 0x0F;
+        if(*(walker->loc - 1) == CODE_JMP)
+        {
+          *(walker->loc - 1) = CODE_FAR_JMP;
+        }
+        else
+        {
+          *(walker->loc - 1) = *(walker->loc - 1) + 0x10;
+          *(walker->loc - 2) = 0x0F;
+        }
         *reinterpret_cast<int*>(walker->loc) = distance - 4;
       }
     }

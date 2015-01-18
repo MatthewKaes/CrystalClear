@@ -82,8 +82,11 @@ public:
 struct CryLookup
 {
   int lable_id;
+  int lable_block_id;
   int loop_back_lable;
   std::vector<bool> corruptions;
+
+  static const int NO_LABLE = -1;
 };
 
 struct Package_Info {
