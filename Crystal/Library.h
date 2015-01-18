@@ -5,6 +5,7 @@
 
 //BIP (built in package) functions.
 void Crystal_Time(Crystal_Symbol* ret_sym);
+void Crystal_Sleep(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
 void Crystal_Input(Crystal_Symbol* ret_sym);
 void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbol* conversion);
 void Crystal_Boolean(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);

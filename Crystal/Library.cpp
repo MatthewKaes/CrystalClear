@@ -3,7 +3,10 @@
 #include "Lexicon.h"
 #include "Function.h"
 #include <windows.h>
+
+// Boost functionalities
 #include <boost\date_time.hpp>
+#include <boost\thread.hpp>
 
 extern const char* CRY_ROOT;
 
@@ -12,6 +15,12 @@ void Crystal_Time(Crystal_Symbol* ret_sym)
   ret_sym->i32 = static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds());
   ret_sym->type = CRY_INT;
 }
+void Crystal_Sleep(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  boost::this_thread::sleep(boost::posix_time::milliseconds(Parse_Int(sym)));
+  ret_sym->type = CRY_NIL;
+}
+
 void Crystal_Input(Crystal_Symbol* ret_sym)
 {
   std::string str;
@@ -48,6 +57,7 @@ void Crystal_Input(Crystal_Symbol* ret_sym)
     Construct_String(ret_sym, value, str.size());
   }
 }
+
 void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbol* conversion)
 {
   std::string conv;
@@ -113,21 +123,25 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
   }
   ret_sym->type = CRY_NIL;
 }
+
 void Crystal_Boolean(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   ret_sym->type = CRY_BOOL;
   ret_sym->i32 = Parse_Bool(sym);
 }
+
 void Crystal_Integer(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   ret_sym->type = CRY_INT;
   ret_sym->i32 = Parse_Int(sym);
 }
+
 void Crystal_Double(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   ret_sym->type = CRY_DOUBLE;
   ret_sym->d = Parse_Double(sym);
 }
+
 void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   std::string conv;
@@ -165,6 +179,7 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   strcpy(str, conv.c_str());
   Construct_String(ret_sym, str, size);
 }
+
 void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   switch(sym->type)
@@ -202,12 +217,14 @@ void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   ret_sym->size = strlen(ret_sym->text);
   ret_sym->type = CRY_TEXT;
 }
+
 void Crystal_Rand(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   Parse_Int(sym);
   ret_sym->i32 = rand() % Parse_Int(sym);
   ret_sym->type = CRY_INT;
 }
+
 void Crystal_Print(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   ret_sym->i32 = Printer(sym);
@@ -221,6 +238,7 @@ void Crystal_PrintColor(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Sy
   Crystal_Print(ret_sym, sym);
   SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
+
 void Crystal_Size(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   if(sym->type == CRY_POINTER)

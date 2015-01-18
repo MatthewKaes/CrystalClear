@@ -6,5 +6,21 @@ def main()
     val -= 1
   end
   print(((time() - start_time) / 1000.0) + " seconds")
+
+  #Call a clock function using sleep
+  print_color("\nEnter anything to start the clock", 11)
   input
+  clock()
+end
+
+def clock()
+  x = 0
+  y = 0
+  while(true)
+   x += 1
+   y += x
+   print(x)
+   print("Total wait: " + y / 1000.0 + " seconds")
+   sleep(x)
+  end
 end

@@ -49,6 +49,9 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(ln, Crystal_NatrualLog, 1);
   REGISTER_FUNCTION(abs, Crystal_Abs, 1);
 
+  //Boost Extensions
+  REGISTER_FUNCTION(sleep, Crystal_Sleep, 1);
+
   //Hooks to other langauges
   REGISTER_FUNCTION(python, Crystal_Python, 2);
   
