@@ -29,8 +29,8 @@
 #define MAX_FREE_LIST 64
 
 // The minimum about of time to wait between collections.
-// (Time is in secionds)
-#define COLLECTION_DELAY 0 
+// (Time is in milliseconds)
+#define COLLECTION_DELAY 150
 
 // turns off all all default optimizations
 // Equivilant of "debug" mode.

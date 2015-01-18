@@ -51,7 +51,7 @@ void GC::Collect()
   // Check if we need to do any collection
   generation--;
   unsigned curr_time = static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds());
-  if(last_cleanup < curr_time - COLLECTION_DELAY * 1000)
+  if(last_cleanup < curr_time - COLLECTION_DELAY)
   {
     // Mark
     auto mem_walker = used_blocks.begin();
