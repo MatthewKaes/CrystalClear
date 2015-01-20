@@ -48,8 +48,14 @@ Crystal_Symbol* GC::Allocate()
 
 void GC::Collect()
 {
-  // Check if we need to do any collection
+  // Update the generation we are on.
   generation--;
+
+  // Check if we have enought blocks to care collecting about.
+  if(used_blocks.size() >= MINIMUM_BLOCKS)
+    return;
+
+  // Check if we need to do any collection
   unsigned curr_time = static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds());
   if(last_cleanup < curr_time - COLLECTION_DELAY)
   {
@@ -73,11 +79,16 @@ void GC::Collect()
     {
       if(!(*mem_walker)->sweep)
       {
+        // Free memory based on underlying type.
+        // Strings have to be freed diffrently then all other types.
         if((*mem_walker)->type == CRY_STRING)
           free((*mem_walker)->str);
         else
           free((*mem_walker)->sym);
 
+        // Add blocks to the free list.
+        // If the free list is full then delete the block.
+#if MAX_FREE_LIST > -1
         if(free_blocks.size() < MAX_FREE_LIST)
         {
           (*mem_walker)->sym = 0;
@@ -87,6 +98,10 @@ void GC::Collect()
         {
           free(*mem_walker);
         }
+#else
+        (*mem_walker)->sym = 0;
+        free_blocks.push(*mem_walker);
+#endif
 
         used_blocks.erase(mem_walker++);
       }

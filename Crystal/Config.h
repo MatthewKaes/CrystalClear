@@ -26,11 +26,15 @@
 
 // Max number of blocks that the deadpool will preserve
 // Blocks in excess of this ammount will be deleted.
-#define MAX_FREE_LIST 64
+#define MAX_FREE_LIST 512
 
 // The minimum about of time to wait between collections.
 // (Time is in milliseconds)
 #define COLLECTION_DELAY 150
+
+// The minimum number of blocks that must be on the used list
+// in order for collection to happen.
+#define MINIMUM_BLOCKS 256
 
 // turns off all all default optimizations
 // Equivilant of "debug" mode.

@@ -7,19 +7,9 @@
 // Boost functionalities
 #include <boost\date_time.hpp>
 #include <boost\thread.hpp>
+#include <boost\regex.hpp>
 
 extern const char* CRY_ROOT;
-
-void Crystal_Time(Crystal_Symbol* ret_sym)
-{
-  ret_sym->i32 = static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds());
-  ret_sym->type = CRY_INT;
-}
-void Crystal_Sleep(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
-{
-  boost::this_thread::sleep(boost::posix_time::milliseconds(Parse_Int(sym)));
-  ret_sym->type = CRY_NIL;
-}
 
 void Crystal_Input(Crystal_Symbol* ret_sym)
 {
@@ -250,6 +240,18 @@ void Crystal_Size(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   {
     ret_sym->type = CRY_NIL;
   }
+}
+
+void Crystal_Time(Crystal_Symbol* ret_sym)
+{
+  ret_sym->i32 = static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds());
+  ret_sym->type = CRY_INT;
+}
+
+void Crystal_Sleep(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  boost::this_thread::sleep(boost::posix_time::milliseconds(Parse_Int(sym)));
+  ret_sym->type = CRY_NIL;
 }
 
 #if INCLUDE_PYTHON
