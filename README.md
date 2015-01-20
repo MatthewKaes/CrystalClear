@@ -19,9 +19,9 @@ Crystal Clear solves these problems by breaking it down into two responsibilitie
 
 The key feature of Crystal is its use of an AOT (Ahead of Time) Compiler to turn crystal code directly into native machine code to remove the overhead of bytecode. Rather than jumping in and out of bytecode, Crystal executes the operations directly similar to how C/C++ work. This also allows for low level optimizations in how the machine code is created giving instruction level control.
 
-###Resource Acquisition Is Initialization
+###Garbage Collected
 
-Variables have function scooping rather than standard scooping techniques making it so variables are easy to construct and destruct. Rather than standard garbage collection variables are compiled to know their lifetime using clarity filters so they are only cleaned up when dynamic data reaches its lifetime. Dynamic data is always created when it's acquired and cleaned up only when necessary to minimize the footprint of memory management on the program.
+Crystal has a fast generational garbage collector that makes it so developers don't have to managed and maintain memory. The garbage collector is optimized to be as fast as possible in exchange for being memory efficient. Crystal Clear's garbage collection can be configured with a number of options to allow the user to change the behavior of the garbage collector.
 
 ##The "Clear"
 
