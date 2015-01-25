@@ -5,11 +5,14 @@
 
 GC global_gc;
 
-GC::GC() : generation(0), last_cleanup(0) {}
+GC::GC() : last_cleanup(0) 
+{
+  generations.reserve(MAX_STACK_DEPTH);
+}
 
 GC::~GC()
 { 
-  auto mem_walker = used_blocks.begin();
+  auto mem_walker = ++used_blocks.begin();
   
   while(mem_walker != used_blocks.end())
   {
@@ -30,6 +33,15 @@ GC::~GC()
 
 Crystal_Symbol* GC::Allocate()
 {
+  if(used_blocks.size() > gen_cap)
+  {
+    Collect();
+    if(used_blocks.size() > gen_cap * 0.8)
+    {
+      gen_cap *= GROWTH_RATE;
+    }
+  }
+
   Crystal_Symbol* sym;
   if(free_blocks.size())
   {
@@ -40,7 +52,6 @@ Crystal_Symbol* GC::Allocate()
   {
     sym = reinterpret_cast<Crystal_Symbol*>(calloc(1, sizeof(Crystal_Symbol)));
   }
-  sym->generation = generation;
   used_blocks.push_back(sym);
 
   return sym;
@@ -48,9 +59,6 @@ Crystal_Symbol* GC::Allocate()
 
 void GC::Collect()
 {
-  // Update the generation we are on.
-  generation--;
-
   // Check if we have enought blocks to care collecting about.
   if(used_blocks.size() >= MINIMUM_BLOCKS)
     return;
@@ -60,20 +68,18 @@ void GC::Collect()
   if(last_cleanup < curr_time - COLLECTION_DELAY)
   {
     // Mark
-    auto mem_walker = used_blocks.begin();
-
-    while(mem_walker != used_blocks.end())
+    for(unsigned i = 0; i < generations.size(); i++)
     {
-      // Only clear newer generations as old memory most likely
-      // needs to be persisted.
-      if((*mem_walker)->generation <= generation)
-        Mark(*mem_walker);
-
-      mem_walker++;
+      Root r = generations[i];
+      for(int block = 0; block < r.block_size; block++)
+      {
+        (r.base + block)->sweep = false;
+        Mark(r.base + block);
+      }
     }
 
     // Sweep
-    mem_walker = used_blocks.begin();
+    auto mem_walker = ++used_blocks.begin();
 
     while(mem_walker != used_blocks.end())
     {
@@ -102,7 +108,6 @@ void GC::Collect()
         (*mem_walker)->sym = 0;
         free_blocks.push(*mem_walker);
 #endif
-
         used_blocks.erase(mem_walker++);
       }
       else
@@ -117,9 +122,15 @@ void GC::Collect()
   }
 }
 
-void GC::Branch()
+void GC::Prune()
 {
-  generation++;
+  generations.pop_back();
+}
+
+void GC::Branch(Crystal_Symbol* root, int blocks)
+{
+  gen_cap = USAGE_LIMIT;
+  generations.push_back(GC::Root(root, blocks));
 }
 
 void GC::Mark(Crystal_Symbol* ptr)
@@ -128,13 +139,17 @@ void GC::Mark(Crystal_Symbol* ptr)
     return;
 
   ptr->sweep = true;
-  if(ptr->type != CRY_STRING)
+  if(ptr->type == CRY_ARRAY)
   {
     for(unsigned i = 0; i < ptr->size; i++)
     {
       if(ptr->sym[i].type == CRY_POINTER)
         Mark(ptr->sym[i].sym);
     }
+  }
+  else if(ptr->type == CRY_POINTER)
+  {
+    Mark(ptr->sym);
   }
 }
 
@@ -145,15 +160,16 @@ Crystal_Symbol* GC_Allocate()
 
 void GC_Collect()
 {
-  global_gc.Collect();
+  // Pull out generation data.
+  global_gc.Prune();
 }
 
-void GC_Branch()
+void GC_Branch(Crystal_Symbol* base, int block_size)
 {
-  global_gc.Branch();
+  global_gc.Branch(base, block_size);
 }
 
 void GC_Extend_Generation(Crystal_Symbol* root)
 {
-  root->sym->generation--;
+  root->sym->sweep = true;
 }

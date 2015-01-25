@@ -81,7 +81,10 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   }
 
   //set up a new generation for the garbage collector.
+  Machine->Push(static_cast<int>(locals_count + stack_depth + 1));
+  Push(0);
   Machine->Call(GC_Branch);
+  Pop(2);
 
   //tidy up lookup data.
   lookups.clear();

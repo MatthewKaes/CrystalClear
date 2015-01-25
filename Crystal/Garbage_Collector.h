@@ -15,22 +15,31 @@ public:
 
   Crystal_Symbol* Allocate();
   void Collect();
-  void Branch();
+  void Prune();
+  void Branch(Crystal_Symbol* root, int blocks);
 
 private:
+  struct Root {
+    Root(Crystal_Symbol* _base, int _size) : base(_base), block_size(_size) {};
+    Crystal_Symbol* base;
+    int block_size;
+  };
+
   void Mark(Crystal_Symbol* ptr);
 
-  unsigned generation;
   unsigned last_cleanup;
+
   std::stack<Crystal_Symbol*> free_blocks;
   std::list<Crystal_Symbol*> used_blocks;
-  std::stack<unsigned> generation_markers;
+
+  unsigned gen_cap;
+  std::vector<Root> generations;
 };
 
 // Exposed Global Garbage Collector Operations
 Crystal_Symbol* GC_Allocate();
 void GC_Collect();
-void GC_Branch();
+void GC_Branch(Crystal_Symbol* base, int size);
 
 void GC_Extend_Generation(Crystal_Symbol* root);
 

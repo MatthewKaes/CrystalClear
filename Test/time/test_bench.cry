@@ -10,17 +10,23 @@ def main()
   #Call a clock function using sleep
   print_color("\nEnter anything to start the clock", 11)
   input
-  clock()
+  x = "Hello"
+  ret = clock(x + " World")
+  print("return from clock: " + ret)
+  return ret
 end
 
-def clock()
+def clock( val )
   x = 0
   y = 0
   while(true)
-   x += 1
-   y += x
-   print(x)
-   print("Total wait: " + y / 1000.0 + " seconds")
-   sleep(x)
+    x += 1
+    y += 40
+    print("Total wait: " + y / 1000.0 + " seconds")
+    print(val += "!")
+    sleep(5)
+    if(y / 1000.0 >= 11)
+      return val
+    end
   end
 end
