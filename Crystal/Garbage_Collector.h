@@ -27,8 +27,6 @@ private:
 
   void Mark(Crystal_Symbol* ptr);
 
-  unsigned last_cleanup;
-
   std::stack<Crystal_Symbol*> free_blocks;
   std::list<Crystal_Symbol*> used_blocks;
 

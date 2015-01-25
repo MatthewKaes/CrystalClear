@@ -5,7 +5,7 @@
 
 GC global_gc;
 
-GC::GC() : last_cleanup(0) 
+GC::GC()
 {
   generations.reserve(MAX_STACK_DEPTH);
 }
@@ -59,66 +59,54 @@ Crystal_Symbol* GC::Allocate()
 
 void GC::Collect()
 {
-  // Check if we have enought blocks to care collecting about.
-  if(used_blocks.size() >= MINIMUM_BLOCKS)
-    return;
-
-  // Check if we need to do any collection
-  unsigned curr_time = static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds());
-  if(last_cleanup < curr_time - COLLECTION_DELAY)
+  // Mark
+  for(unsigned i = 0; i < generations.size(); i++)
   {
-    // Mark
-    for(unsigned i = 0; i < generations.size(); i++)
+    Root r = generations[i];
+    for(int block = 0; block < r.block_size; block++)
     {
-      Root r = generations[i];
-      for(int block = 0; block < r.block_size; block++)
-      {
-        (r.base + block)->sweep = false;
-        Mark(r.base + block);
-      }
+      (r.base + block)->sweep = false;
+      Mark(r.base + block);
     }
+  }
 
-    // Sweep
-    auto mem_walker = ++used_blocks.begin();
+  // Sweep
+  auto mem_walker = ++used_blocks.begin();
 
-    while(mem_walker != used_blocks.end())
+  while(mem_walker != used_blocks.end())
+  {
+    if(!(*mem_walker)->sweep)
     {
-      if(!(*mem_walker)->sweep)
-      {
-        // Free memory based on underlying type.
-        // Strings have to be freed diffrently then all other types.
-        if((*mem_walker)->type == CRY_STRING)
-          free((*mem_walker)->str);
-        else
-          free((*mem_walker)->sym);
+      // Free memory based on underlying type.
+      // Strings have to be freed diffrently then all other types.
+      if((*mem_walker)->type == CRY_STRING)
+        free((*mem_walker)->str);
+      else
+        free((*mem_walker)->sym);
 
-        // Add blocks to the free list.
-        // If the free list is full then delete the block.
+      // Add blocks to the free list.
+      // If the free list is full then delete the block.
 #if MAX_FREE_LIST > -1
-        if(free_blocks.size() < MAX_FREE_LIST)
-        {
-          (*mem_walker)->sym = 0;
-          free_blocks.push(*mem_walker);
-        }
-        else
-        {
-          free(*mem_walker);
-        }
-#else
+      if(free_blocks.size() < MAX_FREE_LIST)
+      {
         (*mem_walker)->sym = 0;
         free_blocks.push(*mem_walker);
-#endif
-        used_blocks.erase(mem_walker++);
       }
       else
       {
-        (*mem_walker)->sweep = false;
-        mem_walker++;
+        free(*mem_walker);
       }
+#else
+      (*mem_walker)->sym = 0;
+      free_blocks.push(*mem_walker);
+#endif
+      used_blocks.erase(mem_walker++);
     }
-
-    // Reset cleanup time
-    last_cleanup = curr_time;
+    else
+    {
+      (*mem_walker)->sweep = false;
+      mem_walker++;
+    }
   }
 }
 
