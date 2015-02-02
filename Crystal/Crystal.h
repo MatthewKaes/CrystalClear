@@ -41,8 +41,7 @@ class Crystal_Symbol
 public:
   Symbol_Type type;
   bool sweep;
-  Symbol_Type ptr_type;
-  unsigned char EX_DATA;
+  unsigned short class_id;
   union {
     Crystal_Symbol* sym;
     char* str;

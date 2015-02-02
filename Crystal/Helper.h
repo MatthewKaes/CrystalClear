@@ -9,6 +9,7 @@ double Parse_Double(Crystal_Symbol* sym);
 void Parse_String(Crystal_Symbol* sym, std::string* str);
 
 bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr);
+int Fast_arraycmp(Crystal_Symbol* aryl, Crystal_Symbol* aryr);
 
 void Stack_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from);
 

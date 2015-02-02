@@ -303,6 +303,14 @@ void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
       dest->type = CRY_BOOL;
       return;
     }
+    else
+    {
+      dest->i32 = Fast_arraycmp(dest->sym, source->sym);
+      dest->type = CRY_BOOL;
+      return;
+    }
+    break;
+
   default:
     dest->i32 = 0;
     dest->type = CRY_BOOL;

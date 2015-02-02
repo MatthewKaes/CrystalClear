@@ -27,12 +27,14 @@ int Parse_Int(Crystal_Symbol* sym)
     return 0;
   }
 }
+
 int Parse_Bool(Crystal_Symbol* sym)
 {
   if(sym->type == CRY_NIL)
     return 0;
   return sym->i32 != 0;
 }
+
 double Parse_Double(Crystal_Symbol* sym)
 {
   switch(sym->type)
@@ -59,6 +61,7 @@ double Parse_Double(Crystal_Symbol* sym)
     return 0.0;
   }
 }
+
 void Parse_String(Crystal_Symbol* sym, std::string* str)
 {
   str->clear();
@@ -90,6 +93,7 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
     return;
   }
 }
+
 bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr)
 {
   int i = 0;
@@ -103,18 +107,103 @@ bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr)
   }
   return true;
 }
+
+int Fast_arraycmp(Crystal_Symbol* aryl, Crystal_Symbol* aryr)
+{
+  if(aryl->size != aryr->size)
+  {
+    return false;
+  }
+
+  for(unsigned i = 0; i < aryl->size; i++)
+  {
+    if(aryl->sym[i].type == CRY_POINTER)
+    {
+      switch(aryl->sym[i].sym->type)
+      {
+      case CRY_STRING:
+        if(aryr->sym[i].type == CRY_TEXT)
+        {
+          if(!Fast_strcmp(aryl->sym[i].sym, aryr))
+          {
+            return 0;
+          }
+        }
+        else if(aryr->sym[i].type != CRY_STRING)
+        {
+          if(!Fast_strcmp(aryl->sym[i].sym, aryr->sym[i].sym))
+          {
+            return 0;
+          }
+        }
+        else
+        {
+          return 0;
+        }
+
+        break;
+      case CRY_ARRAY:
+        if(aryl->type != aryr->type)
+          return 0;
+
+        if(!Fast_arraycmp(aryl->sym + i, aryr->sym + i))
+          return 0;
+
+        break;
+      }
+      continue;
+    }
+
+    if(aryl->sym[i].type == CRY_TEXT)
+    {
+      if(aryr->sym[i].type == CRY_TEXT)
+      {
+        if(!Fast_strcmp(aryl->sym + i, aryr->sym + i))
+        {
+          return 0;
+        }
+      }
+      else if(aryr->sym[i].type != CRY_STRING)
+      {
+        if(!Fast_strcmp(aryl->sym + i, aryr->sym[i].sym))
+        {
+          return 0;
+        }
+      }
+      else
+      {
+        return 0;
+      }
+    }
+
+    if(aryl->sym[i].type != aryr->sym[i].type)
+      return 0;
+    
+    if(aryl->sym[i].LOWWER != aryr->sym[i].LOWWER)
+      return 0;
+
+    if((aryl->sym[i].type == CRY_INT64 || aryl->sym[i].type == CRY_DOUBLE) 
+      && aryl->sym[i].UPPER != aryr->sym[i].UPPER)
+      return 0;
+  }
+
+  return 1;
+}
+
 void Stack_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from)
 {
   sym_stack->i64 = sym_from->i64;
   sym_stack->sym = sym_from->sym;
   sym_stack->type = sym_from->type;
 }
+
 void Power_Syms(Crystal_Symbol* syml, Crystal_Symbol* symr)
 {
   double l = syml->type == CRY_DOUBLE ? syml->d : syml->i32;
   double r = symr->type == CRY_DOUBLE ? symr->d : symr->i32;
   syml->d = pow(l, r);
 }
+
 void Power_SymsR(Crystal_Symbol* syml, Crystal_Symbol* symr)
 {
   double l = syml->type == CRY_DOUBLE ? syml->d : syml->i32;
@@ -128,35 +217,42 @@ void Cry_Derefrence(Crystal_Symbol** sym)
     *sym = (*sym)->sym;
   }
 }
+
 //Array functions
 void Array_Add_Nil(int index, Crystal_Symbol* ary)
 {
   ary[index].type = CRY_NIL;
 }
+
 void Array_Add_Bool(int num, int index, Crystal_Symbol* ary)
 {
   ary[index].type = CRY_BOOL;
   ary[index].i32 = num;
 }
+
 void Array_Add_Int(int num, int index,  Crystal_Symbol* ary)
 {
   ary[index].type = CRY_INT;
   ary[index].i32 = num;
 }
+
 void Array_Add_Double(double dec, int index,  Crystal_Symbol* ary)
 {
   ary[index].type = CRY_DOUBLE;
   ary[index].d = dec;
 }
+
 void Array_Add_Text(const char* text, int index,  Crystal_Symbol* ary)
 {
   ary[index].type = CRY_TEXT;
   ary[index].text = text;
 }
+
 void Array_Add_Var(Crystal_Symbol* sym, int index, Crystal_Symbol* ary)
 {
   Stack_Copy(ary->sym + index, sym);
 }
+
 void Array_Add_Stack(Crystal_Symbol* sym_stack, int index, Crystal_Symbol* ary)
 {
   if(sym_stack->type == CRY_STRING)
@@ -179,26 +275,31 @@ void Ref_Nil(Crystal_Symbol* sym)
 {
   sym->type = CRY_NIL;
 }
+
 void Ref_Bool(int num, Crystal_Symbol* sym)
 {
   sym->type = CRY_BOOL;
   sym->i32 = num;
 }
+
 void Ref_Int(int num, Crystal_Symbol* sym)
 {
   sym->type = CRY_INT;
   sym->i32 = num;
 }
+
 void Ref_Double(double dec, Crystal_Symbol* sym)
 {
   sym->type = CRY_DOUBLE;
   sym->d = dec;
 }
+
 void Ref_Text(const char* text, Crystal_Symbol* sym)
 {
   sym->type = CRY_TEXT;
   sym->text = text;
 }
+
 void Cry_Assignment(Crystal_Symbol* src, Crystal_Symbol* dest)
 {
   *dest = *src;
@@ -236,10 +337,12 @@ int Printer(Crystal_Symbol* sym)
   }
   return counter;
 }
+
 void Copy_Ptr(Crystal_Symbol* res,  Crystal_Symbol* src, int index)
 {
   *res = src->sym->sym[index];
 }
+
 Crystal_Symbol* Get_Ptr(Crystal_Symbol* src, int index)
 {
   return src->sym->sym + index;
