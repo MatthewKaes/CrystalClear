@@ -146,7 +146,7 @@ int Fast_arraycmp(Crystal_Symbol* aryl, Crystal_Symbol* aryr)
         if(aryl->type != aryr->type)
           return 0;
 
-        if(!Fast_arraycmp(aryl->sym + i, aryr->sym + i))
+        if(!Fast_arraycmp(aryl->sym[i].sym, aryr->sym[i].sym))
           return 0;
 
         break;
