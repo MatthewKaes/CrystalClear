@@ -124,7 +124,7 @@ int Fast_arraycmp(Crystal_Symbol* aryl, Crystal_Symbol* aryr)
       case CRY_STRING:
         if(aryr->sym[i].type == CRY_TEXT)
         {
-          if(!Fast_strcmp(aryl->sym[i].sym, aryr))
+          if(!Fast_strcmp(aryl->sym[i].sym, aryr->sym + i))
           {
             return 0;
           }
