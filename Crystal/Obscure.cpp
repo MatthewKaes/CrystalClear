@@ -255,16 +255,47 @@ void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_BOOL;
     return;
   case CRY_TEXT:
-  case CRY_STRING:
-    if(dest->type != source->type)
+    if(source->type == CRY_TEXT)
+    {
+      dest->i32 = Fast_strcmp(dest, source);
+      dest->type = CRY_BOOL;
+      return;
+    }
+    else if(source->type == CRY_POINTER && source->sym->type == CRY_STRING)
+    {
+      dest->i32 = Fast_strcmp(dest, source->sym);
+      dest->type = CRY_BOOL;
+      return;
+    }
+    dest->i32 = 0;
+    dest->type = CRY_BOOL;
+    return;
+  case CRY_POINTER:
+    if(source->type == CRY_TEXT)
+    {
+      if(dest->sym->type != CRY_STRING)
+      {
+        dest->i32 = 0;
+        dest->type = CRY_BOOL;
+        return;
+      }
+      dest->i32 = Fast_strcmp(dest->sym, source);
+      dest->type = CRY_BOOL;
+      return;
+    }
+    else if(source->type != CRY_POINTER || source->sym->type != dest->sym->type)
     {
       dest->i32 = 0;
       dest->type = CRY_BOOL;
       return;
     }
-    dest->i32 = Fast_strcmp(dest, source);
-    dest->type = CRY_BOOL;
-    return;
+
+    if(dest->sym->type == CRY_STRING)
+    {
+      dest->i32 = Fast_strcmp(dest->sym, source->sym);
+      dest->type = CRY_BOOL;
+      return;
+    }
   default:
     dest->i32 = 0;
     dest->type = CRY_BOOL;
