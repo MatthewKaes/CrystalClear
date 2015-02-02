@@ -290,6 +290,13 @@ void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
       return;
     }
 
+    if(dest->sym == source->sym)
+    {
+      dest->i32 = 1;
+      dest->type = CRY_BOOL;
+      return;
+    }
+
     if(dest->sym->type == CRY_STRING)
     {
       dest->i32 = Fast_strcmp(dest->sym, source->sym);
@@ -304,52 +311,8 @@ void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 }
 void Obscure_Diffrence(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
-  switch(dest->type)
-  {
-  case CRY_NIL:
-    dest->i32 = source->type != CRY_NIL;
-    dest->type = CRY_BOOL;
-    return;
-  case CRY_BOOL:
-    if(dest->type != source->type)
-    {
-      dest->i32 = true;
-      dest->type = CRY_BOOL;
-      return;
-    }
-    dest->i32 = (dest->b != source->b);
-    dest->type = CRY_BOOL;
-    return;
-  case CRY_INT:
-    if(dest->type != source->type)
-    {
-      dest->i32 = true;
-      dest->type = CRY_BOOL;
-      return;
-    }
-    dest->i32 = (dest->i32 != source->i32);
-    dest->type = CRY_BOOL;
-    return;
-  case CRY_DOUBLE:
-    if(dest->type != source->type)
-    {
-      dest->i32 = true;
-      dest->type = CRY_BOOL;
-      return;
-    }
-    dest->i32 = (dest->d != source->d);
-    dest->type = CRY_BOOL;
-    return;
-  case CRY_TEXT:
-  case CRY_STRING:
-    dest->i32 = !Fast_strcmp(dest, source);
-    dest->type = CRY_BOOL;
-    return;
-  default:
-    dest->b = true;
-    dest->type = CRY_BOOL;
-    return;
-  }
+  Obscure_Equal(dest, source);
+  dest->i32 = !dest->i32;
 }
 void Obscure_Less(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
@@ -417,67 +380,13 @@ void Obscure_Greater(Crystal_Symbol* dest, Crystal_Symbol* source)
 }
 void Obscure_Less_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
-  switch(dest->type)
-  {
-  case CRY_INT:
-    if(dest->type != source->type)
-    {
-      dest->type = CRY_NIL;
-      return;
-    }
-    dest->i32 = (dest->i32 <= source->i32);
-    dest->type = CRY_BOOL;
-    return;
-  case CRY_DOUBLE:
-    if(dest->type > CRY_DOUBLE || source->type > CRY_DOUBLE)
-    {
-      dest->type = CRY_NIL;
-      return;
-    }
-    else
-    {
-      double l = dest->type == CRY_DOUBLE ? dest->d : dest->i32;
-      double r = source->type == CRY_DOUBLE ? source->d : source->i32;
-      dest->i32 = l <= r;
-      dest->type = CRY_BOOL;
-    }
-    return;
-  default:
-    dest->type = CRY_NIL;
-    return;
-  }
+  Obscure_Greater(dest, source);
+  dest->i32 = !dest->i32;
 }
 void Obscure_Greater_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
-  switch(dest->type)
-  {
-  case CRY_INT:
-    if(dest->type != source->type)
-    {
-      dest->type = CRY_NIL;
-      return;
-    }
-    dest->i32 = (dest->i32 >= source->i32);
-    dest->type = CRY_BOOL;
-    return;
-  case CRY_DOUBLE:
-    if(dest->type > CRY_DOUBLE || source->type > CRY_DOUBLE)
-    {
-      dest->type = CRY_NIL;
-      return;
-    }
-    else
-    {
-      double l = dest->type == CRY_DOUBLE ? dest->d : dest->i32;
-      double r = source->type == CRY_DOUBLE ? source->d : source->i32;
-      dest->i32 = l >= r;
-      dest->type = CRY_BOOL;
-    }
-    return;
-  default:
-    dest->type = CRY_NIL;
-    return;
-  }
+  Obscure_Less(dest, source);
+  dest->i32 = !dest->i32;
 }
 
 //Reversals
