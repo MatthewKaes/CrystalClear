@@ -1,9 +1,9 @@
 def main()
   val = "Crystal"
   val += " " + "Clear"
-  x = [2, nil, true, "Hello", 6.10, nil, val]
+  x = [2, nil, true, "Hello", 6.10, nil, val, val + "!"]
   x[1] = [[true, [val, "Hello"]], 3][0]
-  x[1][1] = false
+  #x[1][1] = false
   print_color("Array X:" , 11) 
   print(x)
   print(x)
@@ -14,8 +14,13 @@ def main()
 
   index = 0
   while(index < size(x))
-   print(x[index])
-   index += 1
+    print(x[index])
+   
+    if(x[index] == [true, ["Crystal Clear", "Hello"])
+      print_color("Crystal!", 13)
+    end
+
+    index += 1
   end
 
   print("")

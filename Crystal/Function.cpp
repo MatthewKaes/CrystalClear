@@ -22,7 +22,7 @@ void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)
   strcpy(new_buffer, val_left.c_str());
   strcpy(new_buffer + val_left.size(), val_right.c_str());
   
-  //Garbage Collect the old string
+  // Create a new Garbage Controled string.
   Construct_String(symd, new_buffer, val_left.size() + val_right.size());
 }
 void Crystal_Text_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
@@ -36,29 +36,28 @@ void Crystal_Text_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
   char* new_buffer = static_cast<char*>(malloc(val_left.size() + val_right.size() + 1));
   strcpy(new_buffer, val_right.c_str());
   strcpy(new_buffer + val_right.size(), val_left.c_str());
-
-  //Garbage Collect the old string
+  
+  // Create a new Garbage Controled string.
   Construct_String(symd, new_buffer, val_left.size() + val_right.size());
 }
 
 void Crystal_Text_Append_C(Crystal_Symbol* symd, const char* str, unsigned length)
 {
-  //Garbage Collect the old string
   char* new_buffer = static_cast<char*>(malloc(symd->sym->size + length + 1));
   strcpy(new_buffer, symd->sym->str);
   strcpy(new_buffer + symd->sym->size, str);
-  free(symd->sym->str);
-  symd->sym->str = new_buffer;
-  symd->sym->size = symd->sym->size + length;
+  
+  // Create a new Garbage Controled string.
+  Construct_String(symd, new_buffer, symd->sym->size + length);
 }
 void Crystal_Text_Append_CR(Crystal_Symbol* symd, const char* str, unsigned length)
 {
   char* new_buffer = static_cast<char*>(malloc(symd->sym->size + length + 1));
   strcpy(new_buffer, str);
   strcpy(new_buffer + length, symd->sym->str);
-  free(symd->sym->str);
-  symd->sym->str = new_buffer;
-  symd->sym->size = symd->sym->size + length;
+  
+  // Create a new Garbage Controled string.
+  Construct_String(symd, new_buffer, symd->sym->size + length);
 }
 
 void Crystal_Const_Append_T(Crystal_Symbol* symd, const char* str, unsigned length)
@@ -70,7 +69,7 @@ void Crystal_Const_Append_T(Crystal_Symbol* symd, const char* str, unsigned leng
   strcpy(new_buffer, val_left.c_str());
   strcpy(new_buffer + val_left.size(), str);
   
-  //Garbage Collect the old string
+  // Create a new Garbage Controled string.
   Construct_String(symd, new_buffer, val_left.size() + length);
 }
 void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned length)
@@ -82,7 +81,7 @@ void Crystal_Const_Append_TL(Crystal_Symbol* symd, const char* str, unsigned len
   strcpy(new_buffer, str);
   strcpy(new_buffer + length, val_left.c_str());
   
-  //Garbage Collect the old string
+  // Create a new Garbage Controled string.
   Construct_String(symd, new_buffer, val_left.size() + length);
 }
 void Construct_Array(Crystal_Symbol* symd, unsigned size, Crystal_Symbol* ary)
