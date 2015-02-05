@@ -194,15 +194,16 @@ void Crystal_Compiler::Allocate(unsigned sym_count)
   //Push it for later use
   Machine->Push(EAX);
 }
-void Crystal_Compiler::Make_Array(unsigned var, unsigned size)
+void Crystal_Compiler::Make_Array(unsigned var, unsigned size, unsigned capacity)
 {
   //Creation of the array object
+  Machine->Push(static_cast<int>(capacity));
   Machine->Push(static_cast<int>(size));
   Push(var);
   Machine->Call(Construct_Array);
-  Machine->Pop(sizeof(int) * 3);
+  Machine->Pop(sizeof(int) * 4);
   //Set up types for compiler use
-  states[var].Set(CRY_POINTER);
+  states[var].Set(CRY_ARRAY);
   //Corrupt the state of the object
   if(lookups.size())
     lookups.back().corruptions[var] = true;
@@ -214,7 +215,7 @@ void Crystal_Compiler::Make_Range(unsigned var)
   Machine->Call(Construct_Range);
   Machine->Pop(sizeof(int) * 3);
   //Set up types for compiler use
-  states[var].Set(CRY_POINTER);
+  states[var].Set(CRY_ARRAY);
   //Corrupt the state of the object
   if(lookups.size())
     lookups.back().corruptions[var] = true;
@@ -644,7 +645,13 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
         Call(Crystal_Text_AppendR);
       Pop(2);
       break;
-    NO_SUPPORT(CRY_ARRAY);
+    case CRY_ARRAY:
+      Push(source);
+      Push(dest);
+      if(left)
+        Call(Crystal_Array_Append);
+      Pop(2);
+      break;
     NO_SUPPORT(CRY_POINTER);
     }
     Runtime_Resovle(dest, resolve);

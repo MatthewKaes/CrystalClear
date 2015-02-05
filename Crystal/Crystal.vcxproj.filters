@@ -128,9 +128,6 @@
     <ClInclude Include="Bytecode.h">
       <Filter>Syntax\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Operations.h">
-      <Filter>Syntax\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="Library.h">
       <Filter>Extensions\Headers</Filter>
     </ClInclude>
@@ -157,6 +154,9 @@
     </ClInclude>
     <ClInclude Include="Garbage_Collector.h">
       <Filter>Core Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Operations.h">
+      <Filter>Syntax\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
