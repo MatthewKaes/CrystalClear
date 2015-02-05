@@ -188,6 +188,17 @@ bool Syntax_Node::Evaluate()
       new_code.result = sym;
     }
   }
+  else
+  {
+    sym.type = DAT_REGISTRY;
+    sym.i32 = tree_->Get_Open_Reg();
+    if(sym.i32 == -1)
+    {
+      sym.i32 = regptr->size();
+      regptr->push_back(true);
+    }
+    new_code.result = sym;
+  }
   
   //Finalize Bytecode
   tree_->Get_Bytecodes()->push_back(new_code);

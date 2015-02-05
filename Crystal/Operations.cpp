@@ -199,7 +199,11 @@ bool Array_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal
   if(base->i32 == GETTER_ID)
   {
     //Create array
-    target->Allocate(syms->size());
+    unsigned capacity = syms->size() * 2;
+    if(capacity < 0x20)
+      capacity = 0x20;
+
+    target->Allocate(capacity);
     for(unsigned i = 0; i < syms->size(); i++)
     {
       target->Push_C(static_cast<int>(i));
@@ -237,7 +241,7 @@ bool Array_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal
         break;
       }
     }
-    target->Make_Array(MEMR(result), syms->size());
+    target->Make_Array(MEMR(result), syms->size(), capacity);
   }
   else
   {
