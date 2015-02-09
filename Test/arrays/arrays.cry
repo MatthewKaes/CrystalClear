@@ -1,13 +1,20 @@
 def main()
   val = "Crystal"
   val += " " + "Clear"
-  x = [2, nil, true, "Hello", 6.10, nil, val, val + "!"]
-  x[1] = [[true, [val, "Hello"]], 3][0]
+  x = [2, nil, true, "Hello", 6.10, nil, val, val + val]
+  x[1] = [[true, [val, "Hello"]], 3]
+  k = "sub"
+  x += k
+  print(k + x)
+  input()
   #x[1][1] = false
   print_color("Array X:" , 11) 
   print(x)
+  val += "\n"
   print(x)
   print("Size: " + size(x) + "\n")
+  input()
+
 
   #unrolling an array
   print_color("Unroll X:", 11)

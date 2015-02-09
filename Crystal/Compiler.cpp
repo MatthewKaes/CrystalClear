@@ -650,6 +650,8 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
       Push(dest);
       if(left)
         Call(Crystal_Array_Append);
+      else
+        Call(Crystal_Array_AppendR);
       Pop(2);
       break;
     NO_SUPPORT(CRY_POINTER);
