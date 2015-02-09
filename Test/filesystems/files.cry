@@ -1,0 +1,9 @@
+# Testing usage of filesystem functions
+
+def main()
+  # Make a relative path
+  make_path("temp\\folder")
+
+  # Remove a path along with all subdirectories if they exist
+  remove_path("temp")
+end

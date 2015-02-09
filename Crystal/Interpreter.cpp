@@ -1,5 +1,6 @@
 #include "Interpreter.h"
 #include "Library.h"
+#include "Filesystems.h"
 #include "Math.h"
 #include <stdio.h>
 #include <boost\filesystem.hpp>
@@ -51,6 +52,10 @@ void Crystal_Interpreter::Populate_BIP()
 
   //Boost Extensions
   REGISTER_FUNCTION(sleep, Crystal_Sleep, 1);
+
+  //Filesystems
+  REGISTER_FUNCTION(make_path, Crystal_MakeDirectory, 1);
+  REGISTER_FUNCTION(remove_path, Crystal_RemovePath, 1);
 
   //Hooks to other langauges
   REGISTER_FUNCTION(python, Crystal_Python, 2);
@@ -155,25 +160,28 @@ void Crystal_Interpreter::Format_Code()
     switch(*code_ptr)
     {
     case '\n':
-      if(code_out[code_out.size() - 2] == '_')
+      if(code_out.size() > 2)
       {
-        code_out.pop_back();
-        code_out.pop_back();
-        code_ptr++;
-        continue;
+        if(code_out[code_out.size() - 2] == '_')
+        {
+          code_out.pop_back();
+          code_out.pop_back();
+          code_ptr++;
+          continue;
+        }
+        if(code_out[code_out.size() - 2] == ',')
+        {
+          code_ptr++;
+          continue;
+        }
+        if(code_out[code_out.size() - 2] == '\n')
+        {
+          code_ptr++;
+          continue;
+        }
       }
-      if(code_out[code_out.size() - 2] == ',')
-      {
-        code_ptr++;
-        continue;
-      }
-      if(code_out.size() > 1 && code_out[code_out.size() - 2] == '\n')
-      {
-        code_ptr++;
-        continue;
-      }
-      else
-        code_out.push_back(*code_ptr++);
+
+      code_out.push_back(*code_ptr++);
       break;
     case ' ':
       code_ptr++;

@@ -15,6 +15,7 @@
 //Avalible Machines
 #include "Machines\x86_Machine.h"
 
+static char* CRY_BASE = 0;
 const char* CRY_ROOT = 0;
 
 extern GC global_gc;
@@ -24,7 +25,14 @@ typedef void (*CRY_EXPORT)();
 int Process_Root(Crystal_Compiler* comp, const char* rootdir)
 {
   //Set the root for other functions to use
-  CRY_ROOT = rootdir;
+  unsigned size = strlen(rootdir);
+  CRY_BASE = strcpy(new char[size + 2], rootdir);
+  if(CRY_BASE[size - 1] != '\\')
+  {
+    CRY_BASE[size] = '\\';
+    CRY_BASE[size + 1] = '\0';
+  }
+  CRY_ROOT = CRY_BASE;
 
   //Create the interpreter
   Crystal_Interpreter interpreter(comp);
@@ -129,4 +137,6 @@ int main(int argc, const char **argv)
     }
     FreeLibrary(Crystal_Interpreter::Extension_Libs[i]);
   }
+
+  delete[] CRY_BASE;
 }

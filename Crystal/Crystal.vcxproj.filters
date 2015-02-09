@@ -17,10 +17,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Core Headers">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
     <Filter Include="Core Sources">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -39,6 +35,10 @@
     </Filter>
     <Filter Include="Front End\Headers">
       <UniqueIdentifier>{66a330df-c8b8-48af-9cfb-18b7df3dd863}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core Sources\Core Headers">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -72,20 +72,11 @@
     <ClCompile Include="Library.cpp">
       <Filter>Extensions</Filter>
     </ClCompile>
-    <ClCompile Include="Helper.cpp">
-      <Filter>Extensions</Filter>
-    </ClCompile>
     <ClCompile Include="Reductions.cpp">
       <Filter>Syntax</Filter>
     </ClCompile>
-    <ClCompile Include="Obscure.cpp">
-      <Filter>Extensions</Filter>
-    </ClCompile>
     <ClCompile Include="Clarity_Filter.cpp">
       <Filter>Core Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Function.cpp">
-      <Filter>Extensions</Filter>
     </ClCompile>
     <ClCompile Include="Math.cpp">
       <Filter>Extensions</Filter>
@@ -93,13 +84,25 @@
     <ClCompile Include="Garbage_Collector.cpp">
       <Filter>Core Sources</Filter>
     </ClCompile>
+    <ClCompile Include="Filesystems.cpp">
+      <Filter>Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper.cpp">
+      <Filter>Core Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Function.cpp">
+      <Filter>Core Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Obscure.cpp">
+      <Filter>Core Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Crystal.h">
-      <Filter>Core Headers</Filter>
+      <Filter>Core Sources\Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Compiler.h">
-      <Filter>Core Headers</Filter>
+      <Filter>Core Sources\Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Machines\Machine.h">
       <Filter>Machines\Headers</Filter>
@@ -134,29 +137,32 @@
     <ClInclude Include="Reductions.h">
       <Filter>Syntax\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Helper.h">
-      <Filter>Extensions\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Obscure.h">
-      <Filter>Extensions\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="Clarity_Filter.h">
-      <Filter>Core Headers</Filter>
+      <Filter>Core Sources\Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>Front End\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Function.h">
-      <Filter>Extensions\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Math.h">
       <Filter>Extensions\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Garbage_Collector.h">
-      <Filter>Core Headers</Filter>
+      <Filter>Core Sources\Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Operations.h">
       <Filter>Syntax\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Filesystems.h">
+      <Filter>Extensions\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>Core Sources\Core Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Function.h">
+      <Filter>Core Sources\Core Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Obscure.h">
+      <Filter>Core Sources\Core Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

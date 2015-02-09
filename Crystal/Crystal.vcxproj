@@ -153,6 +153,7 @@
     <ClCompile Include="Bytecode.cpp" />
     <ClCompile Include="Clarity_Filter.cpp" />
     <ClCompile Include="Compiler.cpp" />
+    <ClCompile Include="Filesystems.cpp" />
     <ClCompile Include="Garbage_Collector.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Function.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="Compiler.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Crystal.h" />
+    <ClInclude Include="Filesystems.h" />
     <ClInclude Include="Garbage_Collector.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Function.h" />
