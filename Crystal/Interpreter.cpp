@@ -56,6 +56,10 @@ void Crystal_Interpreter::Populate_BIP()
   //Filesystems
   REGISTER_FUNCTION(make_path, Crystal_MakeDirectory, 1);
   REGISTER_FUNCTION(remove_path, Crystal_RemovePath, 1);
+  REGISTER_FUNCTION(path_exists, Crystal_PathExists, 1);
+  REGISTER_FUNCTION(file_size, Crystal_FileSize, 1);
+  REGISTER_FUNCTION(list_files, Crystal_FileList, 1);
+  REGISTER_FUNCTION(cry_root, Crystal_CryRoot, 0);
 
   //Hooks to other langauges
   REGISTER_FUNCTION(python, Crystal_Python, 2);

@@ -2,8 +2,33 @@
 
 def main()
   # Make a relative path
-  make_path("temp\\folder")
+  print("Making directory")
+  if make_path("temp\\folder")
+  	print_color("Success\n", 10)
+  else
+  	print_color("Failure\n", 12)
+  end
+
+  print_color("Size of Crystal File:", 12)
+  print(file_size("files.cry") + " bytes\n")
+
+  print("files in current directory: " + cry_root())
+  files = list_files("")
+
+  x = 0
+  while x < size(files)
+    print(files[x])
+    x += 1
+  end
+
+  print("")
 
   # Remove a path along with all subdirectories if they exist
-  remove_path("temp")
+  print("Removing directory")
+  if remove_path("temp")
+  	print_color("Success", 10)
+  else
+  	print_color("Failure", 12)
+  end
+
 end
