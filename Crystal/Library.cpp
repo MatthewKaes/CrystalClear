@@ -116,20 +116,20 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
 
 void Crystal_Boolean(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
-  ret_sym->type = CRY_BOOL;
   ret_sym->i32 = Parse_Bool(sym);
+  ret_sym->type = CRY_BOOL;
 }
 
 void Crystal_Integer(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
-  ret_sym->type = CRY_INT;
   ret_sym->i32 = Parse_Int(sym);
+  ret_sym->type = CRY_INT;
 }
 
 void Crystal_Double(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
-  ret_sym->type = CRY_DOUBLE;
   ret_sym->d = Parse_Double(sym);
+  ret_sym->type = CRY_DOUBLE;
 }
 
 void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
@@ -139,7 +139,6 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   if(ret_sym->type == CRY_STRING && ret_sym == sym)
     return;
 
-  ret_sym->type = CRY_STRING;
   if(sym->type == CRY_TEXT)
   {
     int size = strlen(sym->text);
@@ -168,6 +167,7 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   int size = conv.size();
   strcpy(str, conv.c_str());
   Construct_String(ret_sym, str, size);
+  ret_sym->type = CRY_STRING;
 }
 
 void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)

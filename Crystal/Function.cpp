@@ -94,7 +94,7 @@ void Crystal_Array_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)
 {
   if(symd->type == CRY_POINTER && symd->sym->type == CRY_ARRAY)
   {
-    if(symd->sym->size + 1 < symd->sym->capacity)
+    if(symd->sym->size + 1 >= symd->sym->capacity)
     {
       symd->sym->capacity *= 2;
     }
@@ -108,7 +108,7 @@ void Crystal_Array_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)
   }
   else
   {
-    if(syms->sym->size + 1 < syms->sym->capacity)
+    if(syms->sym->size + 1 >= syms->sym->capacity)
     {
       syms->sym->capacity *= 2;
     }
@@ -126,7 +126,7 @@ void Crystal_Array_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
 {
   if(syms->type == CRY_POINTER && syms->sym->type == CRY_ARRAY)
   {
-    if(syms->sym->size + 1 < syms->sym->capacity)
+    if(syms->sym->size + 1 >= syms->sym->capacity)
     {
       syms->sym->capacity *= 2;
     }
@@ -140,7 +140,7 @@ void Crystal_Array_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
   }
   else
   {
-    if(symd->sym->size + 1 < symd->sym->capacity)
+    if(symd->sym->size + 1 >= symd->sym->capacity)
     {
       symd->sym->capacity *= 2;
     }

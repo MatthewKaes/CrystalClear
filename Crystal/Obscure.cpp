@@ -56,6 +56,11 @@ void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source)
       Crystal_Text_Append(dest, source);
       return;
     }
+    else
+    {
+      Crystal_Array_Append(dest, source);
+      return;
+    }
   default:
     dest->type = CRY_NIL;
     return;
@@ -450,6 +455,10 @@ void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
     {
       Crystal_Text_AppendR(dest, source);
       return;
+    }
+    else
+    {
+      Crystal_Array_AppendR(dest, source);
     }
   default:
     dest->type = CRY_NIL;
