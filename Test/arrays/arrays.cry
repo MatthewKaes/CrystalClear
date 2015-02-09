@@ -5,7 +5,7 @@ def main()
   x[1] = [[true, [val, "Hello"]], 3]
   k = "sub"
   x += k
-  print(integer(input()) + x)
+  print(x = x + 3 + "hello")
   input()
   #x[1][1] = false
   print_color("Array X:" , 11) 
@@ -23,7 +23,7 @@ def main()
   while(index < size(x))
     print(x[index])
    
-    if(x[index] == [true, ["Crystal Clear", "Hello"])
+    if(x[index] == [[true, ["Crystal Clear", "Hello"]], 3])
       print_color("Crystal!", 13)
     end
 

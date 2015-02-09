@@ -66,6 +66,7 @@ void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_Subtraction(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
@@ -104,6 +105,7 @@ void Obscure_Subtraction(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_Multiplication(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
@@ -136,6 +138,7 @@ void Obscure_Multiplication(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_Division(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
@@ -164,6 +167,7 @@ void Obscure_Division(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_Modulo(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
@@ -183,6 +187,7 @@ void Obscure_Modulo(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_Power(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
@@ -221,6 +226,7 @@ void Obscure_Power(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
   switch(dest->type)
@@ -322,11 +328,13 @@ void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_Diffrence(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
   Obscure_Equal(dest, source);
   dest->i32 = !dest->i32;
 }
+
 void Obscure_Less(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
   switch(dest->type)
@@ -359,6 +367,7 @@ void Obscure_Less(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_Greater(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
   switch(dest->type)
@@ -391,11 +400,13 @@ void Obscure_Greater(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_Less_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
   Obscure_Greater(dest, source);
   dest->i32 = !dest->i32;
 }
+
 void Obscure_Greater_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
   Obscure_Less(dest, source);
@@ -465,6 +476,7 @@ void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_SubtractionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
@@ -504,6 +516,7 @@ void Obscure_SubtractionR(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_DivisionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
@@ -532,6 +545,7 @@ void Obscure_DivisionR(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_ModuloR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
@@ -551,6 +565,7 @@ void Obscure_ModuloR(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   }
 }
+
 void Obscure_PowerR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
   if(dest->type == CRY_NIL || source->type == CRY_NIL)

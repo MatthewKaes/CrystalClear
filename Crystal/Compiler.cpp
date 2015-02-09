@@ -820,8 +820,17 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
       Call(left ? Crystal_Text_Append_C : Crystal_Text_Append_CR);
       Pop(3);
       break;
+    case CRY_ARRAY:
+      Load(Addr_Reg(stack_depth), const_);
+      Push(Addr_Reg(stack_depth));
+      Push(dest);
+      if(left)
+        Call(Crystal_Array_Append);
+      else
+        Call(Crystal_Array_AppendR);
+      Pop(2);
+      break;
     //Lacking Support
-    NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);
     }
     Runtime_Resovle(dest, resolve);

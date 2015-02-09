@@ -143,7 +143,7 @@ int Fast_arraycmp(Crystal_Symbol* aryl, Crystal_Symbol* aryr)
 
         break;
       case CRY_ARRAY:
-        if(aryl->type != aryr->type)
+        if(aryl->sym[i].type != aryr->sym[i].type)
           return 0;
 
         if(!Fast_arraycmp(aryl->sym[i].sym, aryr->sym[i].sym))
