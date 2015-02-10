@@ -1,6 +1,7 @@
 #include "Interpreter.h"
 #include "Library.h"
 #include "Filesystems.h"
+#include "IO.h"
 #include "Math.h"
 #include <stdio.h>
 #include <boost\filesystem.hpp>
@@ -49,6 +50,12 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(log, Crystal_Log, 1);
   REGISTER_FUNCTION(ln, Crystal_NatrualLog, 1);
   REGISTER_FUNCTION(abs, Crystal_Abs, 1);
+
+  //Input / Output
+  REGISTER_FUNCTION(marshal_open, Crystal_MarshalOpen, 1);
+  REGISTER_FUNCTION(marshal_dump, Crystal_MarshalDump, 1);
+  REGISTER_FUNCTION(marshal_load, Crystal_MarshalLoad, 1);
+  REGISTER_FUNCTION(marshal_close, Crystal_MarshalClose, 0);
 
   //Boost Extensions
   REGISTER_FUNCTION(sleep, Crystal_Sleep, 1);

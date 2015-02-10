@@ -12,6 +12,9 @@ GC::GC()
 
 GC::~GC()
 { 
+  if(used_blocks.empty())
+    return;
+
   auto mem_walker = ++used_blocks.begin();
   
   while(mem_walker != used_blocks.end())

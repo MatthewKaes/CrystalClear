@@ -1,0 +1,43 @@
+def main()
+  Create_Marshal("dump_file")
+
+  Load_Marshal("dump_file")
+end
+
+def Create_Marshal(filename)
+  # Create a Marshal Dump
+  marshal_open(filename)
+  marshal_dump(true)
+  marshal_dump(false)
+  marshal_dump(1)
+  marshal_dump(2)
+  marshal_dump(12.4)
+  marshal_dump(PI)
+  marshal_dump("Hello World!")
+  
+  # GC is all managed
+  x = "String "
+  x += "val"
+  marshal_dump(x)
+
+  # Close and save the Marshal Dump
+  marshal_close()
+end
+
+def Load_Marshal(filename)
+  # Load back up the file
+  print_color("\nInformation for " + filename +":", 10)
+  file = marshal_load(filename)
+ 
+  print("Size of marshal: " + size(file))
+  print(file)
+
+  print_color("\nContents:", 12)
+  
+  # Print out the components in the file.
+  x = 0
+  while(x < size(file))
+    print(type(file[x]) + ": " + file[x])
+    x += 1
+  end
+end

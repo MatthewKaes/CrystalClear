@@ -40,6 +40,12 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Library">
+      <UniqueIdentifier>{091e93b4-6c1a-4f27-b575-e98d702a62b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Library\Headers">
+      <UniqueIdentifier>{06aafa68-9198-4c1d-af91-3d197f28314d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Compiler.cpp">
@@ -87,14 +93,20 @@
     <ClCompile Include="Filesystems.cpp">
       <Filter>Extensions</Filter>
     </ClCompile>
-    <ClCompile Include="Helper.cpp">
-      <Filter>Core Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="Function.cpp">
-      <Filter>Core Sources</Filter>
+    <ClCompile Include="IO.cpp">
+      <Filter>Extensions</Filter>
     </ClCompile>
     <ClCompile Include="Obscure.cpp">
       <Filter>Core Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Function.cpp">
+      <Filter>Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper.cpp">
+      <Filter>Library</Filter>
+    </ClCompile>
+    <ClCompile Include="Marshal.cpp">
+      <Filter>Library</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -155,14 +167,20 @@
     <ClInclude Include="Filesystems.h">
       <Filter>Extensions\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Helper.h">
-      <Filter>Core Sources\Core Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Function.h">
-      <Filter>Core Sources\Core Headers</Filter>
+    <ClInclude Include="IO.h">
+      <Filter>Extensions\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Obscure.h">
       <Filter>Core Sources\Core Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>Library\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Function.h">
+      <Filter>Library\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Marshal.h">
+      <Filter>Library\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
