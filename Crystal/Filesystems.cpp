@@ -47,6 +47,36 @@ void Crystal_RemovePath(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   ret_sym->type = CRY_BOOL;
 }
 
+void Crystal_CopyPath(Crystal_Symbol* ret_sym, Crystal_Symbol* from, Crystal_Symbol* to)
+{
+  std::string to_str;
+  Parse_String(to, &to_str);
+  path to_p(to_str);
+  if(to_str.c_str()[0] == '\0' || to_str.c_str()[1] != ':')
+  {
+    to_str.insert(0, CRY_ROOT);
+  }
+
+  std::string from_str;
+  Parse_String(from, &from_str);
+  path from_p(from_str);
+  if(from_str.c_str()[0] == '\0' || from_str.c_str()[1] != ':')
+  {
+    from_str.insert(0, CRY_ROOT);
+  }
+  
+  if(exists(from_p))
+  {
+    boost::filesystem::copy(path(from_str), path(to_str));
+    ret_sym->i32 = true;
+  }
+  else
+  {
+    ret_sym->i32 = false;
+  }
+  ret_sym->type = CRY_BOOL;
+}
+
 void Crystal_PathExists(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   std::string str;
@@ -59,6 +89,50 @@ void Crystal_PathExists(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 
   path dir(str.c_str());
   if(exists(dir))
+  {
+    ret_sym->i32 = true;
+  }
+  else
+  {
+    ret_sym->i32 = false;
+  }
+  ret_sym->type = CRY_BOOL;
+}
+
+void Crystal_IsFile(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  std::string str;
+  Parse_String(sym, &str);
+  
+  if(str.c_str()[0] == '\0' || str.c_str()[1] != ':')
+  {
+    str.insert(0, CRY_ROOT);
+  }
+
+  path dir(str.c_str());
+  if(is_regular_file(dir))
+  {
+    ret_sym->i32 = true;
+  }
+  else
+  {
+    ret_sym->i32 = false;
+  }
+  ret_sym->type = CRY_BOOL;
+}
+
+void Crystal_IsDir(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  std::string str;
+  Parse_String(sym, &str);
+  
+  if(str.c_str()[0] == '\0' || str.c_str()[1] != ':')
+  {
+    str.insert(0, CRY_ROOT);
+  }
+
+  path dir(str.c_str());
+  if(is_directory(dir))
   {
     ret_sym->i32 = true;
   }
