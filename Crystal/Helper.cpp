@@ -70,6 +70,24 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
   case CRY_STRING:
     str->assign(sym->str);
     return;
+  case CRY_ARRAY:
+    // Break the array down.
+    str->assign("[");
+    {
+      std::string sub_str;
+      for(int i = 0; i < sym->size; i++)
+      {
+        Parse_String(sym->sym + i, &sub_str);
+        str->append(sub_str);
+
+        if(i != sym->size - 1)
+        {
+          str->append(", ");
+        }
+      }
+    }
+    str->append("]");
+    return;
   case CRY_TEXT:
     str->assign(sym->text);
     return;
@@ -303,39 +321,6 @@ void Ref_Text(const char* text, Crystal_Symbol* sym)
 void Cry_Assignment(Crystal_Symbol* src, Crystal_Symbol* dest)
 {
   *dest = *src;
-}
-
-int Printer(Crystal_Symbol* sym)
-{
-  int counter = 0;
-  if(sym->type == CRY_POINTER)
-  {
-    counter += Printer(sym->sym);
-  }
-  else if(sym->type == CRY_STRING)
-  {
-    counter += printf("%s", sym->str);
-  }
-  else if(sym->type == CRY_ARRAY)
-  {
-    counter += printf("[");
-    for(unsigned i = 0; i < sym->size; i++)
-    {
-      counter += Printer(&sym->sym[i]);
-      if(i != sym->size - 1)
-      {
-        counter += printf(", ");
-      }
-    }
-    counter += printf("]");
-  }
-  else
-  {
-    std::string val;
-    Parse_String(sym, &val);
-    counter += printf("%s", val.c_str());
-  }
-  return counter;
 }
 
 void Copy_Ptr(Crystal_Symbol* res,  Crystal_Symbol* src, int index)

@@ -36,7 +36,6 @@ void Ref_Double(double dec, Crystal_Symbol* sym);
 void Ref_Text(const char* text, Crystal_Symbol* sym);
 void Ref_Variable( Crystal_Symbol* src, Crystal_Symbol* dest);
 
-int Printer(Crystal_Symbol* sym);
 void Copy_Ptr(Crystal_Symbol* res, Crystal_Symbol* src, int index);
 Crystal_Symbol* Get_Ptr(Crystal_Symbol* src, int index);
 void Cry_Assignment(Crystal_Symbol* dest, Crystal_Symbol* src);

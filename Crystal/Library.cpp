@@ -139,35 +139,12 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   if(ret_sym->type == CRY_STRING && ret_sym == sym)
     return;
 
-  if(sym->type == CRY_TEXT)
-  {
-    int size = strlen(sym->text);
-    char* str = static_cast<char*>(malloc(size + 1));
-    strcpy(str, sym->text);
-    Construct_String(ret_sym, str, size);
-    return;
-  }
-  if(sym->type == CRY_BOOL)
-  {
-    b_to_str(sym->b, &conv);
-  }
-  else if(sym->type == CRY_INT || sym->type == CRY_INT64)
-  {
-    i_to_str(sym->i32, &conv);
-  }
-  else if(sym->type == CRY_DOUBLE)
-  {
-    d_to_str(sym->d, &conv);
-  }
-  else if(sym->type == CRY_NIL)
-  {
-    conv.assign("nil");
-  }
+  Parse_String(sym, &conv);
+
   char* str = static_cast<char*>(malloc(conv.size() + 1));
   int size = conv.size();
   strcpy(str, conv.c_str());
   Construct_String(ret_sym, str, size);
-  ret_sym->type = CRY_STRING;
 }
 
 void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
@@ -217,8 +194,9 @@ void Crystal_Rand(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 
 void Crystal_Print(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
-  ret_sym->i32 = Printer(sym);
-  printf("\n");
+  std::string str;
+  Parse_String(sym, &str);
+  ret_sym->i32 = printf("%s\n", str.c_str()) - 1;
   ret_sym->type = CRY_INT;
 }
 
