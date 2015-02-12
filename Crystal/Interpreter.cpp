@@ -56,6 +56,8 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(marshal_dump, Crystal_MarshalDump, 1);
   REGISTER_FUNCTION(marshal_load, Crystal_MarshalLoad, 1);
   REGISTER_FUNCTION(marshal_close, Crystal_MarshalClose, 0);
+  REGISTER_FUNCTION(write_text, Crystal_WriteText, 2);
+  REGISTER_FUNCTION(read_text, Crystal_ReadText, 1);
 
   //Boost Extensions
   REGISTER_FUNCTION(sleep, Crystal_Sleep, 1);

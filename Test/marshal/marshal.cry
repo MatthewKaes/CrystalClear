@@ -1,7 +1,13 @@
 def main()
+  remove_path("output.txt")
+  
   Create_Marshal("dump_file")
 
-  Load_Marshal("dump_file")
+  file = Load_Marshal("dump_file")
+
+  # Text based I/O
+  write_text("output.txt", "Contents of marshal dump:\n")
+  write_text("output.txt", file)
 end
 
 def Create_Marshal(filename)
@@ -40,4 +46,9 @@ def Load_Marshal(filename)
     print(type(file[x]) + ": " + file[x])
     x += 1
   end
+
+  #clean up disk
+  remove_path(filename)
+
+  return file
 end

@@ -106,6 +106,8 @@ void Marshaler::Load(const char* filename, Crystal_Symbol* dest)
 
   // Write out place holder marshal count
   Construct_Array(dest, sym_count, sym_count, unmarshaled);
+
+  fclose(loader);
 }
 
 void Marshaler::Close()
