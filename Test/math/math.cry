@@ -1,0 +1,22 @@
+def main()
+  data = [4, 1, 6.7, 10, 8, 2.4, 7.4]
+  print_color("Array: " + string(data), 13)
+  
+  print_color("\nMean value of array", 11)
+  print(mean(data))
+
+  print_color("\nMin value of array", 11)
+  print(min(data))
+
+  print_color("\nMax value of array", 11)
+  print(max(data))
+
+  print_color("\nSummation array", 11)
+  print(sum(data))
+
+  print_color("\nVariance of array", 11)
+  print(var(data))
+
+  print_color("\nStandard Deviation of array", 11)
+  print(sd(data))
+end

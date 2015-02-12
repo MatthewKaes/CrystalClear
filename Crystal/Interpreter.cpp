@@ -50,6 +50,12 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(log, Crystal_Log, 1);
   REGISTER_FUNCTION(ln, Crystal_NatrualLog, 1);
   REGISTER_FUNCTION(abs, Crystal_Abs, 1);
+  REGISTER_FUNCTION(sum, Crystal_Sum, 1);
+  REGISTER_FUNCTION(mean, Crystal_Mean, 1);
+  REGISTER_FUNCTION(min, Crystal_Min, 1);
+  REGISTER_FUNCTION(max, Crystal_Max, 1);
+  REGISTER_FUNCTION(var, Crystal_Var, 1);
+  REGISTER_FUNCTION(sd, Crystal_Sd, 1);
 
   //Input / Output
   REGISTER_FUNCTION(marshal_open, Crystal_MarshalOpen, 1);
