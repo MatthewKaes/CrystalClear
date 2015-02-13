@@ -19,6 +19,13 @@ typedef int (*CRY_EXPORT)(std::unordered_map<std::string, Package_Info>*, const 
 
 extern const char* CRY_ROOT;
 
+// Late binding indexes for lookups.
+std::unordered_map<const char*, unsigned> late_bindings;
+
+// Registry for all classes and their contained attributes and functions.
+std::vector<Class_Info> Class_Listing;
+
+// All of the externally loaded functions.
 std::vector<HINSTANCE> Crystal_Interpreter::Extension_Libs;
 
 Crystal_Interpreter::Crystal_Interpreter(Crystal_Compiler* compiler)
@@ -27,7 +34,9 @@ Crystal_Interpreter::Crystal_Interpreter(Crystal_Compiler* compiler)
   code_cache.assign(" ");
   Populate_BIP();
 }
+
 Crystal_Interpreter::~Crystal_Interpreter(){}
+
 void Crystal_Interpreter::Populate_BIP()
 {
   //Define all executable packages
@@ -43,6 +52,7 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(time, Crystal_Time, 0);
   REGISTER_FUNCTION(input, Crystal_Input, 0);
   REGISTER_FUNCTION(size, Crystal_Size, 1);
+  REGISTER_FUNCTION(clone, Crystal_Clone, 1);
 
   //Math
   REGISTER_FUNCTION(cos, Crystal_Cos, 1);
@@ -137,6 +147,7 @@ void Crystal_Interpreter::Populate_BIP()
     }
   }
 }
+
 void Crystal_Interpreter::Cache_Code(const char* filename)
 {
   FILE* source;
@@ -162,6 +173,7 @@ void Crystal_Interpreter::Cache_Code(const char* filename)
   //close the file
   fclose(source);
 }
+
 void Crystal_Interpreter::Interpret()
 {
   //Format the code for the lexiconer
@@ -173,6 +185,7 @@ void Crystal_Interpreter::Interpret()
   //Process all the code's syntax
   Process_Code();
 }
+
 void Crystal_Interpreter::Format_Code()
 {
   const char* code_ptr = code_cache.c_str();
@@ -221,10 +234,10 @@ void Crystal_Interpreter::Format_Code()
       continue;
     case '"':
       code_out.push_back(*code_ptr++);
-      //Contents
+      // Contents of the string
       while(*code_ptr != '"')
       {
-        //escape code
+        // Escape codes
         if(*code_ptr == '\\')
         {
           code_ptr++;
@@ -320,6 +333,7 @@ void Crystal_Interpreter::Format_Code()
     code_out.push_back(' ');
   }
 }
+
 void Crystal_Interpreter::Lookup_Packages()
 {
   Crystal_Data pkg, sym;
@@ -357,6 +371,7 @@ void Crystal_Interpreter::Lookup_Packages()
     offset = code_out.find("def ", offset);
   }
 }
+
 void Crystal_Interpreter::Process_Code()
 {
   const char* package_code = code_out.c_str();
@@ -368,6 +383,7 @@ void Crystal_Interpreter::Process_Code()
       Process_Package(package_code);
   }
 }
+
 void Crystal_Interpreter::Process_Package(const char* code)
 {
   Syntax_Tree syntax;
@@ -475,6 +491,7 @@ void Crystal_Interpreter::Process_Package(const char* code)
   comp->End_Encode();
   syntax.Reset();
 }
+
 void Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_map<std::string, unsigned>* local_map)
 {
   if(sym->type == DAT_LOOKUP)
@@ -510,6 +527,7 @@ void Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_ma
     }
   }
 }
+
 void Crystal_Interpreter::Special_Processing(Crystal_Data* sym)
 {
   //Special symbol handling

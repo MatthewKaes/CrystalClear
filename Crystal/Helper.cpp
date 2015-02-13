@@ -75,7 +75,7 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
     str->assign("[");
     {
       std::string sub_str;
-      for(int i = 0; i < sym->size; i++)
+      for(unsigned i = 0; i < sym->size; i++)
       {
         Parse_String(sym->sym + i, &sub_str);
         str->append(sub_str);

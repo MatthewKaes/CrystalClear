@@ -220,6 +220,31 @@ void Crystal_Size(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   }
 }
 
+void Crystal_Clone(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  if(sym->type == CRY_POINTER)
+  {
+    if(sym->sym->type == CRY_ARRAY)
+    {
+      unsigned size = sym->sym->size;
+      Crystal_Symbol* ary = reinterpret_cast<Crystal_Symbol*>(malloc(sizeof(Crystal_Symbol) * size));
+      memcpy(ary, sym->sym->sym, sizeof(Crystal_Symbol) * size);
+      Construct_Array(ret_sym, size, sym->sym->capacity, ary);
+    }
+    else
+    {
+      unsigned size = sym->sym->size;
+      char* str = reinterpret_cast<char*>(malloc(sizeof(char) * size));
+      memcpy(str, sym->sym->sym, sizeof(Crystal_Symbol) * size);
+      Construct_String(ret_sym, str, size);
+    }
+  }
+  else
+  {
+    *ret_sym = *sym;
+  }
+}
+
 void Crystal_Time(Crystal_Symbol* ret_sym)
 {
   ret_sym->i32 = static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds());
