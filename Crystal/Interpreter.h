@@ -30,9 +30,12 @@ private:
   void Process_Code();
   void Process_Package(const char* code);
 
+
   //Processing symbols
   void Special_Processing(Crystal_Data* sym);
   void Lookup_Processing(Crystal_Data* sym, std::unordered_map<std::string, unsigned>* local_map);
+
+  unsigned Late_Binding(Crystal_Data* sym);
 
   //Private members
   Crystal_Compiler* comp;

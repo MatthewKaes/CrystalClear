@@ -10,7 +10,7 @@ def main()
   print_color("Calling Fuction with Constants:", 11)
   print_vars("var1", nil, true)
   print_color("Fuction value testing", 11)
-  test_value(2, false, 13 + z)
+  test_value(true, false, 13 + z)
   print_color("Extended Function", 11)
   extended_func(1,2,3,4,5,6,7,8,9,10, 11.0, 12.0, 13.0, 14.2)
 end

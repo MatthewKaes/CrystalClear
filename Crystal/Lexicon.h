@@ -8,7 +8,7 @@
 bool is_symbol(char object);
 bool is_number(char object);
 
-void Create_Symbol(const char** stream, Crystal_Data* sym);
+bool Create_Symbol(const char** stream, Crystal_Data* sym);
 void Resolve_Type(Crystal_Data* sym);
 
 bool str_to_b(const std::string* object);

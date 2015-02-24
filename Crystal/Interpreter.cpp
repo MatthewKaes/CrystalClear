@@ -23,7 +23,7 @@ extern const char* CRY_ROOT;
 std::unordered_map<const char*, unsigned> late_bindings;
 
 // Registry for all classes and their contained attributes and functions.
-std::vector<Class_Info> Class_Listing;
+std::vector<Class_Info*> Class_Listing;
 
 // All of the externally loaded functions.
 std::vector<HINSTANCE> Crystal_Interpreter::Extension_Libs;
@@ -336,39 +336,72 @@ void Crystal_Interpreter::Format_Code()
 
 void Crystal_Interpreter::Lookup_Packages()
 {
+  const char* package_code = code_out.c_str();
   Crystal_Data pkg, sym;
-  unsigned offset = 0;
-  offset = code_out.find("def ", offset);
-  while(offset != std::string::npos)
-  {
-    offset += strlen("def ");
-    const char* ptr = code_out.c_str() + offset;
-    Create_Symbol(&ptr, &pkg);
-    if(packages.find(pkg.str.c_str()) != packages.end())
-    {
-      printf("CRYSTAL ERROR: package %s is defined multiple times.", pkg.str.c_str());
-    }
-    else
-    {
-      //Define a new package
-      Package_Info new_package;
-      new_package.pt = PGK_EXE;
-      new_package.info.arguments = 0;
-      
-      //Get the arguments
-      Create_Symbol(&ptr, &sym); 
-      while(sym.str[0] != '\n')
-      {
-        if(sym.str[0] != '(' && sym.str[0] != ')' && sym.str[0] != ',')
-        {
-          new_package.info.arguments++;
-        }
-        Create_Symbol(&ptr, &sym);
-      }
+  Class_Info* current_class = NULL;
 
-      packages[pkg.str.c_str()] = new_package; 
+  while(Create_Symbol(&package_code, &sym))
+  {
+    if(!sym.str.compare("def"))
+    {
+      Create_Symbol(&package_code, &pkg);
+      if(current_class == NULL && packages.find(pkg.str.c_str()) != packages.end())
+      {
+        printf("CRYSTAL ERROR: package '%s' is defined multiple times in scope 'GLOBAL'\n", pkg.str.c_str());
+      }
+      else if(current_class != NULL && current_class->lookup.find(Late_Binding(&pkg)) != current_class->lookup.end())
+      {
+        printf("CRYSTAL ERROR: package '%s' is defined multiple times in scope '%s'\n", current_class->name);
+      }
+      else
+      {
+        //Define a new package
+        Package_Info new_package;
+        new_package.pt = PGK_EXE;
+        new_package.info.arguments = 0;
+      
+        //Get the arguments
+        Create_Symbol(&package_code, &sym); 
+        while(sym.str[0] != '\n')
+        {
+          if(sym.str[0] != '(' && sym.str[0] != ')' && sym.str[0] != ',')
+          {
+            new_package.info.arguments++;
+          }
+          Create_Symbol(&package_code, &sym);
+        }
+
+        if(current_class == NULL)
+        {
+          packages[pkg.str.c_str()] = new_package;
+        }
+        else
+        {
+          current_class->lookup[Late_Binding(&pkg)] = new_package;
+        }
+      }
     }
-    offset = code_out.find("def ", offset);
+    else if(!sym.str.compare("class"))
+    {      
+      Create_Symbol(&package_code, &pkg);
+      if(packages.find(pkg.str.c_str()) != packages.end())
+      {
+        printf("CRYSTAL ERROR: class '%s' is defined multiple times.", pkg.str.c_str());
+      }
+      else if(current_class != NULL)
+      {
+        printf("CRYSTAL ERROR: class '%s' is defined inside a scope other then GLOBAL.", pkg.str.c_str());
+      }
+      else
+      {
+        //Define a new package
+        current_class = new Class_Info;
+
+        current_class->name = pkg.str.c_str();
+
+        Class_Listing.push_back(current_class);
+      }
+    }
   }
 }
 
@@ -561,5 +594,28 @@ void Crystal_Interpreter::Special_Processing(Crystal_Data* sym)
       sym->str.assign("||");
       sym->type = DAT_OP;
     }
+  }
+}
+
+unsigned Crystal_Interpreter::Late_Binding(Crystal_Data* sym)
+{
+  std::unordered_map<const char*, unsigned>::iterator index;
+  if(sym->str[0] == '@')
+  {
+    index = late_bindings.find(sym->str.c_str() + 1);
+  }
+  else
+  {
+    index = late_bindings.find(sym->str.c_str());
+  }
+
+  if(index != late_bindings.end())
+  {
+    return index->second;
+  }
+  else
+  {
+    late_bindings[sym->str.c_str()] = late_bindings.size();
+    return late_bindings.size() - 1;
   }
 }

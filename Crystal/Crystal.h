@@ -25,7 +25,7 @@ enum Data_Type : char { DAT_NIL, DAT_LOOKUP, DAT_INT, DAT_INT64, DAT_DOUBLE, DAT
                         DAT_LOCAL, DAT_STRING, DAT_OP, DAT_FUNCTION, DAT_BIFUNCTION, DAT_ARRAY, 
                         DAT_REGISTRY, DAT_REF, DAT_STATEMENT };
 
-enum PACKAGE_TYPE { PGK_EXE, PGK_ATR, PKG_FUC };
+enum PACKAGE_TYPE { PGK_EXE, PGK_CLASS, PGK_FUNC };
 
 union funcptr {
   FuncPtr call;
