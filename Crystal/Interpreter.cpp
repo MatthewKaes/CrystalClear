@@ -339,13 +339,21 @@ void Crystal_Interpreter::Lookup_Packages()
   const char* package_code = code_out.c_str();
   Crystal_Data pkg, sym;
   Class_Info* current_class = NULL;
+  unsigned scope = 0;
 
   while(Create_Symbol(&package_code, &sym))
   {
     if(!sym.str.compare("def"))
     {
+      scope += 1;
+
       Create_Symbol(&package_code, &pkg);
-      if(current_class == NULL && packages.find(pkg.str.c_str()) != packages.end())
+
+      if(scope != 0 && scope != 1)
+      {
+        printf("CRYSTAL ERROR: class '%s' is defined inside a scope other then a class or GLOBAL.", pkg.str.c_str());
+      }
+      else if(current_class == NULL && packages.find(pkg.str.c_str()) != packages.end())
       {
         printf("CRYSTAL ERROR: package '%s' is defined multiple times in scope 'GLOBAL'\n", pkg.str.c_str());
       }
@@ -382,13 +390,15 @@ void Crystal_Interpreter::Lookup_Packages()
       }
     }
     else if(!sym.str.compare("class"))
-    {      
+    {     
+      scope += 1;
+
       Create_Symbol(&package_code, &pkg);
       if(packages.find(pkg.str.c_str()) != packages.end())
       {
         printf("CRYSTAL ERROR: class '%s' is defined multiple times.", pkg.str.c_str());
       }
-      else if(current_class != NULL)
+      else if(scope != 0)
       {
         printf("CRYSTAL ERROR: class '%s' is defined inside a scope other then GLOBAL.", pkg.str.c_str());
       }
@@ -402,6 +412,19 @@ void Crystal_Interpreter::Lookup_Packages()
         Class_Listing.push_back(current_class);
       }
     }
+    else if(!sym.str.compare("end"))
+    {
+      scope -= 1;
+    }      
+    else if(!sym.str.compare("if") || !sym.str.compare("while"))
+    {
+      scope += 1;
+    }
+  }
+
+  if(scope != 0)
+  {
+    printf("CRYSTAL ERROR: Hanging scope. Missing %d 'end' keywords.", scope);
   }
 }
 
