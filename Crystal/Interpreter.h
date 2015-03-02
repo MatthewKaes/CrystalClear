@@ -26,8 +26,8 @@ private:
   
   //Interpret Process under the hood
   void Format_Code();
-  void Lookup_Packages();
-  void Process_Code();
+  void Process_Lookups();
+  void Process_Logic();
   void Process_Package(const char* code);
 
 

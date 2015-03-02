@@ -10,7 +10,7 @@
 
 #define REGISTER_FUNCTION(Name, Func, Args) \
   { Package_Info new_package; \
-  new_package.pt = PGK_EXE; \
+  new_package.pt = PKG_EXE; \
   new_package.info.arguments = Args; \
   new_package.function = Func; \
   built_in[#Name] = new_package; } 
@@ -20,7 +20,7 @@ typedef int (*CRY_EXPORT)(std::unordered_map<std::string, Package_Info>*, const 
 extern const char* CRY_ROOT;
 
 // Late binding indexes for lookups.
-std::unordered_map<const char*, unsigned> late_bindings;
+std::unordered_map<std::string, unsigned> late_bindings;
 
 // Registry for all classes and their contained attributes and functions.
 std::vector<Class_Info*> Class_Listing;
@@ -180,10 +180,10 @@ void Crystal_Interpreter::Interpret()
   Format_Code();
   
   //Process all the code's syntax
-  Lookup_Packages();
+  Process_Lookups();
 
   //Process all the code's syntax
-  Process_Code();
+  Process_Logic();
 }
 
 void Crystal_Interpreter::Format_Code()
@@ -334,7 +334,7 @@ void Crystal_Interpreter::Format_Code()
   }
 }
 
-void Crystal_Interpreter::Lookup_Packages()
+void Crystal_Interpreter::Process_Lookups()
 {
   const char* package_code = code_out.c_str();
   Crystal_Data pkg, sym;
@@ -345,13 +345,11 @@ void Crystal_Interpreter::Lookup_Packages()
   {
     if(!sym.str.compare("def"))
     {
-      scope += 1;
-
       Create_Symbol(&package_code, &pkg);
 
       if(scope != 0 && scope != 1)
       {
-        printf("CRYSTAL ERROR: class '%s' is defined inside a scope other then a class or GLOBAL.", pkg.str.c_str());
+        printf("CRYSTAL ERROR: package '%s' is defined inside a scope other then a class or GLOBAL.", pkg.str.c_str());
       }
       else if(current_class == NULL && packages.find(pkg.str.c_str()) != packages.end())
       {
@@ -359,13 +357,15 @@ void Crystal_Interpreter::Lookup_Packages()
       }
       else if(current_class != NULL && current_class->lookup.find(Late_Binding(&pkg)) != current_class->lookup.end())
       {
-        printf("CRYSTAL ERROR: package '%s' is defined multiple times in scope '%s'\n", current_class->name);
+        printf("CRYSTAL ERROR: function '%s' is defined multiple times in scope '%s'\n", current_class->name);
       }
       else
       {
+        scope += 1;
+
         //Define a new package
         Package_Info new_package;
-        new_package.pt = PGK_EXE;
+        new_package.pt = PKG_EXE;
         new_package.info.arguments = 0;
       
         //Get the arguments
@@ -391,12 +391,10 @@ void Crystal_Interpreter::Lookup_Packages()
     }
     else if(!sym.str.compare("class"))
     {     
-      scope += 1;
-
       Create_Symbol(&package_code, &pkg);
       if(packages.find(pkg.str.c_str()) != packages.end())
       {
-        printf("CRYSTAL ERROR: class '%s' is defined multiple times.", pkg.str.c_str());
+        printf("CRYSTAL ERROR: package '%s' is defined multiple times.", pkg.str.c_str());
       }
       else if(scope != 0)
       {
@@ -404,21 +402,43 @@ void Crystal_Interpreter::Lookup_Packages()
       }
       else
       {
-        //Define a new package
+        scope += 1;
+
+        //Define a new class
         current_class = new Class_Info;
 
         current_class->name = pkg.str.c_str();
-
         Class_Listing.push_back(current_class);
+        
+        //Define a new package
+        Package_Info new_package;
+        new_package.pt = PKG_CLASS;
+        new_package.ID = Class_Listing.size() - 1;
+        
+        packages[pkg.str.c_str()] = new_package;
       }
     }
     else if(!sym.str.compare("end"))
     {
       scope -= 1;
+
+      if(scope == 0 && current_class)
+      {
+        current_class = NULL;
+      }
     }      
     else if(!sym.str.compare("if") || !sym.str.compare("while"))
     {
       scope += 1;
+    }
+    else if(sym.str[0] == '@')
+    {
+      unsigned LB_ID = Late_Binding(&sym);
+      if(current_class->attributes_loc.find(LB_ID) == current_class->attributes_loc.end())
+      {
+        current_class->attributes_loc[LB_ID] = current_class->attributes.size();
+        current_class->attributes.push_back(sym.str);
+      }
     }
   }
 
@@ -428,7 +448,7 @@ void Crystal_Interpreter::Lookup_Packages()
   }
 }
 
-void Crystal_Interpreter::Process_Code()
+void Crystal_Interpreter::Process_Logic()
 {
   const char* package_code = code_out.c_str();
   Crystal_Data sym;
@@ -555,15 +575,20 @@ void Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_ma
     //Crystal package call
     if(packages.find(sym->str.c_str()) != packages.end())
     {
-      if(packages[sym->str.c_str()].pt == PGK_EXE)
+      if(packages[sym->str.c_str()].pt == PKG_EXE)
       {
         sym->type = DAT_FUNCTION;
         sym->i32 = packages[sym->str.c_str()].info.arguments;
       }
+      else if(packages[sym->str.c_str()].pt == PKG_CLASS)
+      {
+        sym->type = DAT_CLASS;
+        sym->i32 = packages[sym->str.c_str()].ID;
+      }
     }
     else if(built_in.find(sym->str.c_str()) != built_in.end())
     {
-      if(built_in[sym->str.c_str()].pt == PGK_EXE)
+      if(built_in[sym->str.c_str()].pt == PKG_EXE)
       {
         sym->type = DAT_BIFUNCTION;
         sym->i32 = built_in[sym->str.c_str()].info.arguments;
@@ -622,15 +647,9 @@ void Crystal_Interpreter::Special_Processing(Crystal_Data* sym)
 
 unsigned Crystal_Interpreter::Late_Binding(Crystal_Data* sym)
 {
-  std::unordered_map<const char*, unsigned>::iterator index;
-  if(sym->str[0] == '@')
-  {
-    index = late_bindings.find(sym->str.c_str() + 1);
-  }
-  else
-  {
-    index = late_bindings.find(sym->str.c_str());
-  }
+  std::unordered_map<std::string, unsigned>::iterator index;
+  
+  index = late_bindings.find(sym->str);
 
   if(index != late_bindings.end())
   {

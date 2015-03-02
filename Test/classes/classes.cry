@@ -1,0 +1,15 @@
+def main()
+  cube
+end
+
+class cube
+  # Pull out attributes for easy documentation
+  @width
+  @height
+  @depth
+
+  # Get the area of the cube
+  def area()
+    return @width * @height * @depth
+  end
+end

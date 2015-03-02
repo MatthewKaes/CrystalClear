@@ -22,10 +22,10 @@ enum Symbol_Type : char { CRY_NIL = 0, CRY_BOOL, CRY_INT, CRY_INT64, CRY_DOUBLE,
                            CRY_POINTER, CRY_STRING, CRY_ARRAY,  CRY_CLASS_OBJ, CRY_SYMS };
 
 enum Data_Type : char { DAT_NIL, DAT_LOOKUP, DAT_INT, DAT_INT64, DAT_DOUBLE, DAT_BOOL, 
-                        DAT_LOCAL, DAT_STRING, DAT_OP, DAT_FUNCTION, DAT_BIFUNCTION, DAT_ARRAY, 
-                        DAT_REGISTRY, DAT_REF, DAT_STATEMENT };
+                        DAT_LOCAL, DAT_ATTRIBUTE, DAT_STRING, DAT_OP, DAT_FUNCTION, DAT_BIFUNCTION, DAT_ARRAY, 
+                        DAT_REGISTRY, DAT_REF, DAT_STATEMENT, DAT_CLASS };
 
-enum PACKAGE_TYPE { PGK_EXE, PGK_CLASS, PGK_FUNC };
+enum PACKAGE_TYPE { PKG_EXE, PKG_CLASS, PKG_FUNC };
 
 union funcptr {
   FuncPtr call;
@@ -43,12 +43,14 @@ struct Package_Info {
     unsigned attributes;
     unsigned arguments;
   } info;
+  unsigned ID;
   void* function;
 };
 
 struct Class_Info {
   std::string name;
   std::vector<std::string> attributes;
+  std::unordered_map<unsigned, unsigned> attributes_loc;
   std::unordered_map<unsigned, Package_Info> lookup;
 };
 
