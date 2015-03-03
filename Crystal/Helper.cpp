@@ -88,6 +88,27 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
     }
     str->append("]");
     return;
+  case CRY_CLASS_OBJ:
+    // Break the array down.
+    str->assign(sym->klass->name);
+    str->append(" :{");
+    {
+      std::string sub_str;
+      for(unsigned i = 0; i < sym->size; i++)
+      {
+        str->append(sym->klass->attributes[i]);
+        str->append(":");
+        Parse_String(sym->sym + i, &sub_str);
+        str->append(sub_str);
+
+        if(i != sym->size - 1)
+        {
+          str->append(", ");
+        }
+      }
+    }
+    str->append("}");
+    return;
   case CRY_TEXT:
     str->assign(sym->text);
     return;

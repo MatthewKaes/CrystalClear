@@ -1,8 +1,9 @@
 def main()
-  cube
+  print("Type of object: " + type(Cube))
+  print(Cube)
 end
 
-class cube
+class Cube
   # Pull out attributes for easy documentation
   @width
   @height

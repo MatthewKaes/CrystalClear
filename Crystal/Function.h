@@ -20,5 +20,6 @@ void Crystal_Array_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms);
 void Construct_Array(Crystal_Symbol* symd, unsigned size, unsigned capacity, Crystal_Symbol* ary);
 void Construct_Range(Crystal_Symbol* symd, int left, int right);
 void Construct_String(Crystal_Symbol* symd,  char* str, unsigned size);
+void Construct_Class(Crystal_Symbol* symd, int id);
 
 #endif

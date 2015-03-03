@@ -1,4 +1,5 @@
 #include "Generator.h"
+#include "Function.h"
 
 GENERATOR_CODE Resolve_Generator(Crystal_Data* sym)
 {
@@ -8,6 +9,8 @@ GENERATOR_CODE Resolve_Generator(Crystal_Data* sym)
     return Function_Gen;
   case DAT_BIFUNCTION:
     return Library_Gen;
+  case DAT_CLASS:
+    return Class_Gen;
   case DAT_OP:
     return Resolve_Operator(sym);
   case DAT_STATEMENT:
@@ -15,6 +18,7 @@ GENERATOR_CODE Resolve_Generator(Crystal_Data* sym)
   }
   return Null_Gen;
 }
+
 GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
 {
   switch(sym->str.c_str()[0])
@@ -111,6 +115,7 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
   }
   return Null_Gen;
 }
+
 GENERATOR_CODE Resolve_Statement(Crystal_Data* sym)
 {
   switch(sym->str.c_str()[0])
@@ -135,6 +140,7 @@ bool Null_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_
 { 
   return false;
 }
+
 bool Function_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   for(int i = static_cast<int>(syms->size() / 2) - 1; i >= 0; i--)
@@ -156,6 +162,7 @@ bool Function_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
 
   return true;
 }
+
 bool Library_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   for(int i = static_cast<int>(syms->size() / 2) - 1; i >= 0; i--)
@@ -170,6 +177,18 @@ bool Library_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cryst
   
   return true;
 }
+
+bool Class_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  target->Push_C(base->i32);
+  target->Push(MEMR(result));
+
+  target->Call(Construct_Class);
+  target->Pop(2);
+  
+  return true;
+}
+
 bool Return_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {    
   if((*syms)[0].type != DAT_LOCAL && (*syms)[0].type != DAT_REGISTRY)
@@ -178,16 +197,19 @@ bool Return_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crysta
 
   return true;
 }
+
 bool End_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   target->End();
   return true;
 }
+
 bool Loop_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   target->Loop();
   return true;
 }
+
 bool If_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   if((*syms)[0].type != DAT_LOCAL && (*syms)[0].type != DAT_REGISTRY)
@@ -195,16 +217,19 @@ bool If_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Da
   target->If(Mem_Conv(target, &(*syms)[1]));
   return true;
 }
+
 bool Else_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   target->Else();
   return true;
 }
+
 bool ElseIf_Preface_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   target->ElseIf_Pre();
   return true;
 }
+
 bool ElseIf_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   if((*syms)[0].type != DAT_LOCAL && (*syms)[0].type != DAT_REGISTRY)
@@ -212,6 +237,7 @@ bool ElseIf_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crysta
   target->ElseIf(Mem_Conv(target, &(*syms)[1]));
   return true;
 }
+
 bool While_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   if((*syms)[0].type != DAT_LOCAL && (*syms)[0].type != DAT_REGISTRY)

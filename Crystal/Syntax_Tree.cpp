@@ -6,6 +6,7 @@ Syntax_Node::Syntax_Node(std::vector<Syntax_Node*>* pool, Syntax_Tree* tree)
 {
   tree_ = tree;
   pool_ = pool;
+
   //Store default left and right
   params.push_back(0);
   params.push_back(0);
@@ -113,6 +114,7 @@ bool Syntax_Node::Evaluate()
     }
   }
 
+  // Evaluate any children before this node is evaluated.
   bool evaluation = false;
   Bytecode new_code;
   for(unsigned i = 0; i < params.size(); i++)
@@ -127,17 +129,26 @@ bool Syntax_Node::Evaluate()
     }
   }
   
-  if(sym.type != DAT_FUNCTION && sym.type != DAT_BIFUNCTION  && sym.type != DAT_STATEMENT && sym.type != DAT_OP && !evaluation)
+  // Check to see if this symbol is an evaluable type.
+  if(sym.type != DAT_FUNCTION && sym.type != DAT_BIFUNCTION && 
+     sym.type != DAT_STATEMENT && sym.type != DAT_OP && 
+     sym.type != DAT_CLASS && !evaluation)
     return true;
 
+  
+  // Get the generator for the bytecode.
   new_code.code_gen = Resolve_Generator(&sym);
   new_code.base = sym;
   new_code.result.type = DAT_NIL;
+
+  // Processing of global and built in functions.
   if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
   { 
+    // Check the argument count for functions.
     if((index != sym.i32 && sym.i32 == 0) || (index != sym.i32 - 1 && sym.i32 > 0))
       printf("ERROR: \"%s\" requires %d argument%s.\n", sym.str.c_str(), sym.i32, sym.i32 == 1 ? "" : "s");
    
+    // Force arguments to be moved onto the stack.
     Force_Memory(&new_code);
     if(sym.type == DAT_BIFUNCTION)
     {
@@ -145,6 +156,9 @@ bool Syntax_Node::Evaluate()
       new_code.result.i32 = 0;
     }
   }
+
+  // Force constants to be in a register or memory location for
+  // certain control statements.
   if(sym.type == DAT_STATEMENT)
   {
     if(!sym.str.compare("return") || !sym.str.compare("if") ||
@@ -154,42 +168,32 @@ bool Syntax_Node::Evaluate()
     }
   }
 
+  // Construct all the elements that this bytecode uses.
   std::vector<bool>* regptr = tree_->Get_Registers();
   for(unsigned i = 0; i < params.size(); i++)
   {
     if(params[i])
     {
       new_code.elements.push_back(*params[i]->Acquire());
+
+      // Free up registers for future use.
       if(params[i]->Acquire()->type == DAT_REGISTRY)
         (*regptr)[params[i]->Acquire()->i32] = false;
     }
   }
 
-  if(parent != NULL)
+  //Stacking assignment operator without using
+  //uneccesary registers.
+  if(parent != NULL && sym.type == DAT_OP && (!sym.str.compare("=") || !sym.str.compare("+=")
+      || !sym.str.compare("-=")  || !sym.str.compare("*=")
+      || !sym.str.compare("^=")  || !sym.str.compare("%=")
+      || !sym.str.compare("<>")))
   {
-    //Stacking assignment operator without using
-    //uneccesary registers.
-    if(sym.type == DAT_OP && (!sym.str.compare("=") || !sym.str.compare("+=")
-       || !sym.str.compare("-=")  || !sym.str.compare("*=")
-       || !sym.str.compare("^=")  || !sym.str.compare("%=")
-       || !sym.str.compare("<>")))
-    {
-      sym = new_code.result = *params[0]->Acquire();
-    }
-    else
-    {
-      sym.type = DAT_REGISTRY;
-      sym.i32 = tree_->Get_Open_Reg();
-      if(sym.i32 == -1)
-      {
-        sym.i32 = regptr->size();
-        regptr->push_back(true);
-      }
-      new_code.result = sym;
-    }
+    sym = new_code.result = *params[0]->Acquire();
   }
   else
   {
+    // Move the result into a registry.
     sym.type = DAT_REGISTRY;
     sym.i32 = tree_->Get_Open_Reg();
     if(sym.i32 == -1)
@@ -199,6 +203,7 @@ bool Syntax_Node::Evaluate()
     }
     new_code.result = sym;
   }
+
   
   //Finalize Bytecode
   tree_->Get_Bytecodes()->push_back(new_code);

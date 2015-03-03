@@ -169,10 +169,7 @@ void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
     else if(sym->sym->type == CRY_ARRAY)
       ret_sym->text = "ARRAY";
     else
-      ret_sym->text = "OBJECT";
-    break;
-  case CRY_CLASS_OBJ:
-    ret_sym->text = "CLASS";
+      ret_sym->text = sym->sym->klass->name.c_str();
     break;
   case CRY_NIL:
     ret_sym->text = "NIL";

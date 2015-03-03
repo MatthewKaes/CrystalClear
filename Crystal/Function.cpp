@@ -2,6 +2,8 @@
 #include "Helper.h"
 #include "Garbage_Collector.h"
 
+extern std::vector<Class_Info*> Class_Listing;
+
 int Crystal_And(Crystal_Symbol* left, Crystal_Symbol* right)
 {
   return Parse_Bool(left) && Parse_Bool(right);
@@ -198,5 +200,16 @@ void Construct_String(Crystal_Symbol* symd,  char* str, unsigned size)
   symd->sym->type = CRY_STRING;
   symd->sym->size = size;
   symd->sym->str = str;
+  symd->type = CRY_POINTER;
+}
+
+void Construct_Class(Crystal_Symbol* symd, int id)
+{
+  Class_Info* klass = Class_Listing[id];
+  symd->sym = GC_Allocate();
+  symd->sym->type = CRY_CLASS_OBJ;
+  symd->sym->sym = reinterpret_cast<Crystal_Symbol*>(calloc(klass->attributes.size(), sizeof(Crystal_Symbol)));
+  symd->sym->size = klass->attributes.size();
+  symd->sym->klass = klass;
   symd->type = CRY_POINTER;
 }
