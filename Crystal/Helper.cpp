@@ -147,6 +147,15 @@ bool Fast_strcmp(Crystal_Symbol* syml, Crystal_Symbol* symr)
   return true;
 }
 
+int Fast_pointercmp(Crystal_Symbol* aryl, Crystal_Symbol* aryr)
+{
+  if(aryl->type != CRY_POINTER || aryr->type != CRY_POINTER)
+  {
+    return false;
+  }
+  return Fast_arraycmp(aryl->sym, aryr->sym);
+}
+
 int Fast_arraycmp(Crystal_Symbol* aryl, Crystal_Symbol* aryr)
 {
   if(aryl->size != aryr->size)

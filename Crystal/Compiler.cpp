@@ -1624,6 +1624,13 @@ void Crystal_Compiler::Eql(unsigned dest, unsigned source, bool left)
         Machine->Load_Mem(offset_dest - DATA_LOWER, 0);
       }
       break;
+    case CRY_CLASS_OBJ:
+      Push(source);
+      Push(dest);
+      Machine->Call(Fast_pointercmp);
+      Pop(2);
+      Machine->Mov(offset_dest - DATA_LOWER, EAX);
+      break;
     //Lacking Support
     NO_SUPPORT(CRY_ARRAY);
     NO_SUPPORT(CRY_POINTER);

@@ -3,6 +3,9 @@ def main()
   x = Cube
   print("Type of object: " + type(x))
   print(x)
+  print(x == Cube)
+  print(x == Box)
+  print(x == [nil, nil, nil])
   
   return x
 end
@@ -16,5 +19,16 @@ class Cube
   # Get the area of the cube
   def area()
     return @width * @height * @depth
+  end
+end
+
+class Box
+  # Pull out attributes for easy documentation
+  @width
+  @height
+
+  # Get the area of the cube
+  def area()
+    return @width * @height
   end
 end
