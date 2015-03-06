@@ -1,6 +1,10 @@
 def main()
-  print("Type of object: " + type(Cube))
-  print(Cube)
+  print_color("Class Manipulation:", 11)
+  x = Cube
+  print("Type of object: " + type(x))
+  print(x)
+  
+  return x
 end
 
 class Cube

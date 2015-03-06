@@ -208,6 +208,21 @@ void Crystal_Compiler::Make_Array(unsigned var, unsigned size, unsigned capacity
   if(lookups.size())
     lookups.back().corruptions[var] = true;
 }
+
+void Crystal_Compiler::Make_Class(unsigned var, unsigned ID)
+{
+  //Creation of the array object
+  Machine->Push(static_cast<int>(ID));
+  Push(var);
+  Machine->Call(Construct_Class);
+  Machine->Pop(sizeof(int) * 2);
+  //Set up types for compiler use
+  states[var].Set(CRY_CLASS_OBJ);
+  //Corrupt the state of the object
+  if(lookups.size())
+    lookups.back().corruptions[var] = true;
+}
+
 void Crystal_Compiler::Make_Range(unsigned var)
 {
   //Creation of the array object

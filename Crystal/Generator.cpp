@@ -180,11 +180,7 @@ bool Library_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cryst
 
 bool Class_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  target->Push_C(base->i32);
-  target->Push(MEMR(result));
-
-  target->Call(Construct_Class);
-  target->Pop(2);
+  target->Make_Class(MEMR(result), base->i32);
   
   return true;
 }

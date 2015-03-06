@@ -78,6 +78,7 @@ public:
   void Convert(unsigned reg, Symbol_Type type);
   void Allocate(unsigned sym_count);
   void Make_Array(unsigned var, unsigned size, unsigned capacity);
+  void Make_Class(unsigned var, unsigned ID);
   void Make_Range(unsigned var);
   void Push(unsigned var);
   void Push_C(CRY_ARG var);
