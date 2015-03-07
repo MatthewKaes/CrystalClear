@@ -133,6 +133,7 @@ public:
   virtual void Setb(unsigned address) = 0;
   virtual void Setbe(unsigned address) = 0;
   //Calls
+  virtual void Call(REGISTERS source) = 0;
   virtual void Call(void* function) = 0;
   virtual void Call(const char* function) = 0;
   virtual void Return(ARG argument = 0) = 0;

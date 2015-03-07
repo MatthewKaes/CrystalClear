@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <list>
 #include <boost\filesystem.hpp>
 #include <boost\date_time.hpp>
 
@@ -66,8 +67,6 @@ int Process_Root(Crystal_Compiler* comp, const char* rootdir)
   interpreter.Interpret();
   return 0;
  }
-
-#include <list>
 
 int main(int argc, const char **argv)
 {

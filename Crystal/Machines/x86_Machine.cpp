@@ -661,6 +661,12 @@ void x86_Machine::Dec(REGISTERS dest)
 {
   *p++ = REG_DEC + Reg_Id(dest);
 }
+void x86_Machine::Call(REGISTERS source)
+{
+  Load_Register(ECX, source);
+  *p++ = FAR_CAL;
+  *p++ = FAR_ECX;
+}
 void x86_Machine::Call(void* function)
 {
   Load_Register(ECX, function);

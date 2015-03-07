@@ -75,6 +75,7 @@ public:
   void Call(void* function);
   void Call(void* function, unsigned reg);
   void Call(const char* cry_function, unsigned reg = CRY_NULL);
+  void Call(const char* binding, unsigned op, unsigned ret);
   void Convert(unsigned reg, Symbol_Type type);
   void Allocate(unsigned sym_count);
   void Make_Array(unsigned var, unsigned size, unsigned capacity);

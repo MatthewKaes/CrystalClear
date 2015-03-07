@@ -94,6 +94,7 @@ public:
   void Setae(unsigned address);
   void Setb(unsigned address);
   void Setbe(unsigned address);
+  void Call(REGISTERS source);
   void Call(void* function);
   void Call(const char* function);
   void Return(ARG argument = 0);

@@ -188,6 +188,20 @@ bool Exponent_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
   PREFORM_ASSIGNMENT(Pow);
 }
 
+bool Dot_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  if(result->type == DAT_NIL)
+  {
+    target->Call((*syms)[1].str.c_str(), MEM((*syms)[0]), CRY_NULL);
+  }
+  else
+  {
+    target->Call((*syms)[1].str.c_str(), MEM((*syms)[0]), MEMR(result));
+  }
+
+  return true;
+}
+
 bool Swap_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   target->Swap(MEM((*syms)[0]), MEM((*syms)[1]));

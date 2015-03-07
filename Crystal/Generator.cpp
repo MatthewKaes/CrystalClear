@@ -65,6 +65,10 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
     {
       return Range_Gen;
     }
+    else if(sym->str.c_str()[0])
+    {
+      return Dot_Gen;
+    }
     break;
   case '!':
     switch(sym->str.c_str()[1])
@@ -149,16 +153,9 @@ bool Function_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
       target->Load(Mem_Conv(target, &(*syms)[i + syms->size() / 2]), &(*syms)[i]);
     target->Push(Mem_Conv(target, &(*syms)[i + syms->size() / 2]));
   }
-  if(result->type == DAT_NIL)
-  {
-    target->Call(base->str.c_str());
-    target->Pop(static_cast<int>(syms->size() / 2));
-  }
-  else
-  {
-    target->Call(base->str.c_str(), MEM(*result));
-    target->Pop(static_cast<int>(syms->size() / 2) + 1);
-  }
+
+  target->Call(base->str.c_str(), MEMR(result));
+  target->Pop(static_cast<int>(syms->size() / 2) + 1);
 
   return true;
 }

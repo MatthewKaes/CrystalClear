@@ -362,3 +362,8 @@ Crystal_Symbol* Get_Ptr(Crystal_Symbol* src, int index)
 {
   return src->sym->sym + index;
 }
+
+void* Late_Binding(int id, Crystal_Symbol* symd)
+{
+  return symd->klass->lookup[id].function;
+}

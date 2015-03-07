@@ -8,6 +8,8 @@
 int CRY_ARG::poolindex = 0;
 char CRY_ARG::strpool[STRING_POOL] = {0};
 
+extern std::unordered_map<std::string, unsigned> late_bindings;
+
 CRY_ARG::CRY_ARG(const char* str) : type(CRY_TEXT), filt(CRY_TEXT)
 {
   str_ = strpool + poolindex;
@@ -161,6 +163,32 @@ void Crystal_Compiler::Call(const char* cry_function, unsigned var)
   {
     states[var].Obscurity();
   }
+}
+void Crystal_Compiler::Call(const char* binding, unsigned op, unsigned ret)
+{
+  Push(op);
+  Machine->Push(static_cast<int>(late_bindings[binding]));
+  Machine->Call(Late_Binding);
+  Push(1);
+
+  if(ret != CRY_NULL)
+  {
+    unsigned offset = stack_size - VAR_SIZE * ret;
+    Machine->Lea(EBX, offset);
+  }
+  else
+  {
+    Machine->Load_Register(EBX, 0);
+  }
+
+  //Call Crystal function
+  Machine->Push(EBX);
+  Machine->Call(EAX);
+  if(ret != CRY_NULL)
+  {
+    states[op].Obscurity();
+  }
+  Push(2);
 }
 void Crystal_Compiler::Convert(unsigned reg, Symbol_Type type)
 {

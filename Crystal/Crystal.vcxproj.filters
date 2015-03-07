@@ -51,9 +51,6 @@
     <ClCompile Include="Compiler.cpp">
       <Filter>Core Sources</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Front End</Filter>
-    </ClCompile>
     <ClCompile Include="Machines\x86_Machine.cpp">
       <Filter>Machines</Filter>
     </ClCompile>
@@ -107,6 +104,9 @@
     </ClCompile>
     <ClCompile Include="Marshal.cpp">
       <Filter>Library</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Front End</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
