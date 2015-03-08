@@ -1,12 +1,30 @@
 def main()
   print_color("Class Manipulation:", 11)
+
+  # Making an object.
   x = Cube
-  print("Type of object: " + type(x))
   print(x)
+  print("")
+
+  # Testing object types
+  print_color("Type of object: " + type(x), 11)
   print(x == Cube)
   print(x == Box)
   print(x == [nil, nil, nil])
+  print("")
   
+  # Setting Attributes of an object.
+  y = 10
+  x.@width = y
+  x.@height = y * 2
+  x.@depth = y + 11.1
+
+  print_color("Contents of object x:", 11)
+  print(x)
+  print(x.@width)
+  print(x.@height)
+  print(x.@depth)
+
   return x
 end
 

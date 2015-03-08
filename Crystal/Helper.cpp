@@ -97,7 +97,7 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
       for(unsigned i = 0; i < sym->size; i++)
       {
         str->append(sym->klass->attributes[i]);
-        str->append(":");
+        str->append(": ");
         Parse_String(sym->sym + i, &sub_str);
         str->append(sub_str);
 
@@ -124,6 +124,7 @@ void Parse_String(Crystal_Symbol* sym, std::string* str)
   case CRY_BOOL:
     b_to_str(sym->b, str);
     return;
+  case CRY_REFERENCE:
   case CRY_POINTER:
     Parse_String(sym->sym, str);
     return;
@@ -260,7 +261,7 @@ void Power_SymsR(Crystal_Symbol* syml, Crystal_Symbol* symr)
 }
 void Cry_Derefrence(Crystal_Symbol** sym)
 {
-  if((*sym)->type == CRY_POINTER)
+  if((*sym)->type == CRY_POINTER || (*sym)->type == CRY_REFERENCE)
   {
     *sym = (*sym)->sym;
   }
@@ -363,7 +364,24 @@ Crystal_Symbol* Get_Ptr(Crystal_Symbol* src, int index)
   return src->sym->sym + index;
 }
 
-void* Late_Binding(int id, Crystal_Symbol* symd)
+void* Late_Func_Binding(int id, Crystal_Symbol* symd)
 {
   return symd->klass->lookup[id].function;
+}
+
+void Late_Attr_Binding(int id, Crystal_Symbol* symd, Crystal_Symbol* ret)
+{
+  ret->type = CRY_REFERENCE;
+  ret->sym = symd->sym->sym + symd->sym->klass->attributes_loc[id];
+}
+
+void Copy_Ref(Crystal_Symbol* dest, Crystal_Symbol* src)
+{
+  if(dest->type == CRY_REFERENCE)
+    dest = dest->sym;
+  
+  if(src->type == CRY_REFERENCE)
+    src = src->sym;
+
+  *dest = *src;
 }

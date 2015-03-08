@@ -91,6 +91,7 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   //tidy up lookup data.
   lookups.clear();
 }
+
 void Crystal_Compiler::End_Encode()
 {
   //Resolve 
@@ -104,6 +105,7 @@ void Crystal_Compiler::End_Encode()
   package_lookup[pack.name] = pack.program;
   program.load = Machine->Location() + 1;
 }
+
 void Crystal_Compiler::Linker()
 {
   for(unsigned i = 0; i < packages.size(); i++)
@@ -119,6 +121,7 @@ void Crystal_Compiler::Linker()
     }
   }
 }
+
 int Crystal_Compiler::Execute(Crystal_Symbol* ret)
 {
   if(package_lookup.find("main") == package_lookup.end())
@@ -129,22 +132,26 @@ int Crystal_Compiler::Execute(Crystal_Symbol* ret)
   CryProg entry = package_lookup["main"];
   return entry.call(ret);
 }
+
 void Crystal_Compiler::Print(unsigned var)
 {
   Push(var);
   Call(Crystal_Print);
   Pop(1);
 }
+
 void Crystal_Compiler::Call(void* function)
 {
   Machine->Call(function);
 }
+
 void Crystal_Compiler::Call(void* function, unsigned var)
 {
   Push(var);
   Machine->Call(function);
   states[var].Obscurity();
 }
+
 void Crystal_Compiler::Call(const char* cry_function, unsigned var)
 {
   if(var != CRY_NULL)
@@ -164,12 +171,13 @@ void Crystal_Compiler::Call(const char* cry_function, unsigned var)
     states[var].Obscurity();
   }
 }
+
 void Crystal_Compiler::Call(const char* binding, unsigned op, unsigned ret)
 {
   Push(op);
   Machine->Push(static_cast<int>(late_bindings[binding]));
-  Machine->Call(Late_Binding);
-  Push(1);
+  Machine->Call(Late_Func_Binding);
+  Pop(1);
 
   if(ret != CRY_NULL)
   {
@@ -188,8 +196,20 @@ void Crystal_Compiler::Call(const char* binding, unsigned op, unsigned ret)
   {
     states[op].Obscurity();
   }
-  Push(2);
+  Pop(2);
 }
+
+void Crystal_Compiler::Get(const char* binding, unsigned op, unsigned ret)
+{
+  Push(ret);
+  Push(op);
+  Machine->Push(static_cast<int>(late_bindings[binding]));
+  Machine->Call(Late_Attr_Binding);
+  Pop(3);
+
+  states[ret].Set(CRY_REFERENCE);
+}
+
 void Crystal_Compiler::Convert(unsigned reg, Symbol_Type type)
 {
   Push(reg);
@@ -207,6 +227,7 @@ void Crystal_Compiler::Convert(unsigned reg, Symbol_Type type)
     break;
   }
 }
+
 void Crystal_Compiler::Allocate(unsigned sym_count)
 {
   //Calloc Memory
@@ -222,6 +243,7 @@ void Crystal_Compiler::Allocate(unsigned sym_count)
   //Push it for later use
   Machine->Push(EAX);
 }
+
 void Crystal_Compiler::Make_Array(unsigned var, unsigned size, unsigned capacity)
 {
   //Creation of the array object
@@ -531,33 +553,53 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
   if(dest == source)
     return;
 
-  unsigned offset_dest = stack_size - dest * VAR_SIZE;
-  unsigned offset_source = stack_size - source * VAR_SIZE;
-
-  if(!(states[source].Size() == 1 && states[source].Test(CRY_NIL)))
+  if(states[dest].Only(CRY_REFERENCE) || states[source].Only(CRY_REFERENCE))
   {
-    Machine->Mov(EAX, offset_source - DATA_LOWER);
-    Machine->Mov(offset_dest - DATA_LOWER, EAX);
-    if(states[source].Test(CRY_DOUBLE) || states[source].Test(CRY_INT64) || 
-       states[source].Test(CRY_TEXT))
-    {
-      Machine->Mov(EAX, offset_source - DATA_UPPER);
-      Machine->Mov(offset_dest - DATA_UPPER, EAX);
-    }
-    
-    if(states[source].Order(CRY_POINTER))
-    {
-      Machine->Mov(EAX, offset_source - DATA_PNTR);
-      Machine->Mov(offset_dest - DATA_PNTR, EAX);
-    }
-    else if(states[dest].Order(CRY_POINTER))
-    {
-      Machine->Load_Mem(offset_dest - DATA_PNTR, NULL);
-    }
+    Push(source);
+    Push(dest);
+    Call(Copy_Ref);
+    Pop(2);
   }
-  Machine->Mov(EAX, offset_source - DATA_TYPE, true);
-  Machine->Mov(offset_dest - DATA_TYPE, EAX, true);
-  states[dest] = states[source];
+  else 
+  {
+    unsigned offset_dest = stack_size - dest * VAR_SIZE;
+    unsigned offset_source = stack_size - source * VAR_SIZE;
+
+    if(!(states[source].Size() == 1 && states[source].Test(CRY_NIL)))
+    {
+      Machine->Mov(EAX, offset_source - DATA_LOWER);
+      Machine->Mov(offset_dest - DATA_LOWER, EAX);
+      if(states[source].Test(CRY_DOUBLE) || states[source].Test(CRY_INT64) || 
+         states[source].Test(CRY_TEXT))
+      {
+        Machine->Mov(EAX, offset_source - DATA_UPPER);
+        Machine->Mov(offset_dest - DATA_UPPER, EAX);
+      }
+    
+      if(states[source].Order(CRY_POINTER))
+      {
+        Machine->Mov(EAX, offset_source - DATA_PNTR);
+        Machine->Mov(offset_dest - DATA_PNTR, EAX);
+      }
+      else if(states[dest].Order(CRY_POINTER))
+      {
+        Machine->Load_Mem(offset_dest - DATA_PNTR, NULL);
+      }
+    }
+
+    Machine->Mov(EAX, offset_source - DATA_TYPE, true);
+    Machine->Mov(offset_dest - DATA_TYPE, EAX, true);
+  }
+
+  if(states[source].Only(CRY_REFERENCE))
+  {
+    states[dest].Obscurity();
+  }
+  else
+  {
+    states[dest] = states[source];
+  }
+
   //Corrupt the state of the object
   if(lookups.size())
     lookups.back().corruptions[dest] = true;

@@ -41,6 +41,9 @@ void Copy_Ptr(Crystal_Symbol* res, Crystal_Symbol* src, int index);
 Crystal_Symbol* Get_Ptr(Crystal_Symbol* src, int index);
 void Cry_Assignment(Crystal_Symbol* dest, Crystal_Symbol* src);
 
-void* Late_Binding(int id, Crystal_Symbol* symd);
+void* Late_Func_Binding(int id, Crystal_Symbol* symd);
+void Late_Attr_Binding(int id, Crystal_Symbol* symd, Crystal_Symbol* ret);
+
+void Copy_Ref(Crystal_Symbol* dest, Crystal_Symbol* src);
 
 #endif

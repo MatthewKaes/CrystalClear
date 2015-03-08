@@ -19,6 +19,7 @@ public:
   void Dilute(Symbol_Type flag);
   void Obscurity();
   bool Test(Symbol_Type flag);
+  bool Only(Symbol_Type flag);
   bool Order(Symbol_Type flag);
   bool Compare(Clarity_Filter& filter);
   unsigned Size();

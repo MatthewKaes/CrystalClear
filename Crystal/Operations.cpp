@@ -53,54 +53,67 @@ bool Addition_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
 {
   PREFORM_OPERATION(Add);
 }
+
 bool Subtraction_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Sub);
 }
+
 bool Multiplication_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Mul);
 }
+
 bool Division_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Div);
 }
+
 bool Modulo_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Mod);
 }
+
 bool Power_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Pow);
 }
+
 bool And_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(And);
 }
+
 bool Or_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Or);
 }
+
 bool Equal_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Eql);
 }
+
 bool Diffrent_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Dif);
 }
+
 bool Less_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Les);
 }
+
 bool Less_Equal_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(LesEql);
 }
+
 bool Greater_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(Gtr);
 }
+
 bool Greater_Equal_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_OPERATION(GtrEql);
@@ -115,6 +128,7 @@ bool Generic_Assignment(Crystal_Compiler* target, Crystal_Data* base, std::vecto
     (target->*func_const)(MEM((*syms)[0]), &(*syms)[1], true);
   return true;
 }
+
 bool Assignment_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   if(base->i32 == REFRENCE_ID)
@@ -163,26 +177,32 @@ bool Assignment_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cr
     target->Load(MEM((*syms)[0]), &(*syms)[1]);
   return true;
 }
+
 bool Additive_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_ASSIGNMENT(Add);
 }
+
 bool Subtractive_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_ASSIGNMENT(Sub);
 }
+
 bool Multiplicative_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_ASSIGNMENT(Mul);
 }
+
 bool Divisional_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_ASSIGNMENT(Div);
 }
+
 bool Remainder_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_ASSIGNMENT(Mod);
 }
+
 bool Exponent_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   PREFORM_ASSIGNMENT(Pow);
@@ -190,13 +210,20 @@ bool Exponent_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
 
 bool Dot_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  if(result->type == DAT_NIL)
+  if((*syms)[1].str[0] == '@')
   {
-    target->Call((*syms)[1].str.c_str(), MEM((*syms)[0]), CRY_NULL);
+    target->Get((*syms)[1].str.c_str(), MEM((*syms)[0]), MEMR(result));
   }
   else
   {
-    target->Call((*syms)[1].str.c_str(), MEM((*syms)[0]), MEMR(result));
+    if(result->type == DAT_NIL)
+    {
+      target->Call((*syms)[1].str.c_str(), MEM((*syms)[0]), CRY_NULL);
+    }
+    else
+    {
+      target->Call((*syms)[1].str.c_str(), MEM((*syms)[0]), MEMR(result));
+    }
   }
 
   return true;
@@ -299,6 +326,7 @@ bool Array_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal
   }
   return true;
 }
+
 bool Range_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   //Value Right

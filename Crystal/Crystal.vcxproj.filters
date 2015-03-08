@@ -137,9 +137,6 @@
     <ClInclude Include="Interpreter.h">
       <Filter>Interpreter\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="Lexicon.h">
-      <Filter>Interpreter\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="Bytecode.h">
       <Filter>Syntax\Headers</Filter>
     </ClInclude>
@@ -181,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="Marshal.h">
       <Filter>Library\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Lexicon.h">
+      <Filter>Interpreter\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

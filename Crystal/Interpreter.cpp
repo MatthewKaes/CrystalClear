@@ -281,7 +281,6 @@ void Crystal_Interpreter::Format_Code()
       {
         code_out.push_back(*code_ptr++);
       }
-      code_out.push_back(*code_ptr++);
       break;
     case '=':    
     case '|':
@@ -431,7 +430,7 @@ void Crystal_Interpreter::Process_Lookups()
     {
       scope += 1;
     }
-    else if(sym.str[0] == '@')
+    else if(current_class && sym.str[0] == '@')
     {
       unsigned LB_ID = Late_Binding(&sym);
       if(current_class->attributes_loc.find(LB_ID) == current_class->attributes_loc.end())
