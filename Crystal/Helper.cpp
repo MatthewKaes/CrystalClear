@@ -375,6 +375,12 @@ void Late_Attr_Binding(int id, Crystal_Symbol* symd, Crystal_Symbol* ret)
   ret->sym = symd->sym->sym + symd->sym->klass->attributes_loc[id];
 }
 
+void Late_Attr_Binding_Ref(int id, Crystal_Symbol* symd, Crystal_Symbol* ret)
+{
+  ret->type = CRY_REFERENCE;
+  ret->sym = symd->sym->sym->sym + symd->sym->sym->klass->attributes_loc[id];
+}
+
 void Copy_Ref(Crystal_Symbol* dest, Crystal_Symbol* src)
 {
   if(dest->type == CRY_REFERENCE)

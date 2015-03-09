@@ -43,6 +43,7 @@ void Cry_Assignment(Crystal_Symbol* dest, Crystal_Symbol* src);
 
 void* Late_Func_Binding(int id, Crystal_Symbol* symd);
 void Late_Attr_Binding(int id, Crystal_Symbol* symd, Crystal_Symbol* ret);
+void Late_Attr_Binding_Ref(int id, Crystal_Symbol* symd, Crystal_Symbol* ret);
 
 void Copy_Ref(Crystal_Symbol* dest, Crystal_Symbol* src);
 

@@ -15,14 +15,15 @@ def main()
   
   # Setting Attributes of an object.
   y = 10
-  x.@width = y
-  x.@height = y * 2
+  x.@2d = Box
+  x.@2d.@width = y
+  x.@2d.@height = y * 2
   x.@depth = y + 11.1
 
   print_color("Contents of object x:", 11)
   print(x)
-  print(x.@width)
-  print(x.@height)
+  print(x.@2d.@width)
+  print(x.@2d.@height)
   print(x.@depth)
 
   return x
@@ -30,13 +31,12 @@ end
 
 class Cube
   # Pull out attributes for easy documentation
-  @width
-  @height
+  @2d
   @depth
 
   # Get the area of the cube
   def area()
-    return @width * @height * @depth
+    return @2d.area() * @depth
   end
 end
 
@@ -45,7 +45,7 @@ class Box
   @width
   @height
 
-  # Get the area of the cube
+  # Get the area of the box
   def area()
     return @width * @height
   end

@@ -204,7 +204,10 @@ void Crystal_Compiler::Get(const char* binding, unsigned op, unsigned ret)
   Push(ret);
   Push(op);
   Machine->Push(static_cast<int>(late_bindings[binding]));
-  Machine->Call(Late_Attr_Binding);
+  if(states[op].Only(CRY_REFERENCE))
+    Machine->Call(Late_Attr_Binding_Ref);
+  else
+    Machine->Call(Late_Attr_Binding);
   Pop(3);
 
   states[ret].Set(CRY_REFERENCE);
