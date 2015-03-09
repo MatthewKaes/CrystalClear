@@ -11,8 +11,7 @@ def main()
   print(x == Cube)
   print(x == Box)
   print(x == [nil, nil, nil])
-  print("")
-  
+
   # Setting Attributes of an object.
   y = 10
   x.@2d = Box
@@ -20,11 +19,23 @@ def main()
   x.@2d.@height = y * 2
   x.@depth = y + 11.1
 
-  print_color("Contents of object x:", 11)
+  z = 10
+  y = clone(x.@2d)
+  y.@width = z + 100 
+  y.@height = z ^ 1.35 
+
+  print_color("\nContents of object x:", 11)
+
   print(x)
   print(x.@2d.@width)
   print(x.@2d.@height)
   print(x.@depth)
+
+  print_color("\nContents of clone " + type(y) + " y:", 11)
+
+  print(y)
+  print(y.@width)
+  print(y.@height)
 
   return x
 end

@@ -407,6 +407,7 @@ void Crystal_Interpreter::Process_Lookups()
         current_class = new Class_Info;
 
         current_class->name = pkg.str.c_str();
+        current_class->id = Class_Listing.size();
         Class_Listing.push_back(current_class);
         
         //Define a new package

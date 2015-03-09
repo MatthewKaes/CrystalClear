@@ -171,6 +171,9 @@ void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
     else
       ret_sym->text = sym->sym->klass->name.c_str();
     break;
+  case CRY_REFERENCE:
+    Crystal_Type(ret_sym, sym->sym);
+    break;
   case CRY_NIL:
     ret_sym->text = "NIL";
     break;
@@ -228,6 +231,10 @@ void Crystal_Clone(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
       memcpy(ary, sym->sym->sym, sizeof(Crystal_Symbol) * size);
       Construct_Array(ret_sym, size, sym->sym->capacity, ary);
     }
+    else if(sym->sym->type == CRY_CLASS_OBJ)
+    {
+      Clone_Class(ret_sym, sym);
+    }
     else
     {
       unsigned size = sym->sym->size;
@@ -235,6 +242,10 @@ void Crystal_Clone(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
       memcpy(str, sym->sym->sym, sizeof(Crystal_Symbol) * size);
       Construct_String(ret_sym, str, size);
     }
+  }
+  else if(sym->type == CRY_REFERENCE)
+  {
+    Crystal_Clone(ret_sym, sym->sym);
   }
   else
   {

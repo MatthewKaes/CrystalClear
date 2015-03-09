@@ -52,6 +52,7 @@ struct Class_Info {
   std::vector<std::string> attributes;
   std::unordered_map<unsigned, unsigned> attributes_loc;
   std::unordered_map<unsigned, Package_Info> lookup;
+  unsigned id;
 };
 
 struct CryLookup

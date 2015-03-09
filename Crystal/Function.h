@@ -21,5 +21,6 @@ void Construct_Array(Crystal_Symbol* symd, unsigned size, unsigned capacity, Cry
 void Construct_Range(Crystal_Symbol* symd, int left, int right);
 void Construct_String(Crystal_Symbol* symd,  char* str, unsigned size);
 void Construct_Class(Crystal_Symbol* symd, int id);
+void Clone_Class(Crystal_Symbol* symd, Crystal_Symbol* sym);
 
 #endif

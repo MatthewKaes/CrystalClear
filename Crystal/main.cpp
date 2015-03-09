@@ -20,6 +20,7 @@ static char* CRY_BASE = 0;
 const char* CRY_ROOT = 0;
 
 extern GC global_gc;
+extern std::vector<Class_Info*> Class_Listing;
 
 typedef void (*CRY_EXPORT)();
 
@@ -120,6 +121,9 @@ int main(int argc, const char **argv)
     printf("Compiles and runs a crystal program for a collection of crystal source code.\n");
     printf("Source code will be pulled for the target directory and aggragated for use.\n\n");
   }  
+
+  //Clean up code
+
   //Release Python
 #if INCLUDE_PYTHON
   Py_Finalize();
@@ -135,6 +139,12 @@ int main(int argc, const char **argv)
       release();
     }
     FreeLibrary(Crystal_Interpreter::Extension_Libs[i]);
+  }
+
+  //Free Class Objects
+  for(int i = 0; i < Class_Listing.size(); i++)
+  {
+    delete Class_Listing[i];
   }
 
   delete[] CRY_BASE;
