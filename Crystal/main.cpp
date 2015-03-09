@@ -142,7 +142,7 @@ int main(int argc, const char **argv)
   }
 
   //Free Class Objects
-  for(int i = 0; i < Class_Listing.size(); i++)
+  for(unsigned i = 0; i < Class_Listing.size(); i++)
   {
     delete Class_Listing[i];
   }

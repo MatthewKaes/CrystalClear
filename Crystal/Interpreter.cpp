@@ -53,6 +53,7 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(input, Crystal_Input, 0);
   REGISTER_FUNCTION(size, Crystal_Size, 1);
   REGISTER_FUNCTION(clone, Crystal_Clone, 1);
+  REGISTER_FUNCTION(fork, Crystal_Fork, 1);
 
   //Math
   REGISTER_FUNCTION(cos, Crystal_Cos, 1);

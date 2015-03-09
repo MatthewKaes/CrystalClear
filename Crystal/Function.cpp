@@ -214,16 +214,11 @@ void Construct_Class(Crystal_Symbol* symd, int id)
   symd->type = CRY_POINTER;
 }
 
-void Clone_Class(Crystal_Symbol* symd, Crystal_Symbol* sym)
+void Clone_Class(Crystal_Symbol* symd, Crystal_Symbol* sym, Crystal_Symbol* data)
 {
-  Class_Info* klass = sym->sym->klass;
-  unsigned size = sym->sym->size;
-  Crystal_Symbol* ary = reinterpret_cast<Crystal_Symbol*>(malloc(sizeof(Crystal_Symbol) * size));
-  memcpy(ary, sym->sym->sym, sizeof(Crystal_Symbol) * size);
-
   symd->sym = GC_Allocate();
   symd->sym->type = CRY_CLASS_OBJ;
   *symd->sym = *sym->sym;
-  symd->sym->sym = ary;
+  symd->sym->sym = data;
   symd->type = CRY_POINTER;
 }

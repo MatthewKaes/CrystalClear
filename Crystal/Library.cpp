@@ -232,8 +232,60 @@ void Crystal_Clone(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
       Construct_Array(ret_sym, size, sym->sym->capacity, ary);
     }
     else if(sym->sym->type == CRY_CLASS_OBJ)
+    {  
+      Class_Info* klass = sym->sym->klass;
+      unsigned size = sym->sym->size;
+      Crystal_Symbol* ary = reinterpret_cast<Crystal_Symbol*>(malloc(sizeof(Crystal_Symbol) * size));
+      memcpy(ary, sym->sym->sym, sizeof(Crystal_Symbol) * size);
+
+      Clone_Class(ret_sym, sym, ary);
+    }
+    else
     {
-      Clone_Class(ret_sym, sym);
+      unsigned size = sym->sym->size;
+      char* str = reinterpret_cast<char*>(malloc(sizeof(char) * size));
+      memcpy(str, sym->sym->sym, sizeof(Crystal_Symbol) * size);
+      Construct_String(ret_sym, str, size);
+    }
+  }
+  else if(sym->type == CRY_REFERENCE)
+  {
+    Crystal_Clone(ret_sym, sym->sym);
+  }
+  else
+  {
+    *ret_sym = *sym;
+  }
+}
+
+void Crystal_Fork(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  if(sym->type == CRY_POINTER)
+  {
+    if(sym->sym->type == CRY_ARRAY)
+    {
+      unsigned size = sym->sym->size;
+      Crystal_Symbol* ary = reinterpret_cast<Crystal_Symbol*>(malloc(sizeof(Crystal_Symbol) * size));
+
+      for(unsigned i = 0; i < size; i++)
+      {
+        Crystal_Fork(ary + i, sym->sym->sym + i);
+      }
+
+      Construct_Array(ret_sym, size, sym->sym->capacity, ary);
+    }
+    else if(sym->sym->type == CRY_CLASS_OBJ)
+    {  
+      Class_Info* klass = sym->sym->klass;
+      unsigned size = sym->sym->size;
+      Crystal_Symbol* ary = reinterpret_cast<Crystal_Symbol*>(malloc(sizeof(Crystal_Symbol) * size));
+
+      for(unsigned i = 0; i < size; i++)
+      {
+        Crystal_Fork(ary + i, sym->sym->sym + i);
+      }
+      
+      Clone_Class(ret_sym, sym, ary);
     }
     else
     {

@@ -20,9 +20,10 @@ def main()
   x.@depth = y + 11.1
 
   z = 10
-  y = clone(x.@2d)
-  y.@width = z + 100 
-  y.@height = z ^ 1.35 
+  y = fork(x)
+  y.@2d.@width = z + 100 
+  y.@2d.@height = z ^ 1.35 
+  y.@depth = z - 4
 
   print_color("\nContents of object x:", 11)
 
@@ -34,8 +35,9 @@ def main()
   print_color("\nContents of clone " + type(y) + " y:", 11)
 
   print(y)
-  print(y.@width)
-  print(y.@height)
+  print(y.@2d.@width)
+  print(y.@2d.@height)
+  print(y.@depth)
 
   return x
 end
