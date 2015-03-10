@@ -349,6 +349,36 @@ void Ref_Text(const char* text, Crystal_Symbol* sym)
   sym->text = text;
 }
 
+void Push_Nil(Crystal_Symbol* sym)
+{
+  sym->sym->type = CRY_NIL;
+}
+
+void Push_Bool(int num, Crystal_Symbol* sym)
+{
+  sym->sym->type = CRY_BOOL;
+  sym->sym->i32 = num;
+}
+
+void Push_Int(int num, Crystal_Symbol* sym)
+{
+  sym->sym->type = CRY_INT;
+  sym->sym->i32 = num;
+}
+
+void Push_Double(double dec, Crystal_Symbol* sym)
+{
+  sym->sym->type = CRY_DOUBLE;
+  sym->sym->d = dec;
+}
+
+void Push_Text(const char* text, Crystal_Symbol* sym)
+{
+  sym->sym->type = CRY_TEXT;
+  sym->sym->text = text;
+}
+
+
 void Cry_Assignment(Crystal_Symbol* src, Crystal_Symbol* dest)
 {
   *dest = *src;

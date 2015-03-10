@@ -520,8 +520,15 @@ void Crystal_Compiler::End()
   }
   lookups.pop_back();
 }
+
 void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
 {
+  if(states[var].Only(CRY_REFERENCE))
+  {
+    Ref_Load(var, val);
+    return;
+  }
+
   unsigned offset = stack_size - VAR_SIZE * var;
   switch(val.type)
   {
@@ -551,6 +558,42 @@ void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
   if(lookups.size())
     lookups.back().corruptions[var] = true;
 }
+
+void Crystal_Compiler::Ref_Load(unsigned var, CRY_ARG val)
+{
+  unsigned offset = stack_size - VAR_SIZE * var;
+    Push(var);
+  switch(val.type)
+  {
+  case CRY_INT:
+    Push_C(val.num_);
+    Call(Push_Int);
+    Pop(2);
+    break;
+  case CRY_BOOL:
+    Push_C(val.bol_);
+    Call(Push_Bool);
+    Pop(2);
+    break;
+  case CRY_DOUBLE:
+    Push_C(val.dec_);
+    Call(Push_Double);
+    Pop(3);
+    break;
+  //Text can be loaded as constanst since strings cant.
+  case CRY_TEXT:
+    Push_C(val.str_);
+    Call(Push_Text);
+    Pop(2);
+    break;
+  }
+
+  states[var].Set(val.type);
+  //Corrupt the state of the object
+  if(lookups.size())
+    lookups.back().corruptions[var] = true;
+}
+
 void Crystal_Compiler::Copy(unsigned dest, unsigned source)
 {
   if(dest == source)
@@ -607,6 +650,7 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
   if(lookups.size())
     lookups.back().corruptions[dest] = true;
 }
+
 void Crystal_Compiler::Swap(unsigned dest, unsigned source)
 {  
   //It should be noted that no refrence counters are changed

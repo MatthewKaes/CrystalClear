@@ -21,9 +21,9 @@ def main()
 
   z = 10
   y = fork(x)
-  y.@2d.@width = z + 100 
-  y.@2d.@height = z ^ 1.35 
-  y.@depth = z - 4
+  y.@2d.@width = 100 
+  y.@2d.@height = 1.35 
+  y.@depth = "depth"
 
   print_color("\nContents of object x:", 11)
 

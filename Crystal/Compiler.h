@@ -97,6 +97,7 @@ public:
   void End();
   
   void Load(unsigned var, CRY_ARG val = CRY_ARG());
+  void Ref_Load(unsigned var, CRY_ARG val = CRY_ARG());
   void Copy(unsigned dest, unsigned source);
   void Swap(unsigned dest, unsigned source);
   void Add(unsigned dest, unsigned source, bool left = true);

@@ -35,7 +35,13 @@ void Ref_Bool(int num, Crystal_Symbol* sym);
 void Ref_Int(int num, Crystal_Symbol* sym);
 void Ref_Double(double dec, Crystal_Symbol* sym);
 void Ref_Text(const char* text, Crystal_Symbol* sym);
-void Ref_Variable( Crystal_Symbol* src, Crystal_Symbol* dest);
+
+//Refrence functions
+void Push_Nil(Crystal_Symbol* sym);
+void Push_Bool(int num, Crystal_Symbol* sym);
+void Push_Int(int num, Crystal_Symbol* sym);
+void Push_Double(double dec, Crystal_Symbol* sym);
+void Push_Text(const char* text, Crystal_Symbol* sym);
 
 void Copy_Ptr(Crystal_Symbol* res, Crystal_Symbol* src, int index);
 Crystal_Symbol* Get_Ptr(Crystal_Symbol* src, int index);
