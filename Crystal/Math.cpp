@@ -99,7 +99,7 @@ void Crystal_Min(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   for(unsigned i = 1; i < ary->size; i++)
   {
     double val = Parse_Double(ary->sym + i);
-    if(val > ret_sym->d)
+    if(val < ret_sym->d)
     {
       ret_sym->d = val;
     }
@@ -127,7 +127,7 @@ void Crystal_Max(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   for(unsigned i = 1; i < ary->size; i++)
   {
     double val = Parse_Double(ary->sym + i);
-    if(val < ret_sym->d)
+    if(val > ret_sym->d)
     {
       ret_sym->d = val;
     }
