@@ -1,30 +1,33 @@
 def main()
+  # Create a string object
   val = "Crystal"
   val += " " + "Clear"
+  
+  # Create an array object
   x = [2, nil, true, "Hello", 6.10, nil, val, val + val]
-  x[1] = [[true, [val, "Hello"]], 3]
-  k = "sub"
+  
+  # Make a subarray
+  x[3] = [[true, [val, "Hello"]], 3]
   x += k
-  print(x = x + 3 + "hello")
+  x = x + 3 + "hello"
   input()
-  #x[1][1] = false
+  
+  # Get metrics about the array
   print_color("Array X:" , 11) 
-  print(x)
-  val += "\n"
   print(x)
   print("Size: " + size(x) + "\n")
   input()
 
-
-  #unrolling an array
+  # Unrolling an array
   print_color("Unroll X:", 11)
 
   index = 0
   while(index < size(x))
     print(x[index])
-   
+    
+	# Test subarray contents
     if(x[index] == [[true, ["Crystal Clear", "Hello"]], 3])
-      print_color("Crystal!", 13)
+      print_color("Subarray Match!", 13)
     end
 
     index += 1
@@ -32,17 +35,18 @@ def main()
 
   print("")
 
-  y = 10 ... 100.0 / 6.3 + 5
+  # Construct a range
+  y = 0 ... 10
   print_color("Range Y:", 11) 
   print(y)
   print("Size: " + size(y) + "\n")
 
-  #unrolling an array
-  print_color("Unroll Y + 10:", 11) 
+  # Unrolling an array
+  print_color("Unroll Y:", 11) 
   
   index = 0
   while(index < size(y))
-   print(y[index] + 10)
+   print(y[index])
    index += 1
   end
 

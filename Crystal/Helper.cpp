@@ -261,7 +261,12 @@ void Power_SymsR(Crystal_Symbol* syml, Crystal_Symbol* symr)
 }
 void Cry_Derefrence(Crystal_Symbol** sym)
 {
-  if((*sym)->type == CRY_POINTER || (*sym)->type == CRY_REFERENCE)
+  if((*sym)->type == CRY_REFERENCE)
+  {
+    *sym = (*sym)->sym;
+  }
+
+  if((*sym)->type == CRY_POINTER)
   {
     *sym = (*sym)->sym;
   }
@@ -319,36 +324,6 @@ void Array_Add_Stack(Crystal_Symbol* sym_stack, int index, Crystal_Symbol* ary)
   }
 }
 
-//Refrence functions
-void Ref_Nil(Crystal_Symbol* sym)
-{
-  sym->type = CRY_NIL;
-}
-
-void Ref_Bool(int num, Crystal_Symbol* sym)
-{
-  sym->type = CRY_BOOL;
-  sym->i32 = num;
-}
-
-void Ref_Int(int num, Crystal_Symbol* sym)
-{
-  sym->type = CRY_INT;
-  sym->i32 = num;
-}
-
-void Ref_Double(double dec, Crystal_Symbol* sym)
-{
-  sym->type = CRY_DOUBLE;
-  sym->d = dec;
-}
-
-void Ref_Text(const char* text, Crystal_Symbol* sym)
-{
-  sym->type = CRY_TEXT;
-  sym->text = text;
-}
-
 void Push_Nil(Crystal_Symbol* sym)
 {
   sym->sym->type = CRY_NIL;
@@ -378,20 +353,15 @@ void Push_Text(const char* text, Crystal_Symbol* sym)
   sym->sym->text = text;
 }
 
-
 void Cry_Assignment(Crystal_Symbol* src, Crystal_Symbol* dest)
 {
   *dest = *src;
 }
 
-void Copy_Ptr(Crystal_Symbol* res,  Crystal_Symbol* src, int index)
+void Val_Binding(Crystal_Symbol* ret, Crystal_Symbol* src, int index)
 {
-  *res = src->sym->sym[index];
-}
-
-Crystal_Symbol* Get_Ptr(Crystal_Symbol* src, int index)
-{
-  return src->sym->sym + index;
+  ret->type = CRY_REFERENCE;
+  ret->sym = src->sym->sym + index;
 }
 
 void* Late_Func_Binding(int id, Crystal_Symbol* symd)

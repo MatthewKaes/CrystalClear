@@ -17,6 +17,7 @@ CRY_ARG::CRY_ARG(const char* str) : type(CRY_TEXT), filt(CRY_TEXT)
   poolindex += strlen(str) + 2;
   strpool[poolindex - 1] = '\0';
 }
+
 CRY_ARG::CRY_ARG(Crystal_Data* sym)
 {
   switch(sym->type)
@@ -288,11 +289,60 @@ void Crystal_Compiler::Make_Range(unsigned var)
   if(lookups.size())
     lookups.back().corruptions[var] = true;
 }
+
+void Crystal_Compiler::Array_Index(unsigned dest, unsigned var, unsigned index)
+{
+  Convert(index, CRY_INT);
+  Push(var);
+  Push(dest);
+  Call(Val_Binding);
+  Pop(3);
+
+  states[dest].Set(CRY_REFERENCE);
+  //Corrupt the state of the object
+  if(lookups.size())
+    lookups.back().corruptions[dest] = true;
+}
+
+void Crystal_Compiler::Array_Index_C(unsigned dest, unsigned var, CRY_ARG index)
+{    
+  //Reference
+  switch(index.type)
+  {
+  case CRY_NIL:
+    Push_C(0);
+    break;
+  case CRY_BOOL:
+    Push_C(static_cast<int>(index.bol_));
+    break;
+  case CRY_INT:
+    Push_C(index.num_);
+    break;
+  case CRY_DOUBLE:
+    Push_C(static_cast<int>(index.dec_));
+    break;
+  case CRY_TEXT:
+    Push_C(atoi(index.str_));
+    break;
+  }
+
+  Push(var);
+  Push(dest);
+  Call(Val_Binding);
+  Pop(3);
+  
+  states[dest].Set(CRY_REFERENCE);
+  //Corrupt the state of the object
+  if(lookups.size())
+    lookups.back().corruptions[dest] = true;
+}
+
 void Crystal_Compiler::Push(unsigned var)
 {
   unsigned offset = stack_size - var * VAR_SIZE;
   Machine->Push_Adr(offset);
 }
+
 void Crystal_Compiler::Push_C(CRY_ARG var)
 {
   switch(var.type)
@@ -308,14 +358,17 @@ void Crystal_Compiler::Push_C(CRY_ARG var)
     return;
   }
 }
+
 void Crystal_Compiler::Push_Reg()
 {
   Machine->Push(EAX);
 }
+
 void Crystal_Compiler::Pop(unsigned args)
 {
   Machine->Pop(args * 4);
 }
+
 void Crystal_Compiler::Return(unsigned var)
 {
   unsigned label = Machine->Reserve_Label();
@@ -353,6 +406,7 @@ void Crystal_Compiler::Return(unsigned var)
 
   Machine->Return();
 }
+
 void Crystal_Compiler::Return()
 {
   unsigned label = Machine->Reserve_Label();
@@ -371,6 +425,7 @@ void Crystal_Compiler::Return()
 
   Machine->Return();
 }
+
 void Crystal_Compiler::Loop()
 {
   CryLookup new_lookup;
@@ -388,6 +443,7 @@ void Crystal_Compiler::Loop()
   Machine->Make_Label(new_lookup.loop_back_lable);
   lookups.push_back(new_lookup);
 }
+
 void Crystal_Compiler::While(unsigned var)
 {
   unsigned offset_dest = stack_size - var * VAR_SIZE;
@@ -404,8 +460,8 @@ void Crystal_Compiler::While(unsigned var)
   Machine->Je(new_lookup.lable_id);
   Machine->Cmp(offset_dest - DATA_TYPE, static_cast<char>(CRY_NIL));
   Machine->Je(new_lookup.lable_id);
-  
 }
+
 void Crystal_Compiler::If(unsigned var)
 {
   unsigned offset_dest = stack_size - var * VAR_SIZE;
@@ -432,6 +488,7 @@ void Crystal_Compiler::If(unsigned var)
   }
   lookups.push_back(new_lookup);
 }
+
 void Crystal_Compiler::Else()
 {
   CryLookup new_lookup;
@@ -454,6 +511,7 @@ void Crystal_Compiler::Else()
 
   lookups.push_back(new_lookup);
 }
+
 void Crystal_Compiler::ElseIf_Pre()
 {
   CryLookup new_lookup;
@@ -476,6 +534,7 @@ void Crystal_Compiler::ElseIf_Pre()
 
   lookups.push_back(new_lookup);
 }
+
 void Crystal_Compiler::ElseIf(unsigned var)
 {
   CryLookup new_lookup = lookups.back();
@@ -561,8 +620,7 @@ void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
 
 void Crystal_Compiler::Ref_Load(unsigned var, CRY_ARG val)
 {
-  unsigned offset = stack_size - VAR_SIZE * var;
-    Push(var);
+  Push(var);
   switch(val.type)
   {
   case CRY_INT:
@@ -580,7 +638,6 @@ void Crystal_Compiler::Ref_Load(unsigned var, CRY_ARG val)
     Call(Push_Double);
     Pop(3);
     break;
-  //Text can be loaded as constanst since strings cant.
   case CRY_TEXT:
     Push_C(val.str_);
     Call(Push_Text);

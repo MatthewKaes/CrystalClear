@@ -131,45 +131,6 @@ bool Generic_Assignment(Crystal_Compiler* target, Crystal_Data* base, std::vecto
 
 bool Assignment_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  if(base->i32 == REFRENCE_ID)
-  {    
-    switch((*syms)[1].type)
-    {
-    case DAT_NIL:
-      target->Push_Reg();
-      target->Call(Ref_Nil);
-      target->Pop(1);
-      break;
-    case DAT_BOOL:
-      target->Push_C(static_cast<int>((*syms)[1].b));
-      target->Call(Ref_Bool);
-      target->Pop(2);
-      break;
-    case DAT_INT:
-      target->Push_C((*syms)[1].i32);
-      target->Call(Ref_Int);
-      target->Pop(2);
-      break;
-    case DAT_DOUBLE:
-      target->Push_C((*syms)[1].d);
-      target->Call(Ref_Double);
-      target->Pop(3);
-      break;
-    case DAT_STRING:
-      target->Push_C((*syms)[1].str.c_str());
-      target->Call(Ref_Text);
-      target->Pop(2);
-      break;
-    case DAT_REGISTRY:
-    case DAT_LOCAL:
-      target->Push(MEM((*syms)[1]));
-      target->Call(Cry_Assignment);
-      target->Pop(2);
-      break;
-    }
-    return true;
-  }
-
   //Normal Assignment
   if((*syms)[1].type == DAT_LOCAL || (*syms)[1].type == DAT_REGISTRY)
     target->Copy(MEM((*syms)[0]), MEM((*syms)[1]));
@@ -286,42 +247,14 @@ bool Array_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal
   }
   else
   {
-    //Getter
-    switch((*syms)[1].type)
+    //Reference
+    if((*syms)[1].type == DAT_REGISTRY || (*syms)[1].type == DAT_LOCAL)
     {
-    case DAT_NIL:
-      target->Push_C(0);
-      break;
-    case DAT_BOOL:
-      target->Push_C(static_cast<int>((*syms)[1].b));
-      break;
-    case DAT_INT:
-      target->Push_C((*syms)[1].i32);
-      break;
-    case DAT_DOUBLE:
-      target->Push_C(static_cast<int>((*syms)[1].d));
-      break;
-    case DAT_STRING:
-      target->Push_C(atoi((*syms)[1].str.c_str()));
-      break;
-    case DAT_REGISTRY:
-    case DAT_LOCAL:
-      target->Convert(MEM((*syms)[1]), CRY_INT);
-      break;
-    }
-    target->Push(MEM((*syms)[0]));
-
-    if(base->i32 == REFRENCE_ID)
-    {
-      target->Call(Get_Ptr);
-      target->Pop(2);
-      target->Push_Reg();
+      target->Array_Index(MEMR(result), MEM((*syms)[0]), MEM((*syms)[1]));
     }
     else
     {
-      target->Push(MEMR(result));
-      target->Call(Copy_Ptr);
-      target->Pop(3);
+      target->Array_Index_C(MEMR(result), MEM((*syms)[0]), &(*syms)[1]);
     }
   }
   return true;

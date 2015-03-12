@@ -82,6 +82,8 @@ public:
   void Make_Array(unsigned var, unsigned size, unsigned capacity);
   void Make_Class(unsigned var, unsigned ID);
   void Make_Range(unsigned var);
+  void Array_Index(unsigned dest, unsigned var, unsigned index);
+  void Array_Index_C(unsigned dest, unsigned var, CRY_ARG index = CRY_ARG());
   void Push(unsigned var);
   void Push_C(CRY_ARG var);
   void Push_Reg();
