@@ -8,15 +8,12 @@ def main()
   
   # Make a subarray
   x[3] = [[true, [val, "Hello"]], 3]
-  x += k
-  x = x + 3 + "hello"
-  input()
+  print(x = x + 3 + "hello")
   
   # Get metrics about the array
   print_color("Array X:" , 11) 
   print(x)
   print("Size: " + size(x) + "\n")
-  input()
 
   # Unrolling an array
   print_color("Unroll X:", 11)

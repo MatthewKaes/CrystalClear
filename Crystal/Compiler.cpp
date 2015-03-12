@@ -751,7 +751,8 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  if(states[dest].Size() == 1 && states[source].Size() == 1 &&
+    !states[dest].Only(CRY_REFERENCE) && !states[source].Only(CRY_REFERENCE))
   {
     //null operation
     Clarity_Filter except(CRY_TEXT);
@@ -862,7 +863,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1 && !states[dest].Only(CRY_REFERENCE))
   {
     //null operation 
     Clarity_Filter except(CRY_TEXT);
@@ -1042,7 +1043,8 @@ void Crystal_Compiler::Sub(unsigned dest, unsigned source, bool left)
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  if(states[dest].Size() == 1 && states[source].Size() == 1 && 
+    !states[dest].Only(CRY_REFERENCE) && !states[source].Only(CRY_REFERENCE))
   {
     //null operation 
     if(Null_Op(states[dest], states[source], dest))
@@ -1119,7 +1121,7 @@ void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1 && !states[dest].Only(CRY_REFERENCE))
   {
     //null operation 
     if(Null_Op(states[dest], const_.filt, dest))
@@ -1214,7 +1216,8 @@ void Crystal_Compiler::Mul(unsigned dest, unsigned source, bool left)
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  if(states[dest].Size() == 1 && states[source].Size() == 1 && 
+    !states[dest].Only(CRY_REFERENCE) && !states[source].Only(CRY_REFERENCE))
   {
     //null operation
     if(Null_Op(states[dest], states[source], dest))
@@ -1276,7 +1279,7 @@ void Crystal_Compiler::MulC(unsigned dest, CRY_ARG const_, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1 && !states[dest].Only(CRY_REFERENCE))
   {
     //null operation
     if(Null_Op(states[dest], const_.filt, dest))
@@ -1341,7 +1344,8 @@ void Crystal_Compiler::Div(unsigned dest, unsigned source, bool left)
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  if(states[dest].Size() == 1 && states[source].Size() == 1 && 
+    !states[dest].Only(CRY_REFERENCE) && !states[source].Only(CRY_REFERENCE))
   {
     //null operation
     if(Null_Op(states[dest], states[source], dest))
@@ -1399,7 +1403,7 @@ void Crystal_Compiler::DivC(unsigned dest, CRY_ARG const_, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1 && !states[dest].Only(CRY_REFERENCE))
   {
     //null operation
     if(Null_Op(states[dest], const_.filt, dest))
@@ -1470,7 +1474,8 @@ void Crystal_Compiler::Mod(unsigned dest, unsigned source, bool left)
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  if(states[dest].Size() == 1 && states[source].Size() == 1 && 
+    !states[dest].Only(CRY_REFERENCE) && !states[source].Only(CRY_REFERENCE))
   {
     //null operation
     if(Null_Op(states[dest], states[source], dest))
@@ -1509,7 +1514,7 @@ void Crystal_Compiler::ModC(unsigned dest, CRY_ARG const_, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1 && !states[dest].Only(CRY_REFERENCE))
   {
     //null operation
     if(Null_Op(states[dest], const_.filt, dest))
@@ -1561,7 +1566,8 @@ void Crystal_Compiler::Pow(unsigned dest, unsigned source, bool left)
   unsigned labletop, lablebottom;
 
   //std static handling
-  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  if(states[dest].Size() == 1 && states[source].Size() == 1 && 
+    !states[dest].Only(CRY_REFERENCE) && !states[source].Only(CRY_REFERENCE))
   {
     //null operation
     if(Null_Op(states[dest], states[source], dest))
@@ -1621,7 +1627,7 @@ void Crystal_Compiler::PowC(unsigned dest, CRY_ARG const_, bool left)
   unsigned labletop, lablebottom;
 
   //std static handling
-  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1 && !states[dest].Only(CRY_REFERENCE))
   {
     //null operation
     if(Null_Op(states[dest], const_.filt, dest))
@@ -1687,6 +1693,7 @@ void Crystal_Compiler::PowC(unsigned dest, CRY_ARG const_, bool left)
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
 }
+
 void Crystal_Compiler::And(unsigned dest, unsigned source, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
@@ -1697,6 +1704,7 @@ void Crystal_Compiler::And(unsigned dest, unsigned source, bool left)
   Machine->Mov(offset_dest - DATA_LOWER, EAX);
   Runtime_Resovle(dest, CRY_BOOL);
 }
+
 void Crystal_Compiler::AndC(unsigned dest, CRY_ARG const_, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
@@ -1708,6 +1716,7 @@ void Crystal_Compiler::AndC(unsigned dest, CRY_ARG const_, bool left)
   Machine->Mov(offset_dest - DATA_LOWER, EAX);
   Runtime_Resovle(dest, CRY_BOOL);
 }
+
 void Crystal_Compiler::Or(unsigned dest, unsigned source, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
@@ -1718,6 +1727,7 @@ void Crystal_Compiler::Or(unsigned dest, unsigned source, bool left)
   Machine->Mov(offset_dest - DATA_LOWER, EAX);
   Runtime_Resovle(dest, CRY_BOOL);
 }
+
 void Crystal_Compiler::OrC(unsigned dest, CRY_ARG const_, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
@@ -1729,13 +1739,15 @@ void Crystal_Compiler::OrC(unsigned dest, CRY_ARG const_, bool left)
   Machine->Mov(offset_dest - DATA_LOWER, EAX);
   Runtime_Resovle(dest, CRY_BOOL);
 }
+
 void Crystal_Compiler::Eql(unsigned dest, unsigned source, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  if(states[dest].Size() == 1 && states[source].Size() == 1 && 
+    !states[dest].Only(CRY_REFERENCE) && !states[source].Only(CRY_REFERENCE))
   {
     //null operation
     if(states[dest].Test(CRY_NIL) || states[source].Test(CRY_NIL))
@@ -1826,7 +1838,7 @@ void Crystal_Compiler::EqlC(unsigned dest, CRY_ARG const_, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1 && !states[dest].Only(CRY_REFERENCE))
   {
     //null operation
     if(states[dest].Test(CRY_NIL) || const_.filt.Test(CRY_NIL))
@@ -1907,7 +1919,8 @@ void Crystal_Compiler::Dif(unsigned dest, unsigned source, bool left)
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  if(states[dest].Size() == 1 && states[source].Size() == 1 && 
+    !states[dest].Only(CRY_REFERENCE) && !states[source].Only(CRY_REFERENCE))
   {
     //null operation
     if(states[dest].Test(CRY_NIL) || states[source].Test(CRY_NIL))
@@ -1991,7 +2004,7 @@ void Crystal_Compiler::DifC(unsigned dest, CRY_ARG const_, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1 && !states[dest].Only(CRY_REFERENCE))
   {
     //null operation
     if(states[dest].Test(CRY_NIL) || const_.filt.Test(CRY_NIL))
@@ -2072,7 +2085,8 @@ void Crystal_Compiler::Les(unsigned dest, unsigned source, bool left)
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  if(states[dest].Size() == 1 && states[source].Size() == 1 && 
+    !states[dest].Only(CRY_REFERENCE) && !states[source].Only(CRY_REFERENCE))
   {
 
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
@@ -2129,7 +2143,7 @@ void Crystal_Compiler::LesC(unsigned dest, CRY_ARG const_, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1 && !states[dest].Only(CRY_REFERENCE))
   {
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
     switch(resolve)
@@ -2185,7 +2199,8 @@ void Crystal_Compiler::LesEql(unsigned dest, unsigned source, bool left)
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  if(states[dest].Size() == 1 && states[source].Size() == 1 && 
+    !states[dest].Only(CRY_REFERENCE) && !states[source].Only(CRY_REFERENCE))
   {
 
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
@@ -2242,7 +2257,7 @@ void Crystal_Compiler::LesEqlC(unsigned dest, CRY_ARG const_, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1 && !states[dest].Only(CRY_REFERENCE))
   {
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
     switch(resolve)
@@ -2298,7 +2313,8 @@ void Crystal_Compiler::Gtr(unsigned dest, unsigned source, bool left)
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  if(states[dest].Size() == 1 && states[source].Size() == 1 && 
+    !states[dest].Only(CRY_REFERENCE) && !states[source].Only(CRY_REFERENCE))
   {
 
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
@@ -2355,7 +2371,7 @@ void Crystal_Compiler::GtrC(unsigned dest, CRY_ARG const_, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1 && !states[dest].Only(CRY_REFERENCE))
   {
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
     switch(resolve)
@@ -2411,7 +2427,8 @@ void Crystal_Compiler::GtrEql(unsigned dest, unsigned source, bool left)
   unsigned offset_source = stack_size - source * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && states[source].Size() == 1)
+  if(states[dest].Size() == 1 && states[source].Size() == 1 && 
+    !states[dest].Only(CRY_REFERENCE) && !states[source].Only(CRY_REFERENCE))
   {
 
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], states[source]);
@@ -2468,7 +2485,7 @@ void Crystal_Compiler::GtrEqlC(unsigned dest, CRY_ARG const_, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
 
   //std static handling
-  if(states[dest].Size() == 1 && const_.filt.Size() == 1)
+  if(states[dest].Size() == 1 && const_.filt.Size() == 1 && !states[dest].Only(CRY_REFERENCE))
   {
     Symbol_Type resolve = Clarity_Filter::Reduce(states[dest], const_.filt);
     switch(resolve)

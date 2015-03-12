@@ -5,6 +5,9 @@
 
 void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
@@ -74,6 +77,9 @@ void Obscure_Subtraction(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_NIL;
     return;
   }
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
@@ -113,6 +119,9 @@ void Obscure_Multiplication(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_NIL;
     return;
   }
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
@@ -146,6 +155,9 @@ void Obscure_Division(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_NIL;
     return;
   }
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
@@ -175,6 +187,9 @@ void Obscure_Modulo(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_NIL;
     return;
   }
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
@@ -195,6 +210,9 @@ void Obscure_Power(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_NIL;
     return;
   }
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
@@ -229,6 +247,9 @@ void Obscure_Power(Crystal_Symbol* dest, Crystal_Symbol* source)
 
 void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   switch(dest->type)
   {
   case CRY_NIL:
@@ -337,6 +358,9 @@ void Obscure_Diffrence(Crystal_Symbol* dest, Crystal_Symbol* source)
 
 void Obscure_Less(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   switch(dest->type)
   {
   case CRY_INT:
@@ -370,6 +394,9 @@ void Obscure_Less(Crystal_Symbol* dest, Crystal_Symbol* source)
 
 void Obscure_Greater(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   switch(dest->type)
   {
   case CRY_INT:
@@ -416,6 +443,9 @@ void Obscure_Greater_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 //Reversals
 void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
@@ -479,6 +509,9 @@ void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 
 void Obscure_SubtractionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
   {
     dest->type = CRY_NIL;
@@ -519,6 +552,9 @@ void Obscure_SubtractionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 
 void Obscure_DivisionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
   {
     dest->type = CRY_NIL;
@@ -548,6 +584,9 @@ void Obscure_DivisionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 
 void Obscure_ModuloR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
   {
     dest->type = CRY_NIL;
@@ -568,6 +607,9 @@ void Obscure_ModuloR(Crystal_Symbol* dest, Crystal_Symbol* source)
 
 void Obscure_PowerR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
   {
     dest->type = CRY_NIL;

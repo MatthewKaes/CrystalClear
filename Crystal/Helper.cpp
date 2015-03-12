@@ -22,6 +22,7 @@ int Parse_Int(Crystal_Symbol* sym)
   case CRY_DOUBLE:
     return static_cast<int>(sym->d);
   case CRY_POINTER:
+  case CRY_REFERENCE:
     return Parse_Int(sym->sym);
   default:
     return 0;
@@ -30,6 +31,8 @@ int Parse_Int(Crystal_Symbol* sym)
 
 int Parse_Bool(Crystal_Symbol* sym)
 {
+  if(sym->type == CRY_REFERENCE || sym->type == CRY_POINTER)
+    return Parse_Bool(sym->sym);
   if(sym->type == CRY_NIL)
     return 0;
   return sym->i32 != 0;
@@ -56,6 +59,7 @@ double Parse_Double(Crystal_Symbol* sym)
   case CRY_INT:
     return sym->i32;
   case CRY_POINTER:
+  case CRY_REFERENCE:
     return Parse_Double(sym->sym);
   default:
     return 0.0;
