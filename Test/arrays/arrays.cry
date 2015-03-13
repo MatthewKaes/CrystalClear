@@ -7,7 +7,7 @@ def main()
   x = [2, nil, true, "Hello", 6.10, nil, val, val + val]
   
   # Make a subarray
-  x[3] = [[true, [val, "Hello"]], 3]
+  x[1] = [[true, [val, "Hello"]], 3]
   print(x = x + 3 + "hello")
   
   # Get metrics about the array
@@ -22,7 +22,7 @@ def main()
   while(index < size(x))
     print(x[index])
     
-	# Test subarray contents
+    # Test subarray contents
     if(x[index] == [[true, ["Crystal Clear", "Hello"]], 3])
       print_color("Subarray Match!", 13)
     end

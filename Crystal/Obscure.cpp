@@ -5,8 +5,8 @@
 
 void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
-  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
-  source = source->type != CRY_REFERENCE ? source : source->sym; 
+  Cry_Derefrence(&dest);
+  Cry_Derefrence(&source);
 
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
@@ -50,20 +50,12 @@ void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = resolve;
     return;
   case CRY_TEXT:
+  case CRY_STRING:
     Crystal_Text_Append(dest, source);
     return;
-  case CRY_POINTER:
-    if((dest->type == CRY_POINTER && dest->sym->type == CRY_STRING) ||
-       (source->type == CRY_POINTER && source->sym->type == CRY_STRING))
-    {
-      Crystal_Text_Append(dest, source);
-      return;
-    }
-    else
-    {
-      Crystal_Array_Append(dest, source);
-      return;
-    }
+  case CRY_ARRAY:
+    Crystal_Array_Append(dest, source);
+    return;
   default:
     dest->type = CRY_NIL;
     return;
@@ -247,8 +239,8 @@ void Obscure_Power(Crystal_Symbol* dest, Crystal_Symbol* source)
 
 void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
-  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
-  source = source->type != CRY_REFERENCE ? source : source->sym; 
+  Cry_Derefrence(&dest);
+  Cry_Derefrence(&source);
 
   switch(dest->type)
   {
@@ -287,62 +279,26 @@ void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_BOOL;
     return;
   case CRY_TEXT:
-    if(source->type == CRY_TEXT)
+  case CRY_STRING:
+    if(source->type == CRY_TEXT || source->type == CRY_STRING)
     {
       dest->i32 = Fast_strcmp(dest, source);
-      dest->type = CRY_BOOL;
-      return;
-    }
-    else if(source->type == CRY_POINTER && source->sym->type == CRY_STRING)
-    {
-      dest->i32 = Fast_strcmp(dest, source->sym);
       dest->type = CRY_BOOL;
       return;
     }
     dest->i32 = 0;
     dest->type = CRY_BOOL;
     return;
-  case CRY_POINTER:
-    if(source->type == CRY_TEXT)
-    {
-      if(dest->sym->type != CRY_STRING)
-      {
-        dest->i32 = 0;
-        dest->type = CRY_BOOL;
-        return;
-      }
-      dest->i32 = Fast_strcmp(dest->sym, source);
-      dest->type = CRY_BOOL;
-      return;
-    }
-    else if(source->type != CRY_POINTER || source->sym->type != dest->sym->type)
+  case CRY_ARRAY:
+    if(dest->type != source->type)
     {
       dest->i32 = 0;
       dest->type = CRY_BOOL;
       return;
     }
-
-    if(dest->sym == source->sym)
-    {
-      dest->i32 = 1;
-      dest->type = CRY_BOOL;
-      return;
-    }
-
-    if(dest->sym->type == CRY_STRING)
-    {
-      dest->i32 = Fast_strcmp(dest->sym, source->sym);
-      dest->type = CRY_BOOL;
-      return;
-    }
-    else
-    {
-      dest->i32 = Fast_arraycmp(dest->sym, source->sym);
-      dest->type = CRY_BOOL;
-      return;
-    }
-    break;
-
+    dest->i32 = Fast_arraycmp(dest->sym, source->sym);
+    dest->type = CRY_BOOL;
+    return;
   default:
     dest->i32 = 0;
     dest->type = CRY_BOOL;
@@ -443,8 +399,8 @@ void Obscure_Greater_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 //Reversals
 void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
-  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
-  source = source->type != CRY_REFERENCE ? source : source->sym; 
+  Cry_Derefrence(&dest);
+  Cry_Derefrence(&source);
 
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
@@ -488,19 +444,12 @@ void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = resolve;
     return;
   case CRY_TEXT:
+  case CRY_STRING:
     Crystal_Text_AppendR(dest, source);
     return;
-  case CRY_POINTER:
-    if((dest->type == CRY_POINTER && dest->sym->type == CRY_STRING) ||
-       (source->type == CRY_POINTER && source->sym->type == CRY_STRING))
-    {
-      Crystal_Text_AppendR(dest, source);
-      return;
-    }
-    else
-    {
-      Crystal_Array_AppendR(dest, source);
-    }
+  case CRY_ARRAY:
+    Crystal_Array_AppendR(dest, source);
+    return;
   default:
     dest->type = CRY_NIL;
     return;
@@ -543,8 +492,7 @@ void Obscure_SubtractionR(Crystal_Symbol* dest, Crystal_Symbol* source)
     }
     dest->type = resolve;
     return;
-  case CRY_TEXT:
-  case CRY_STRING:
+  default:
     dest->type = CRY_NIL;
     return;
   }
@@ -560,6 +508,7 @@ void Obscure_DivisionR(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_NIL;
     return;
   }
+
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
