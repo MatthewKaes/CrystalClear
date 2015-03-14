@@ -6,6 +6,7 @@
 #include <string>
 
 bool is_symbol(char object);
+bool is_op(char object);
 bool is_number(char object);
 
 bool Create_Symbol(const char** stream, Crystal_Data* sym);

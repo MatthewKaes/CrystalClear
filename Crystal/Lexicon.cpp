@@ -43,6 +43,34 @@ bool is_symbol(char object)
     return false;
   }
 }
+
+bool is_op(char object)
+{
+  switch(object)
+  {
+  case '+':
+  case '.':
+  case '-':
+  case '*':
+  case '/':
+  case '^':
+  case '%':
+  case '(':
+  case '[':
+  case '=':
+  case '<':
+  case '>':
+  case ':':
+  case ',':
+  case '|':
+  case '!':
+  case '&':
+    return true;
+  default:
+    return false;
+  }
+}
+
 bool is_number(char object)
 {
   if(object >= '0' && object <= '9')
@@ -122,7 +150,7 @@ void Resolve_Type(Crystal_Data* sym)
   }
   else if(is_symbol(sym->str[0]))
   {
-    if(is_number(sym->str[0]))
+    if(is_number(sym->str.c_str()[0]) || is_number(sym->str.c_str()[1]))
     {
       sym->type = DAT_INT;
       sym->i32 = str_to_i(&sym->str);

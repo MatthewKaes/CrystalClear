@@ -290,12 +290,17 @@ void Crystal_Interpreter::Format_Code()
         code_out.push_back(*code_ptr++);
       }
       break;
+    case '-':
+      if(is_op(code_out[code_out.size() - 2]))
+      {
+        code_out.push_back(*code_ptr++);
+        continue;
+      }
     case '=':    
     case '|':
     case '&':   
     case '>':
     case '+':
-    case '-':
     case '*':
     case '/':
     case '^':
