@@ -76,9 +76,6 @@ void Crystal_Convert(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Symbo
   }
   else if(!conv.compare("TEXT") || !conv.compare("STRING"))
   {
-    //Save the expensive operation if we can!
-    if(ret_sym->type == CRY_STRING && ret_sym == sym)
-      return;
     ret_sym->type = CRY_STRING;
     if(sym->type == CRY_TEXT)
     {
@@ -135,9 +132,6 @@ void Crystal_Double(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   std::string conv;
-  //Save the expensive operation if we can!
-  if(ret_sym->type == CRY_STRING && ret_sym == sym)
-    return;
 
   Parse_String(sym, &conv);
 
@@ -149,6 +143,8 @@ void Crystal_String(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 
 void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
+  Cry_Derefrence(&sym);
+
   switch(sym->type)
   {
   case CRY_BOOL:
@@ -209,7 +205,7 @@ void Crystal_PrintColor(Crystal_Symbol* ret_sym, Crystal_Symbol* sym, Crystal_Sy
 
 void Crystal_Size(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
-  if(sym->type == CRY_POINTER)
+  if(sym->type == CRY_POINTER || sym->type == CRY_REFERENCE)
   {
     ret_sym->i32 = sym->sym->size;
     ret_sym->type = CRY_INT;

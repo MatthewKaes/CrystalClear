@@ -364,6 +364,17 @@ void Cry_Assignment(Crystal_Symbol* src, Crystal_Symbol* dest)
 
 void Val_Binding(Crystal_Symbol* ret, Crystal_Symbol* src, int index)
 {
+  if(index < 0)
+  {
+    index += src->sym->size;
+  }
+
+  if(index >= src->sym->size)
+  {
+    ret->type = CRY_NIL;
+    return;
+  }
+
   ret->type = CRY_REFERENCE;
   ret->sym = src->sym->sym + index;
 }

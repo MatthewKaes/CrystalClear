@@ -168,6 +168,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Obscure.cpp" />
     <ClCompile Include="Operations.cpp" />
+    <ClCompile Include="OS.cpp" />
     <ClCompile Include="Reductions.cpp" />
     <ClCompile Include="Syntax_Tree.cpp" />
   </ItemGroup>
@@ -194,6 +195,7 @@
     <ClInclude Include="Generator.h" />
     <ClInclude Include="Obscure.h" />
     <ClInclude Include="Operations.h" />
+    <ClInclude Include="OS.h" />
     <ClInclude Include="Reductions.h" />
     <ClInclude Include="Syntax_Tree.h" />
   </ItemGroup>

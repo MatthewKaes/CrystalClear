@@ -2,6 +2,7 @@
 #include "Library.h"
 #include "Filesystems.h"
 #include "IO.h"
+#include "OS.h"
 #include "Math.h"
 #include <stdio.h>
 #include <boost\filesystem.hpp>
@@ -89,6 +90,12 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(file_size, Crystal_FileSize, 1);
   REGISTER_FUNCTION(list_files, Crystal_FileList, 1);
   REGISTER_FUNCTION(cry_root, Crystal_CryRoot, 0);
+
+  //OS
+  REGISTER_FUNCTION(cry_copyright, Crystal_CrystalCopyright, 0)
+  REGISTER_FUNCTION(cry_version, Crystal_CrystalVersion, 0);
+  REGISTER_FUNCTION(cry_target, Crystal_CrystalTarget, 0);
+  REGISTER_FUNCTION(environ, Crystal_Environ, 1);
 
   //Hooks to other langauges
   REGISTER_FUNCTION(python, Crystal_Python, 2);

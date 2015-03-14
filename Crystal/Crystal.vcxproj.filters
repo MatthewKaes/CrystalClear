@@ -108,6 +108,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Front End</Filter>
     </ClCompile>
+    <ClCompile Include="OS.cpp">
+      <Filter>Extensions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Crystal.h">
@@ -181,6 +184,9 @@
     </ClInclude>
     <ClInclude Include="Lexicon.h">
       <Filter>Interpreter\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="OS.h">
+      <Filter>Extensions\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

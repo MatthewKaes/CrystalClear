@@ -6,6 +6,11 @@
 #include <vector>
 #include <unordered_map>
 
+//Crystal Constants
+#define CRY_COPYRIGHT "Crystal Clear Copyright Matthew Kaes 2014"
+#define CRY_VERSION "0.7.4"
+#define CRY_MACHINE "x86"
+
 //Crystal Macros
 #define NO_SUPPORT(type) \
     case type: \
