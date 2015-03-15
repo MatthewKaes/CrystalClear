@@ -16,6 +16,23 @@
   new_package.function = Func; \
   built_in[#Name] = new_package; } 
 
+#define REGISTER_CLASS(Name) \
+  current_class = new Class_Info; \
+  current_class->name = #Name; \
+  current_class->id = Class_Listing.size(); \
+  Class_Listing.push_back(current_class); \
+  new_package.pt = PKG_CLASS; \
+  new_package.ID = Class_Listing.size() - 1; \
+  packages[#Name] = new_package;
+
+#define REGISTER_ATTRIBUTE(Attr) \
+  { unsigned LB_ID = Late_Binding("@" ## #Attr); \
+  if(current_class->attributes_loc.find(LB_ID) == current_class->attributes_loc.end()) \
+  { \
+    current_class->attributes_loc[LB_ID] = current_class->attributes.size(); \
+    current_class->attributes.push_back("@" ## #Attr); \
+  } }
+
 typedef int (*CRY_EXPORT)(std::unordered_map<std::string, Package_Info>*, const char*);
 
 extern const char* CRY_ROOT;
@@ -34,6 +51,7 @@ Crystal_Interpreter::Crystal_Interpreter(Crystal_Compiler* compiler)
   comp = compiler;
   code_cache.assign(" ");
   Populate_BIP();
+  Populate_BIC();
 }
 
 Crystal_Interpreter::~Crystal_Interpreter(){}
@@ -99,7 +117,7 @@ void Crystal_Interpreter::Populate_BIP()
 
   //Hooks to other langauges
   REGISTER_FUNCTION(python, Crystal_Python, 2);
-  
+
 #if _DEBUG
   //Load extensions
   //Get the debug version of the dll.
@@ -154,6 +172,16 @@ void Crystal_Interpreter::Populate_BIP()
       }
     }
   }
+}
+
+void Crystal_Interpreter::Populate_BIC()
+{
+  Class_Info* current_class;
+  Package_Info new_package;
+
+  REGISTER_CLASS(file);
+  REGISTER_ATTRIBUTE(filename);
+  REGISTER_ATTRIBUTE(object);
 }
 
 void Crystal_Interpreter::Cache_Code(const char* filename)
@@ -367,7 +395,7 @@ void Crystal_Interpreter::Process_Lookups()
       {
         printf("CRYSTAL ERROR: package '%s' is defined multiple times in scope 'GLOBAL'\n", pkg.str.c_str());
       }
-      else if(current_class != NULL && current_class->lookup.find(Late_Binding(&pkg)) != current_class->lookup.end())
+      else if(current_class != NULL && current_class->lookup.find(Late_Binding(pkg.str.c_str())) != current_class->lookup.end())
       {
         printf("CRYSTAL ERROR: function '%s' is defined multiple times in scope '%s'\n", current_class->name);
       }
@@ -397,7 +425,7 @@ void Crystal_Interpreter::Process_Lookups()
         }
         else
         {
-          current_class->lookup[Late_Binding(&pkg)] = new_package;
+          current_class->lookup[Late_Binding(pkg.str.c_str())] = new_package;
         }
       }
     }
@@ -446,7 +474,7 @@ void Crystal_Interpreter::Process_Lookups()
     }
     else if(current_class && sym.str[0] == '@')
     {
-      unsigned LB_ID = Late_Binding(&sym);
+      unsigned LB_ID = Late_Binding(sym.str.c_str());
       if(current_class->attributes_loc.find(LB_ID) == current_class->attributes_loc.end())
       {
         current_class->attributes_loc[LB_ID] = current_class->attributes.size();
@@ -658,11 +686,11 @@ void Crystal_Interpreter::Special_Processing(Crystal_Data* sym)
   }
 }
 
-unsigned Crystal_Interpreter::Late_Binding(Crystal_Data* sym)
+unsigned Crystal_Interpreter::Late_Binding(const char* id)
 {
   std::unordered_map<std::string, unsigned>::iterator index;
   
-  index = late_bindings.find(sym->str);
+  index = late_bindings.find(id);
 
   if(index != late_bindings.end())
   {
@@ -670,7 +698,7 @@ unsigned Crystal_Interpreter::Late_Binding(Crystal_Data* sym)
   }
   else
   {
-    late_bindings[sym->str.c_str()] = late_bindings.size();
+    late_bindings[id] = late_bindings.size();
     return late_bindings.size() - 1;
   }
 }

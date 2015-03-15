@@ -23,6 +23,7 @@ private:
 
   //Populate the data for built in packages.
   void Populate_BIP();
+  void Populate_BIC();
   
   //Interpret Process under the hood
   void Format_Code();
@@ -35,7 +36,7 @@ private:
   void Special_Processing(Crystal_Data* sym);
   void Lookup_Processing(Crystal_Data* sym, std::unordered_map<std::string, unsigned>* local_map);
 
-  unsigned Late_Binding(Crystal_Data* sym);
+  unsigned Late_Binding(const char* id);
 
   //Private members
   Crystal_Compiler* comp;
