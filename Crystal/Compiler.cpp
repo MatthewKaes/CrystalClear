@@ -820,7 +820,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
         if(left)
           Call(Crystal_Text_Append);
         else
-          Call(Crystal_Text_AppendR);
+          Call(Crystal_Text_Append_Rev);
         Pop(2);
       }
       //we now have a string.
@@ -832,7 +832,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
       if(left)
         Call(Crystal_Text_Append);
       else
-        Call(Crystal_Text_AppendR);
+        Call(Crystal_Text_Append_Rev);
       Pop(2);
       break;
     case CRY_ARRAY:
@@ -841,7 +841,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
       if(left)
         Call(Crystal_Array_Append);
       else
-        Call(Crystal_Array_AppendR);
+        Call(Crystal_Array_Append_Rev);
       Pop(2);
       break;
     NO_SUPPORT(CRY_POINTER);
@@ -1017,7 +1017,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
       if(left)
         Call(Crystal_Array_Append);
       else
-        Call(Crystal_Array_AppendR);
+        Call(Crystal_Array_Append_Rev);
       Pop(2);
       break;
     //Lacking Support

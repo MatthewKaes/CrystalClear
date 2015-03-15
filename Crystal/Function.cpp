@@ -30,7 +30,7 @@ void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)
   Construct_String(symd, new_buffer, val_left.size() + val_right.size());
 }
 
-void Crystal_Text_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
+void Crystal_Text_Append_Rev(Crystal_Symbol* symd, Crystal_Symbol* syms)
 {
   std::string val_left;
   Parse_String(symd, &val_left);
@@ -44,6 +44,22 @@ void Crystal_Text_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
   
   // Create a new Garbage Controled string.
   Construct_String(symd, new_buffer, val_left.size() + val_right.size());
+}
+
+void Crystal_Text_Append_Loc(Crystal_Symbol* symd, Crystal_Symbol* syms, Crystal_Symbol* result)
+{
+  std::string val_left;
+  Parse_String(symd, &val_left);
+
+  std::string val_right;
+  Parse_String(syms, &val_right);
+
+  char* new_buffer = static_cast<char*>(malloc(val_left.size() + val_right.size() + 1));
+  strcpy(new_buffer, val_left.c_str());
+  strcpy(new_buffer + val_left.size(), val_right.c_str());
+  
+  // Create a new Garbage Controled string.
+  Construct_String(result, new_buffer, val_left.size() + val_right.size());
 }
 
 void Crystal_Text_Append_C(Crystal_Symbol* symd, const char* str, unsigned length)
@@ -124,7 +140,7 @@ void Crystal_Array_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)
   }
 }
 
-void Crystal_Array_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
+void Crystal_Array_Append_Rev(Crystal_Symbol* symd, Crystal_Symbol* syms)
 {
   if(syms->type == CRY_POINTER && syms->sym->type == CRY_ARRAY)
   {
@@ -153,6 +169,38 @@ void Crystal_Array_AppendR(Crystal_Symbol* symd, Crystal_Symbol* syms)
     new_ary[0] = *syms;
 
     Construct_Array(symd, symd->sym->size + 1, symd->sym->capacity, new_ary);
+  }
+}
+
+void Crystal_Array_Append_Loc(Crystal_Symbol* symd, Crystal_Symbol* syms, Crystal_Symbol* result)
+{
+  if(symd->type == CRY_POINTER && symd->sym->type == CRY_ARRAY)
+  {
+    if(symd->sym->size + 1 >= symd->sym->capacity)
+    {
+      symd->sym->capacity *= 2;
+    }
+
+    Crystal_Symbol* new_ary = reinterpret_cast<Crystal_Symbol*>(calloc(symd->sym->capacity, sizeof(Crystal_Symbol)));
+    
+    memcpy(new_ary, symd->sym->sym, sizeof(Crystal_Symbol) * symd->sym->size);
+    new_ary[symd->sym->size] = *syms;
+
+    Construct_Array(result, symd->sym->size + 1, symd->sym->capacity, new_ary);
+  }
+  else
+  {
+    if(syms->sym->size + 1 >= syms->sym->capacity)
+    {
+      syms->sym->capacity *= 2;
+    }
+
+    Crystal_Symbol* new_ary = reinterpret_cast<Crystal_Symbol*>(calloc(syms->sym->capacity, sizeof(Crystal_Symbol)));
+    
+    memcpy(new_ary + 1, syms->sym->sym, sizeof(Crystal_Symbol) * syms->sym->size);
+    new_ary[0] = *symd;
+
+    Construct_Array(result, syms->sym->size + 1, syms->sym->capacity, new_ary);
   }
 }
 

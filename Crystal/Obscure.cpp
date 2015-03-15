@@ -5,6 +5,7 @@
 
 void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
+  Crystal_Symbol* result = dest;
   Cry_Derefrence(&dest);
   Cry_Derefrence(&source);
 
@@ -12,49 +13,49 @@ void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source)
   switch(resolve)
   {
   case CRY_BOOL:
-    dest->i32 = dest->i32 || source->i32;
-    dest->type = resolve;
     if(dest->type == CRY_NIL || source->type == CRY_NIL)
     {
-      dest->type = CRY_NIL;
+      result->type = CRY_NIL;
       return;
     }
+    result->i32 = dest->i32 || source->i32;
+    result->type = resolve;
     return;
-  case CRY_INT:
-    dest->i32 = dest->i32 + source->i32;
-    dest->type = resolve;    
+  case CRY_INT:   
     if(dest->type == CRY_NIL || source->type == CRY_NIL)
     {
-      dest->type = CRY_NIL;
+      result->type = CRY_NIL;
       return;
     }
+    dest->i32 = dest->i32 + source->i32;
+    result->type = resolve; 
     return;
   case CRY_DOUBLE:    
     if(dest->type == CRY_NIL || source->type == CRY_NIL)
     {
-      dest->type = CRY_NIL;
+      result->type = CRY_NIL;
       return;
     }
-    if(dest->type != CRY_DOUBLE)
+    if(result->type != CRY_DOUBLE)
     {
-      dest->d = dest->i32 + source->d;
+      result->d = dest->i32 + source->d;
     }
     else if(source->type != CRY_DOUBLE)
     {
-      dest->d += source->i32;
+      result->d = dest->d + source->i32;
     }
     else
     {
-      dest->d += source->d;
+      result->d = dest->d + source->d;
     }
     dest->type = resolve;
     return;
   case CRY_TEXT:
   case CRY_STRING:
-    Crystal_Text_Append(dest, source);
+    Crystal_Text_Append_Loc(dest, source, result);
     return;
   case CRY_ARRAY:
-    Crystal_Array_Append(dest, source);
+    Crystal_Array_Append_Loc(dest, source, result);
     return;
   default:
     dest->type = CRY_NIL;
@@ -69,6 +70,8 @@ void Obscure_Subtraction(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_NIL;
     return;
   }
+
+  Crystal_Symbol* result = dest;
   dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
   source = source->type != CRY_REFERENCE ? source : source->sym; 
 
@@ -76,27 +79,27 @@ void Obscure_Subtraction(Crystal_Symbol* dest, Crystal_Symbol* source)
   switch(resolve)
   {
   case CRY_BOOL:
-    dest->i32 = dest->i32 && source->i32;
-    dest->type = resolve;
+    result->i32 = dest->i32 && source->i32;
+    result->type = resolve;
     return;
   case CRY_INT:
-    dest->i32 = dest->i32 - source->i32;
-    dest->type = resolve;
+    result->i32 = dest->i32 - source->i32;
+    result->type = resolve;
     return;
   case CRY_DOUBLE:
     if(dest->type != CRY_DOUBLE)
     {
-      dest->d = dest->i32 - source->d;
+      result->d = dest->i32 - source->d;
     }
     else if(source->type != CRY_DOUBLE)
     {
-      dest->d -= source->i32;
+      result->d -= source->i32;
     }
     else
     {
-      dest->d -= source->d;
+      result->d -= source->d;
     }
-    dest->type = resolve;
+    result->type = resolve;
     return;
   default:
     dest->type = CRY_NIL;
@@ -111,6 +114,8 @@ void Obscure_Multiplication(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_NIL;
     return;
   }
+
+  Crystal_Symbol* result = dest;
   dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
   source = source->type != CRY_REFERENCE ? source : source->sym; 
 
@@ -118,24 +123,24 @@ void Obscure_Multiplication(Crystal_Symbol* dest, Crystal_Symbol* source)
   switch(resolve)
   {
   case CRY_BOOL:
-    dest->i32 = !(dest->i32 ^ source->i32);
-    dest->type = resolve;
+    result->i32 = !(dest->i32 ^ source->i32);
+    result->type = resolve;
     return;
   case CRY_INT:
-    dest->i32 = dest->i32 * source->i32;
-    dest->type = resolve;
+    result->i32 = dest->i32 * source->i32;
+    result->type = resolve;
     return;
   case CRY_DOUBLE:
     if(dest->type != CRY_DOUBLE)
-      dest->d = dest->i32 * source->d;
+      result->d = dest->i32 * source->d;
     else if(source->type != CRY_DOUBLE)
-      dest->d *= source->i32;
+      result->d *= source->i32;
     else
-      dest->d *= source->d;
-    dest->type = resolve;
+      result->d *= source->d;
+    result->type = resolve;
     return;
   default:
-    dest->type = CRY_NIL;
+    result->type = CRY_NIL;
     return;
   }
 }
@@ -147,6 +152,8 @@ void Obscure_Division(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_NIL;
     return;
   }
+
+  Crystal_Symbol* result = dest;
   dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
   source = source->type != CRY_REFERENCE ? source : source->sym; 
 
@@ -154,20 +161,20 @@ void Obscure_Division(Crystal_Symbol* dest, Crystal_Symbol* source)
   switch(resolve)
   {
   case CRY_INT:
-    dest->i32 = dest->i32 / source->i32;
-    dest->type = resolve;
+    result->i32 = dest->i32 / source->i32;
+    result->type = resolve;
     return;
   case CRY_DOUBLE:
     if(dest->type != CRY_DOUBLE)
-      dest->d = dest->i32 / source->d;
+      result->d = dest->i32 / source->d;
     else if(source->type != CRY_DOUBLE)
-      dest->d /= source->i32;
+      result->d /= source->i32;
     else
-      dest->d /= source->d;
-    dest->type = resolve;
+      result->d /= source->d;
+    result->type = resolve;
     return;
   default:
-    dest->type = CRY_NIL;
+    result->type = CRY_NIL;
     return;
   }
 }
@@ -179,6 +186,8 @@ void Obscure_Modulo(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_NIL;
     return;
   }
+
+  Crystal_Symbol* result = dest;
   dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
   source = source->type != CRY_REFERENCE ? source : source->sym; 
 
@@ -186,8 +195,8 @@ void Obscure_Modulo(Crystal_Symbol* dest, Crystal_Symbol* source)
   switch(resolve)
   {
   case CRY_INT:
-    dest->i32 %= source->i32;
-    dest->type = resolve;
+    result->i32 %= source->i32;
+    result->type = resolve;
     return;
   default:
     dest->type = CRY_NIL;
@@ -202,6 +211,8 @@ void Obscure_Power(Crystal_Symbol* dest, Crystal_Symbol* source)
     dest->type = CRY_NIL;
     return;
   }
+
+  Crystal_Symbol* result = dest;
   dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
   source = source->type != CRY_REFERENCE ? source : source->sym; 
 
@@ -209,99 +220,100 @@ void Obscure_Power(Crystal_Symbol* dest, Crystal_Symbol* source)
   switch(resolve)
   {
   case CRY_BOOL:
-    dest->i32 = dest->i32 ^ source->i32;
-    dest->type = resolve;
+    result->i32 = dest->i32 ^ source->i32;
+    result->type = resolve;
     return;
   case CRY_INT:
     {
       int temp = dest->i32;
       for(int i = 1; i < source->i32; i++)
       {
-        dest->i32 *= temp;
+        result->i32 *= temp;
       }
-      dest->type = resolve;
+      result->type = resolve;
     }
     return;
   case CRY_DOUBLE:
     if(dest->type != CRY_DOUBLE)
-      dest->d = pow(dest->i32,source->d);
+      result->d = pow(dest->i32,source->d);
     else if(source->type != CRY_DOUBLE)
-      dest->d = pow(dest->d,source->i32);
+      result->d = pow(dest->d,source->i32);
     else
-      dest->d = pow(dest->d,source->d);
-    dest->type = resolve;
+      result->d = pow(dest->d,source->d);
+    result->type = resolve;
     return;
   default:
-    dest->type = CRY_NIL;
+    result->type = CRY_NIL;
     return;
   }
 }
 
 void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
+  Crystal_Symbol* result = dest;
   Cry_Derefrence(&dest);
   Cry_Derefrence(&source);
 
   switch(dest->type)
   {
   case CRY_NIL:
-    dest->i32 = source->type == CRY_NIL;
-    dest->type = CRY_BOOL;
+    result->i32 = source->type == CRY_NIL;
+    result->type = CRY_BOOL;
     return;
   case CRY_BOOL:
     if(dest->type != source->type)
     {
-      dest->i32 = 0;
-      dest->type = CRY_BOOL;
+      result->i32 = 0;
+      result->type = CRY_BOOL;
       return;
     }
-    dest->i32 = (dest->b == source->b);
-    dest->type = CRY_BOOL;
+    result->i32 = (dest->b == source->b);
+    result->type = CRY_BOOL;
     return;
   case CRY_INT:
     if(dest->type != source->type)
     {
-      dest->i32 = 0;
-      dest->type = CRY_BOOL;
+      result->i32 = 0;
+      result->type = CRY_BOOL;
       return;
     }
-    dest->i32 = (dest->i32 == source->i32);
-    dest->type = CRY_BOOL;
+    result->i32 = (dest->i32 == source->i32);
+    result->type = CRY_BOOL;
     return;
   case CRY_DOUBLE:
-    if(dest->type != source->type)
+    if(result->type != source->type)
     {
-      dest->i32 = 0;
-      dest->type = CRY_BOOL;
+      result->i32 = 0;
+      result->type = CRY_BOOL;
       return;
     }
-    dest->i32 = (dest->d == source->d);
-    dest->type = CRY_BOOL;
+    result->i32 = (dest->d == source->d);
+    result->type = CRY_BOOL;
     return;
   case CRY_TEXT:
   case CRY_STRING:
-    if(source->type == CRY_TEXT || source->type == CRY_STRING)
+    if(source->type != CRY_TEXT || source->type != CRY_STRING)
     {
-      dest->i32 = Fast_strcmp(dest, source);
-      dest->type = CRY_BOOL;
+      result->i32 = 0;
+      result->type = CRY_BOOL;
       return;
     }
-    dest->i32 = 0;
-    dest->type = CRY_BOOL;
+    result->i32 = Fast_strcmp(dest, source);
+    result->type = CRY_BOOL;
     return;
   case CRY_ARRAY:
     if(dest->type != source->type)
     {
-      dest->i32 = 0;
-      dest->type = CRY_BOOL;
+      result->i32 = 0;
+      result->type = CRY_BOOL;
       return;
     }
-    dest->i32 = Fast_arraycmp(dest->sym, source->sym);
-    dest->type = CRY_BOOL;
+    result->i32 = Fast_arraycmp(dest, source);
+    result->type = CRY_BOOL;
     return;
   default:
-    dest->i32 = 0;
-    dest->type = CRY_BOOL;
+    result->i32 = 0;
+    result->type = CRY_BOOL;
     return;
   }
 }
@@ -314,6 +326,7 @@ void Obscure_Diffrence(Crystal_Symbol* dest, Crystal_Symbol* source)
 
 void Obscure_Less(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
+  Crystal_Symbol* result = dest;
   dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
   source = source->type != CRY_REFERENCE ? source : source->sym; 
 
@@ -322,34 +335,35 @@ void Obscure_Less(Crystal_Symbol* dest, Crystal_Symbol* source)
   case CRY_INT:
     if(dest->type != source->type)
     {
-      dest->type = CRY_NIL;
+      result->type = CRY_NIL;
       return;
     }
-    dest->i32 = (dest->i32 < source->i32);
-    dest->type = CRY_BOOL;
+    result->i32 = (dest->i32 < source->i32);
+    result->type = CRY_BOOL;
     return;
   case CRY_DOUBLE:
     if(dest->type > CRY_DOUBLE || source->type > CRY_DOUBLE)
     {
-      dest->type = CRY_NIL;
+      result->type = CRY_NIL;
       return;
     }
     else
     {
       double l = dest->type == CRY_DOUBLE ? dest->d : dest->i32;
       double r = source->type == CRY_DOUBLE ? source->d : source->i32;
-      dest->i32 = l < r;
-      dest->type = CRY_BOOL;
+      result->i32 = l < r;
+      result->type = CRY_BOOL;
     }
     return;
   default:
-    dest->type = CRY_NIL;
+    result->type = CRY_NIL;
     return;
   }
 }
 
 void Obscure_Greater(Crystal_Symbol* dest, Crystal_Symbol* source)
 {  
+  Crystal_Symbol* result = dest;
   dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
   source = source->type != CRY_REFERENCE ? source : source->sym; 
 
@@ -358,28 +372,28 @@ void Obscure_Greater(Crystal_Symbol* dest, Crystal_Symbol* source)
   case CRY_INT:
     if(dest->type != source->type)
     {
-      dest->type = CRY_NIL;
+      result->type = CRY_NIL;
       return;
     }
-    dest->i32 = (dest->i32 > source->i32);
-    dest->type = CRY_BOOL;
+    result->i32 = (dest->i32 > source->i32);
+    result->type = CRY_BOOL;
     return;
   case CRY_DOUBLE:
     if(dest->type > CRY_DOUBLE || source->type > CRY_DOUBLE)
     {
-      dest->type = CRY_NIL;
+      result->type = CRY_NIL;
       return;
     }
     else
     {
       double l = dest->type == CRY_DOUBLE ? dest->d : dest->i32;
       double r = source->type == CRY_DOUBLE ? source->d : source->i32;
-      dest->i32 = l > r;
-      dest->type = CRY_BOOL;
+      result->i32 = l > r;
+      result->type = CRY_BOOL;
     }
     return;
   default:
-    dest->type = CRY_NIL;
+    result->type = CRY_NIL;
     return;
   }
 }
@@ -399,6 +413,7 @@ void Obscure_Greater_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 //Reversals
 void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
+  Crystal_Symbol* result = dest;
   Cry_Derefrence(&dest);
   Cry_Derefrence(&source);
 
@@ -408,191 +423,198 @@ void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
   case CRY_BOOL:    
     if(dest->type == CRY_NIL || source->type == CRY_NIL)
     {
-      dest->type = CRY_NIL;
+      result->type = CRY_NIL;
       return;
     }
-    dest->i32 = dest->i32 || source->i32;
-    dest->type = resolve;
+    result->i32 = dest->i32 || source->i32;
+    result->type = resolve;
     return;
   case CRY_INT:    
     if(dest->type == CRY_NIL || source->type == CRY_NIL)
     {
-      dest->type = CRY_NIL;
+      result->type = CRY_NIL;
       return;
     }
-    dest->i32 = dest->i32 + source->i32;
-    dest->type = resolve;
+    result->i32 = dest->i32 + source->i32;
+    result->type = resolve;
     return;
   case CRY_DOUBLE:    
     if(dest->type == CRY_NIL || source->type == CRY_NIL)
     {
-      dest->type = CRY_NIL;
+      result->type = CRY_NIL;
       return;
     }
     if(dest->type != CRY_DOUBLE)
     {
-      dest->d = dest->i32 + source->d;
+      result->d = dest->i32 + source->d;
     }
     else if(source->type != CRY_DOUBLE)
     {
-      dest->d += source->i32;
+      result->d = dest->d + source->i32;
     }
     else
     {
-      dest->d += source->d;
+      result->d = dest->d + source->d;
     }
-    dest->type = resolve;
+    result->type = resolve;
     return;
   case CRY_TEXT:
   case CRY_STRING:
-    Crystal_Text_AppendR(dest, source);
+    Crystal_Text_Append_Loc(source, dest, result);
     return;
   case CRY_ARRAY:
-    Crystal_Array_AppendR(dest, source);
+    Crystal_Array_Append_Loc(source, dest, result);
     return;
   default:
-    dest->type = CRY_NIL;
+    result->type = CRY_NIL;
     return;
   }
 }
 
 void Obscure_SubtractionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
-  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
-  source = source->type != CRY_REFERENCE ? source : source->sym; 
-
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
   {
     dest->type = CRY_NIL;
     return;
   }
+  
+  Crystal_Symbol* result = dest;
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
   case CRY_BOOL:
-    dest->b = dest->b ^ source->b;
-    dest->type = resolve;
+    result->b = dest->b ^ source->b;
+    result->type = resolve;
     return;
   case CRY_INT:
-    dest->i32 = source->i32 - dest->i32;
-    dest->type = resolve;
+    result->i32 = source->i32 - dest->i32;
+    result->type = resolve;
     return;
   case CRY_DOUBLE:
     if(dest->type != CRY_DOUBLE)
     {
-      dest->d = source->d - dest->i32;
+      result->d = source->d - dest->i32;
     }
     else if(source->type != CRY_DOUBLE)
     {
-      dest->d = source->i32 - dest->d;
+      result->d = source->i32 - dest->d;
     }
     else
     {
-      dest->d = source->d - dest->d;
+      result->d = source->d - dest->d;
     }
-    dest->type = resolve;
+    result->type = resolve;
     return;
   default:
-    dest->type = CRY_NIL;
+    result->type = CRY_NIL;
     return;
   }
 }
 
 void Obscure_DivisionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
-  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
-  source = source->type != CRY_REFERENCE ? source : source->sym; 
-
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
   {
     dest->type = CRY_NIL;
     return;
   }
+  
+  Crystal_Symbol* result = dest;
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
 
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
   case CRY_INT:
-    dest->i32 = source->i32 / dest->i32;
-    dest->type = resolve;
+    result->i32 = source->i32 / dest->i32;
+    result->type = resolve;
     return;
   case CRY_DOUBLE:
     if(dest->type != CRY_DOUBLE)
-      dest->d = source->i32 / dest->d;
+      result->d = source->i32 / dest->d;
     else if(source->type != CRY_DOUBLE)
-      dest->d = source->d / dest->i32;
+      result->d = source->d / dest->i32;
     else
-      dest->d = source->d / dest->d;
-    dest->type = resolve;
+      result->d = source->d / dest->d;
+    result->type = resolve;
     return;
   default:
-    dest->type = CRY_NIL;
+    result->type = CRY_NIL;
     return;
   }
 }
 
 void Obscure_ModuloR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
-  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
-  source = source->type != CRY_REFERENCE ? source : source->sym; 
-
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
   {
     dest->type = CRY_NIL;
     return;
   }
+  
+  Crystal_Symbol* result = dest;
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
   case CRY_INT:
-    dest->i32 = source->i32 % dest->i32;
-    dest->type = resolve;
+    result->i32 = source->i32 % dest->i32;
+    result->type = resolve;
     return;
   default:
-    dest->type = CRY_NIL;
+    result->type = CRY_NIL;
     return;
   }
 }
 
 void Obscure_PowerR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
-  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
-  source = source->type != CRY_REFERENCE ? source : source->sym; 
-
   if(dest->type == CRY_NIL || source->type == CRY_NIL)
   {
     dest->type = CRY_NIL;
     return;
   }
+  
+  Crystal_Symbol* result = dest;
+  dest = dest->type != CRY_REFERENCE ? dest : dest->sym; 
+  source = source->type != CRY_REFERENCE ? source : source->sym; 
+
   Symbol_Type resolve = dest->type > source->type ? dest->type : source->type;
   switch(resolve)
   {
   case CRY_BOOL:
-    dest->i32 = dest->i32 ^ source->i32;
-    dest->type = resolve;
+    result->i32 = dest->i32 ^ source->i32;
+    result->type = resolve;
     return;
   case CRY_INT:
     {
       int temp = dest->i32;
-      dest->i32 = source->i32;
+      result->i32 = source->i32;
       for(int i = 1; i < temp; i++)
       {
-        dest->i32 *= source->i32;
+        result->i32 *= source->i32;
       }
     }
-    dest->type = resolve;
+    result->type = resolve;
     return;
   case CRY_DOUBLE:
     if(dest->type != CRY_DOUBLE)
-      dest->d = pow(source->i32,dest->d);
+      result->d = pow(source->i32,dest->d);
     else if(source->type != CRY_DOUBLE)
-      dest->d = pow(source->d,dest->i32);
+      result->d = pow(source->d,dest->i32);
     else
-      dest->d = pow(source->d,dest->d);
-    dest->type = resolve;
+      result->d = pow(source->d,dest->d);
+    result->type = resolve;
     return;
   default:
-    dest->type = CRY_NIL;
+    result->type = CRY_NIL;
     return;
   }
 }
