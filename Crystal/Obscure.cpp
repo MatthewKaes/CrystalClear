@@ -224,14 +224,19 @@ void Obscure_Power(Crystal_Symbol* dest, Crystal_Symbol* source)
     result->type = resolve;
     return;
   case CRY_INT:
+    if(!source->i32)
     {
-      int temp = dest->i32;
+      result->i32 = 1;
+    }
+    else
+    {
+      result->i32 = dest->i32;
       for(int i = 1; i < source->i32; i++)
       {
-        result->i32 *= temp;
+        result->i32 *= dest->i32;
       }
-      result->type = resolve;
     }
+    result->type = resolve;
     return;
   case CRY_DOUBLE:
     if(dest->type != CRY_DOUBLE)
@@ -594,10 +599,14 @@ void Obscure_PowerR(Crystal_Symbol* dest, Crystal_Symbol* source)
     result->type = resolve;
     return;
   case CRY_INT:
+    if(!dest->i32)
     {
-      int temp = dest->i32;
+      result->i32 = 1;
+    }
+    else
+    {
       result->i32 = source->i32;
-      for(int i = 1; i < temp; i++)
+      for(int i = 1; i < dest->i32; i++)
       {
         result->i32 *= source->i32;
       }
