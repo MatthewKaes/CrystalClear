@@ -1,5 +1,6 @@
 #include "Math.h"
 #include "Helper.h"
+#include "Function.h"
 
 void Crystal_Cos(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
@@ -165,4 +166,45 @@ void Crystal_Sd(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   Crystal_Var(ret_sym, sym);
 
   ret_sym->d = sqrt(ret_sym->d);
+}
+
+void Crystal_Step(Crystal_Symbol* ret_sym, Crystal_Symbol* start, Crystal_Symbol* end, Crystal_Symbol* step)
+{
+  int start_v = Parse_Int(start);
+  int end_v = Parse_Int(end);
+  int step_v = Parse_Int(step);
+  int index = 0;
+
+  if(start_v < end_v && step_v > 0)
+  {
+    unsigned size = (end_v - start_v) / step_v + 1;
+    Crystal_Symbol* ary = reinterpret_cast<Crystal_Symbol*>(calloc(size, sizeof(Crystal_Symbol)));
+
+    for(int i = start_v; i <= end_v; i += step_v)
+    {
+      ary[index].type = CRY_INT;
+      ary[index].i32 = i;
+      index++;
+    }
+
+    Construct_Array(ret_sym, size, size, ary);
+  }
+  else if(start_v > end_v && step_v < 0)
+  {
+    unsigned size = (end_v - start_v) / step_v + 1;
+    Crystal_Symbol* ary = reinterpret_cast<Crystal_Symbol*>(calloc(size, sizeof(Crystal_Symbol)));
+
+    for(int i = start_v; i >= end_v; i += step_v)
+    {
+      ary[index].type = CRY_INT;
+      ary[index].i32 = i;
+      index++;
+    }
+
+    Construct_Array(ret_sym, size, size, ary);
+  }
+  else
+  {
+    ret_sym->type = CRY_NIL;
+  }
 }

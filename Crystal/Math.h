@@ -17,5 +17,6 @@ void Crystal_Min(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
 void Crystal_Max(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
 void Crystal_Var(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
 void Crystal_Sd(Crystal_Symbol* ret_sym, Crystal_Symbol* sym);
+void Crystal_Step(Crystal_Symbol* ret_sym, Crystal_Symbol* start, Crystal_Symbol* end, Crystal_Symbol* step);
 
 #endif

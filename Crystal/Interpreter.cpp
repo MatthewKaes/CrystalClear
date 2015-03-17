@@ -86,6 +86,7 @@ void Crystal_Interpreter::Populate_BIP()
   REGISTER_FUNCTION(max, Crystal_Max, 1);
   REGISTER_FUNCTION(var, Crystal_Var, 1);
   REGISTER_FUNCTION(sd, Crystal_Sd, 1);
+  REGISTER_FUNCTION(step, Crystal_Step, 3);
 
   //Input / Output
   REGISTER_FUNCTION(marshal_open, Crystal_MarshalOpen, 1);
