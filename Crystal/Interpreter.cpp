@@ -378,7 +378,7 @@ void Crystal_Interpreter::Format_Code()
 void Crystal_Interpreter::Process_Lookups()
 {
   const char* package_code = code_out.c_str();
-  Crystal_Data pkg, sym;
+  Crystal_Data pkg, sym, last_sym;
   Class_Info* current_class = NULL;
   unsigned scope = 0;
 
@@ -473,7 +473,7 @@ void Crystal_Interpreter::Process_Lookups()
     {
       scope += 1;
     }
-    else if(current_class && sym.str[0] == '@')
+    else if(current_class && sym.str[0] == '@' && !last_sym.str.compare("."))
     {
       unsigned LB_ID = Late_Binding(sym.str.c_str());
       if(current_class->attributes_loc.find(LB_ID) == current_class->attributes_loc.end())
@@ -482,6 +482,8 @@ void Crystal_Interpreter::Process_Lookups()
         current_class->attributes.push_back(sym.str);
       }
     }
+
+    last_sym = sym;
   }
 
   if(scope != 0)
