@@ -496,15 +496,21 @@ void Crystal_Interpreter::Process_Logic()
 {
   const char* package_code = code_out.c_str();
   Crystal_Data sym;
+  Class_Info* current_class = NULL;
+
   while(*package_code)
   {
     Create_Symbol(&package_code, &sym);
     if(!sym.str.compare("def"))
-      Process_Package(package_code);
+      Process_Package(package_code, current_class);
+    else if(!sym.str.compare("class"))
+      current_class = Class_Listing[packages[sym.str.c_str()].ID];
+    else if(!sym.str.compare("end"))
+      current_class = NULL;
   }
 }
 
-void Crystal_Interpreter::Process_Package(const char* code)
+void Crystal_Interpreter::Process_Package(const char* code, Class_Info* current_class)
 {
   Syntax_Tree syntax;
   Crystal_Data entry, sym;
@@ -514,9 +520,16 @@ void Crystal_Interpreter::Process_Package(const char* code)
   unsigned precedence = 0;
   unsigned arguments = 0;
   
-  //Get the function signature data.
+  // Get the function signature data.
   Create_Symbol(&package_code, &entry);
   Create_Symbol(&package_code, &sym);
+
+  // Set up the "this" object
+  if(current_class)
+  {
+    local_map["this"] = 0;
+  }
+
   while(sym.str[0] != '\n')
   {
     if(sym.str[0] != '(' && sym.str[0] != ')' && sym.str[0] != ',')
