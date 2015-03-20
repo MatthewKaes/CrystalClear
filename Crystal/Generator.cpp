@@ -182,6 +182,11 @@ bool Class_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal
   return true;
 }
 
+bool Member_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  return true;
+}
+
 bool Return_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {    
   if((*syms)[0].type != DAT_LOCAL && (*syms)[0].type != DAT_REGISTRY)

@@ -473,7 +473,7 @@ void Crystal_Interpreter::Process_Lookups()
     {
       scope += 1;
     }
-    else if(current_class && sym.str[0] == '@' && !last_sym.str.compare("."))
+    else if(current_class && sym.str[0] == '@' && last_sym.str.compare("."))
     {
       unsigned LB_ID = Late_Binding(sym.str.c_str());
       if(current_class->attributes_loc.find(LB_ID) == current_class->attributes_loc.end())
@@ -519,6 +519,7 @@ void Crystal_Interpreter::Process_Package(const char* code, Class_Info* current_
   unsigned scope = 1;
   unsigned precedence = 0;
   unsigned arguments = 0;
+  bool dot_op = false;
   
   // Get the function signature data.
   Create_Symbol(&package_code, &entry);
@@ -540,7 +541,8 @@ void Crystal_Interpreter::Process_Package(const char* code, Class_Info* current_
     }
     Create_Symbol(&package_code, &sym);
   }
-  //Evaluating the contents of the package.
+
+  // Evaluating the contents of the package.
   while(scope)
   {
     Create_Symbol(&package_code, &sym);
@@ -558,9 +560,9 @@ void Crystal_Interpreter::Process_Package(const char* code, Class_Info* current_
         precedence++;
         sym.type = DAT_OP;
 
-        //If the i32 segment remains zero it's a bracket operator
-        //if it is set to -1 in the syntax tree it's an array
-        //constructor.
+        // If the i32 segment remains zero it's a bracket operator
+        // if it is set to -1 in the syntax tree it's an array
+        // constructor.
         sym.i32 = 0;
       }
       else if(sym.str[0] == '(')
@@ -591,17 +593,17 @@ void Crystal_Interpreter::Process_Package(const char* code, Class_Info* current_
       }
     }
     
-    //Special Symbols
+    // Special Symbols
     Special_Processing(&sym);
-    
-    //Look up nodes that need are unknown
-    Lookup_Processing(&sym, &local_map);
 
-    //Creating the node
+    // Look up nodes that need are unknown
+    Lookup_Processing(&sym, &local_map, dot_op);
+
+    // Creating the node
     Syntax_Node* new_node = syntax.Acquire_Node();
     *new_node->Acquire() = sym;
 
-    //Precedence
+    // Precedence
     if(sym.type == DAT_OP)
       new_node->priority = Get_Precedence(sym.str.c_str()) + Get_Precedence(NULL) * precedence;
     else if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
@@ -610,11 +612,12 @@ void Crystal_Interpreter::Process_Package(const char* code, Class_Info* current_
       new_node->priority = Get_Precedence("k") + Get_Precedence(NULL) * precedence;
     else
       new_node->priority = Get_Precedence(NULL) * (precedence + 1);
-    //Process node
+
+    // Process node
     syntax.Process(new_node);
   }
 
-  //Start the encoding
+  // Start the encoding
   comp->Start_Encode(entry.str.c_str(), local_map.size(), syntax.Get_Depth(), arguments);
   std::vector<Bytecode>* codes = syntax.Get_Bytecodes();
   for(unsigned i = 0; i < codes->size(); i++)
@@ -625,24 +628,34 @@ void Crystal_Interpreter::Process_Package(const char* code, Class_Info* current_
   syntax.Reset();
 }
 
-void Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_map<std::string, unsigned>* local_map)
+void Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_map<std::string, unsigned>* local_map, bool dot_op)
 {
+  // Processing Lookups
   if(sym->type == DAT_LOOKUP)
   {
-    //Crystal package call
-    if(packages.find(sym->str.c_str()) != packages.end())
+    // Class function
+    if(dot_op && sym->str.c_str()[0] != '@')
     {
+      sym->i32 = Late_Binding(sym->str.c_str());
+      sym->type = DAT_OBJFUNCTION;
+    }
+    // Crystal packages look up
+    else if(packages.find(sym->str.c_str()) != packages.end())
+    {
+      // Globally defined functions
       if(packages[sym->str.c_str()].pt == PKG_EXE)
       {
         sym->type = DAT_FUNCTION;
         sym->i32 = packages[sym->str.c_str()].info.arguments;
       }
+      // Class packages
       else if(packages[sym->str.c_str()].pt == PKG_CLASS)
       {
         sym->type = DAT_CLASS;
         sym->i32 = packages[sym->str.c_str()].ID;
       }
     }
+    // Look up for built in functions
     else if(built_in.find(sym->str.c_str()) != built_in.end())
     {
       if(built_in[sym->str.c_str()].pt == PKG_EXE)
@@ -652,17 +665,29 @@ void Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_ma
         sym->external = built_in[sym->str.c_str()].function;
       }
     }
+    // Look up for locals
     else if(local_map->find(sym->str.c_str()) != local_map->end())
     {
       sym->type = DAT_LOCAL;
       sym->i32 = (*local_map)[sym->str.c_str()];
     }
+    // Add the symbol to the local map
     else
     {
       sym->type = DAT_LOCAL;
       sym->i32 = local_map->size();
       (*local_map)[sym->str.c_str()] = sym->i32;
     }
+  }
+
+  // Processing dot operators for look ups
+  if(!sym->str.compare("."))
+  {
+    dot_op = true;
+  }
+  else
+  {
+    dot_op = false;
   }
 }
 

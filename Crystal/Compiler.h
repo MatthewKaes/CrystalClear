@@ -63,7 +63,7 @@ class Crystal_Compiler
 public:
   Crystal_Compiler(AOT_Compiler* target);
   ~Crystal_Compiler();
-  void Start_Encode(std::string name, unsigned locals_used, unsigned stack_size, unsigned arguments = 0);
+  void Start_Encode(std::string name, unsigned locals_used, unsigned stack_size, unsigned arguments = 0, Class_Info* obj = 0, unsigned id = 0);
   void End_Encode();
   void Linker();
   int Execute(Crystal_Symbol* ret = 0);
@@ -157,6 +157,7 @@ private:
   unsigned locals_count;
   unsigned stack_size;
   unsigned stack_depth;
+  bool class_encoding;
   std::vector<CryPackage> packages;
   std::unordered_map<std::string, CryProg> package_lookup;
   

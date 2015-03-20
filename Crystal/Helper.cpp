@@ -369,7 +369,7 @@ void Val_Binding(Crystal_Symbol* ret, Crystal_Symbol* src, int index)
     index += src->sym->size;
   }
 
-  if(index >= src->sym->size)
+  if(index >= static_cast<int>(src->sym->size))
   {
     ret->type = CRY_NIL;
     return;
@@ -381,7 +381,7 @@ void Val_Binding(Crystal_Symbol* ret, Crystal_Symbol* src, int index)
 
 void* Late_Func_Binding(int id, Crystal_Symbol* symd)
 {
-  return symd->klass->lookup[id].function;
+  return symd->sym->klass->lookup[id].function;
 }
 
 void Late_Attr_Binding(int id, Crystal_Symbol* symd, Crystal_Symbol* ret)

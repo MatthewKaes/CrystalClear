@@ -159,13 +159,14 @@ void Crystal_Type(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   case CRY_DOUBLE:
     ret_sym->text = "DOUBLE";
     break;
-  case CRY_POINTER:
-    if(sym->sym->type == CRY_STRING)
-      ret_sym->text = "STRING";
-    else if(sym->sym->type == CRY_ARRAY)
-      ret_sym->text = "ARRAY";
-    else
-      ret_sym->text = sym->sym->klass->name.c_str();
+  case CRY_STRING:
+    ret_sym->text = "STRING";
+    break;
+  case CRY_ARRAY:
+    ret_sym->text = "ARRAY";
+    break;
+  case CRY_CLASS_OBJ:
+    ret_sym->text = sym->klass->name.c_str();
     break;
   case CRY_REFERENCE:
     Crystal_Type(ret_sym, sym->sym);

@@ -97,14 +97,18 @@ void Crystal_Compiler::End_Encode()
 {
   //Resolve 
   Return();
+
   //Construct Package
-  CryPackage pack;
-  pack.name = Machine->Get_Name();
-  pack.links = Machine->Get_Links();
-  pack.program = program;
-  packages.push_back(pack);
-  package_lookup[pack.name] = pack.program;
-  program.load = Machine->Location() + 1;
+  if(!class_encoding)
+  {
+    CryPackage pack;
+    pack.name = Machine->Get_Name();
+    pack.links = Machine->Get_Links();
+    pack.program = program;
+    packages.push_back(pack);
+    package_lookup[pack.name] = pack.program;
+    program.load = Machine->Location() + 1;
+  }
 }
 
 void Crystal_Compiler::Linker()

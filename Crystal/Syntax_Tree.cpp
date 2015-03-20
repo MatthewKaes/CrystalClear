@@ -7,10 +7,11 @@ Syntax_Node::Syntax_Node(std::vector<Syntax_Node*>* pool, Syntax_Tree* tree)
   tree_ = tree;
   pool_ = pool;
 
-  //Store default left and right
+  // Store default left and right
   params.push_back(0);
   params.push_back(0);
 }
+
 void Syntax_Node::Process(Syntax_Node* node)
 {
   if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.str[0] == '[') &&
@@ -94,9 +95,10 @@ void Syntax_Node::Reduce()
     }
   }
 }
+
 bool Syntax_Node::Evaluate()
 {  
-  //Setup labels for prefaced control statements
+  // Setup labels for prefaced control statements
   if(sym.type == DAT_STATEMENT)
   {
     if(!sym.str.compare("while"))
@@ -132,7 +134,7 @@ bool Syntax_Node::Evaluate()
   // Check to see if this symbol is an evaluable type.
   if(sym.type != DAT_FUNCTION && sym.type != DAT_BIFUNCTION && 
      sym.type != DAT_STATEMENT && sym.type != DAT_OP && 
-     sym.type != DAT_CLASS && !evaluation)
+     sym.type != DAT_CLASS && sym.type != DAT_OBJFUNCTION && !evaluation)
     return true;
 
   
@@ -140,6 +142,12 @@ bool Syntax_Node::Evaluate()
   new_code.code_gen = Resolve_Generator(&sym);
   new_code.base = sym;
   new_code.result.type = DAT_NIL;
+  
+  // Force arguments to be moved onto the stack for functions
+  if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.type == DAT_OBJFUNCTION)
+  {
+    Force_Memory(&new_code);
+  }
 
   // Processing of global and built in functions.
   if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
@@ -147,15 +155,15 @@ bool Syntax_Node::Evaluate()
     // Check the argument count for functions.
     if((index != sym.i32 && sym.i32 == 0) || (index != sym.i32 - 1 && sym.i32 > 0))
       printf("ERROR: \"%s\" requires %d argument%s.\n", sym.str.c_str(), sym.i32, sym.i32 == 1 ? "" : "s");
-   
-    // Force arguments to be moved onto the stack.
-    Force_Memory(&new_code);
+    
+    // Built in functions have to have a symbol to return to
     if(sym.type == DAT_BIFUNCTION)
     {
       new_code.result.type = DAT_REGISTRY;
       new_code.result.i32 = 0;
     }
   }
+  else 
 
   // Force constants to be in a register or memory location for
   // certain control statements.
@@ -182,8 +190,8 @@ bool Syntax_Node::Evaluate()
     }
   }
 
-  //Stacking assignment operator without using
-  //uneccesary registers.
+  // Stacking assignment operator without using
+  // uneccesary registers.
   if(parent != NULL && sym.type == DAT_OP && (!sym.str.compare("=") || !sym.str.compare("+=")
       || !sym.str.compare("-=")  || !sym.str.compare("*=")
       || !sym.str.compare("^=")  || !sym.str.compare("%=")
@@ -210,6 +218,7 @@ bool Syntax_Node::Evaluate()
 
   return true;
 }
+
 void Syntax_Node::Remove()
 {
   for(unsigned i = 0; i < params.size(); i++)
@@ -220,10 +229,12 @@ void Syntax_Node::Remove()
     }
   pool_->push_back(this);
 }
+
 Crystal_Data* Syntax_Node::Acquire()
 {
   return &sym;
 }
+
 void Syntax_Node::Finalize()
 {  
   R_Assoc = false;
@@ -249,6 +260,7 @@ void Syntax_Node::Finalize()
     }
   }
 }
+
 void Syntax_Node::Force_Memory(Bytecode* code)
 {
   for(unsigned i = 0; i < params.size(); i++)
@@ -271,10 +283,12 @@ void Syntax_Node::Force_Memory(Bytecode* code)
     }
   }
 }
+
 Syntax_Tree::Syntax_Tree()
 {
   Reset();
 }
+
 Syntax_Tree::~Syntax_Tree()
 {
   if(root)
@@ -285,6 +299,7 @@ Syntax_Tree::~Syntax_Tree()
     delete nodepool[i];
   }
 }
+
 Syntax_Node* Syntax_Tree::Acquire_Node()
 {
   if(nodepool.empty())
@@ -295,6 +310,7 @@ Syntax_Node* Syntax_Tree::Acquire_Node()
   nodepool.pop_back();
   return node;
 }
+
 void Syntax_Tree::Process(Syntax_Node* node)
 {
   if(!node)
@@ -306,6 +322,7 @@ void Syntax_Tree::Process(Syntax_Node* node)
   else
     root->Process(node);
 }
+
 bool Syntax_Tree::Evaluate()
 {
   if(!root)
@@ -321,31 +338,38 @@ bool Syntax_Tree::Evaluate()
   }
   return result;
 }
+
 void Syntax_Tree::Reset()
 {
   root = NULL;
   bytecodes.clear();
 }
+
 void Syntax_Tree::Set_Root(Syntax_Node* new_root)
 {
   root = new_root;
 }
+
 std::vector<Bytecode>* Syntax_Tree::Get_Bytecodes()
 {
   return &bytecodes;
 }
+
 std::vector<bool>* Syntax_Tree::Get_Registers()
 {
   return &registers;
 }
+
 unsigned Syntax_Tree::Get_Depth()
 {
   return Get_Registers()->size();
 }
+
 Syntax_Node* Syntax_Tree::Get_Root()
 {
   return root;
 }
+
 int Syntax_Tree::Get_Open_Reg()
 {
   for(unsigned i = 0; i < registers.size(); i++)

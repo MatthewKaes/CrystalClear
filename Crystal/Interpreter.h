@@ -34,7 +34,7 @@ private:
 
   //Processing symbols
   void Special_Processing(Crystal_Data* sym);
-  void Lookup_Processing(Crystal_Data* sym, std::unordered_map<std::string, unsigned>* local_map);
+  void Lookup_Processing(Crystal_Data* sym, std::unordered_map<std::string, unsigned>* local_map, bool dot_op);
 
   unsigned Late_Binding(const char* id);
 
