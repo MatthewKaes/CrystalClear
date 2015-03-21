@@ -6,6 +6,7 @@ BYTE x86_Machine::two_complement_8(unsigned char id)
 {
   return static_cast<BYTE>((0xFF - id) + 1);
 }
+
 unsigned x86_Machine::two_complement_32(unsigned id)
 {
   return (0xFFFFFFFF - id) + 1;
@@ -20,15 +21,18 @@ x86_Machine::x86_Machine()
   efp.reserve(STACK_SIZE);
   edp.reserve(STACK_SIZE);
 }
+
 void x86_Machine::Setup(std::string name, BYTE* program)
 {
   p = program;
   prg_id = name;
   call_links.clear();
 }
+
 BYTE* x86_Machine::Location(){
   return p;
 }
+
 void x86_Machine::Make_Label(unsigned label)
 {
   AOT_Var l;
@@ -87,10 +91,12 @@ void x86_Machine::Make_Label(unsigned label)
     walker++;
   }
 }
+
 unsigned x86_Machine::New_Label()
 {
   return cls.size();
 }
+
 unsigned x86_Machine::Reserve_Label()
 {
   AOT_Var new_lab;
@@ -99,10 +105,12 @@ unsigned x86_Machine::Reserve_Label()
   cls.push_back(new_lab);
   return new_lab.lab;
 }
+
 unsigned x86_Machine::Last_Label()
 {
   return cls.size() - 1;
 }
+
 void x86_Machine::Cmp(unsigned address, ARG argument)
 {
   switch(argument.type)
@@ -161,6 +169,7 @@ void x86_Machine::Cmp(unsigned address, ARG argument)
     break;
   }
 }
+
 void x86_Machine::CmpF(unsigned address, ARG argument)
 {
   switch(argument.type)
@@ -183,101 +192,119 @@ void x86_Machine::CmpF(unsigned address, ARG argument)
     break;
   }
 }
+
 void x86_Machine::Jmp(unsigned label, bool short_jump)
 {
   *p++ = CODE_JMP;  
   Label_Management(label, short_jump);
 }
+
 void x86_Machine::Je(unsigned label, bool short_jump)
 {
   *p++ = CODE_JE;
   Label_Management(label, short_jump);
 }
+
 void x86_Machine::Jne(unsigned label, bool short_jump)
 {
   *p++ = CODE_JNE;
   Label_Management(label, short_jump);
 }
+
 void x86_Machine::Jle(unsigned label, bool short_jump)
 {
   *p++ = CODE_JLE;
   Label_Management(label, short_jump);
 }
+
 void x86_Machine::Jl(unsigned label, bool short_jump)
 {
   *p++ = CODE_JL;
   Label_Management(label, short_jump);
 }
+
 void x86_Machine::Jg(unsigned label, bool short_jump)
 {
   *p++ = CODE_JG;
   Label_Management(label, short_jump);
 }
+
 void x86_Machine::Jge(unsigned label, bool short_jump)
 {
   *p++ = CODE_JGE;
   Label_Management(label, short_jump);
 }
+
 void x86_Machine::Sete(unsigned address)
 {
   *p++ = SET_TYP;  
   *p++ = 0x94;  
   Put_Addr(address);
 }
+
 void x86_Machine::Setne(unsigned address)
 {
   *p++ = SET_TYP;
   *p++ = 0x95;
   Put_Addr(address);
 }
+
 void x86_Machine::Setl(unsigned address)
 {
   *p++ = SET_TYP;
   *p++ = 0x9C;
   Put_Addr(address);
 }
+
 void x86_Machine::Setle(unsigned address)
 {
   *p++ = SET_TYP;
   *p++ = 0x9E;
   Put_Addr(address);
 }
+
 void x86_Machine::Setg(unsigned address)
 {
   *p++ = SET_TYP;
   *p++ = 0x9F;
   Put_Addr(address);
 }
+
 void x86_Machine::Setge(unsigned address)
 {
   *p++ = SET_TYP;
   *p++ = 0x9D;
   Put_Addr(address);
 }
+
 void x86_Machine::Seta(unsigned address)
 {
   *p++ = SET_TYP;
   *p++ = 0x97;
   Put_Addr(address);
 }
+
 void x86_Machine::Setae(unsigned address)
 {
   *p++ = SET_TYP;
   *p++ = 0x93;
   Put_Addr(address);
 }
+
 void x86_Machine::Setb(unsigned address)
 {
   *p++ = SET_TYP;
   *p++ = 0x92;
   Put_Addr(address);
 }
+
 void x86_Machine::Setbe(unsigned address)
 {
   *p++ = SET_TYP;
   *p++ = 0x96;
   Put_Addr(address);
 }
+
 void x86_Machine::Allocate_Stack(unsigned bytes)
 {
   //Strack preamble
@@ -322,6 +349,7 @@ void x86_Machine::Allocate_Stack(unsigned bytes)
   *p++ = STK_POP; *p++ = ADD_ESP; *p++ = BYTES_12; //12 bytes
   stack_allocated = true;
 }  
+
 void x86_Machine::Print(ARG argument)
 {
   if(argument.type == AOT_FLOAT)
@@ -347,6 +375,7 @@ void x86_Machine::Print(ARG argument)
   Call(printf);
   Pop();
 }
+
 void x86_Machine::Push(ARG argument)
 {
   pushed_bytes += BYTES_4;
@@ -407,18 +436,21 @@ void x86_Machine::Push(ARG argument)
     return;
   }
 }
+
 void x86_Machine::Push_Adr(unsigned address)
 {
   Lea(EAX, address);
   *p++ = REG_PSH; 
   pushed_bytes += BYTES_4;   
 }
+
 void x86_Machine::Push_Stk(unsigned address)
 {
   Mov(EAX, two_complement_32(address));
   *p++ = REG_PSH; 
   pushed_bytes += BYTES_4;   
 }
+
 void x86_Machine::Push_LD(unsigned address, ARG_TYPES type)
 {
   switch(type)
@@ -445,6 +477,7 @@ void x86_Machine::Push_LD(unsigned address, ARG_TYPES type)
     return;
   }
 }
+
 void x86_Machine::Pop(unsigned bytes)
 {
   if(!bytes)
@@ -459,6 +492,7 @@ void x86_Machine::Pop(unsigned bytes)
     pushed_bytes -= bytes;
   }
 }
+
 void x86_Machine::Load_Mem(unsigned address, ARG argument)
 {
   switch(argument.type)
@@ -513,6 +547,7 @@ void x86_Machine::Load_Register(REGISTERS reg, ARG argument)
     return;
   }
 }
+
 void x86_Machine::Load_Ptr(unsigned ptr)
 {
   *p++ = MEM_MOV;  
@@ -527,6 +562,7 @@ void x86_Machine::Load_Ptr(unsigned ptr)
     (int&)p[0] = static_cast<int>(ptr); p+= sizeof(int);
   }
 }
+
 void x86_Machine::MovP(unsigned addr, unsigned offset, bool byte)
 {
   *p++ = MEM_MOV - byte;
@@ -536,21 +572,25 @@ void x86_Machine::MovP(unsigned addr, unsigned offset, bool byte)
   *p++ = PTR_MOV;
   *p++ = static_cast<char>(offset);
 }
+
 void x86_Machine::Mov(REGISTERS dest, unsigned address, bool byte)
 {
   *p++ = MEM_MOV - byte;
   Reg_Op(address, dest);
 }
+
 void x86_Machine::Mov(unsigned address, REGISTERS source, bool byte)
 {
   *p++ = MOV_TYP - byte;
   Reg_Op(address, source);
 }
+
 void x86_Machine::Lea(REGISTERS dest, unsigned address)
 {
   *p++ = REG_ADR;
   Reg_Op(address, dest);
 }
+
 void x86_Machine::Move_Register(REGISTERS dest, REGISTERS source)
 {
   if(source == dest)
@@ -558,6 +598,7 @@ void x86_Machine::Move_Register(REGISTERS dest, REGISTERS source)
   *p++ = MEM_MOV;
   *p++ = Reg_to_Reg(dest, source);
 }
+
 void x86_Machine::Xchg_Register(REGISTERS dest, REGISTERS source)
 {
   if(source == dest)
@@ -576,48 +617,57 @@ void x86_Machine::Xchg_Register(REGISTERS dest, REGISTERS source)
     *p++ = Reg_to_Reg(dest, source);
   }
 }
+
 void x86_Machine::Add(REGISTERS dest, REGISTERS source)
 {
   *p++ = REG_ADD;
   *p++ = Reg_to_Reg(dest, source);
 }
+
 void x86_Machine::Add(unsigned address, REGISTERS source)
 {
   *p++ = MEM_ADD;
   Reg_Op(address, source);
 }
+
 void x86_Machine::Sub(REGISTERS dest, REGISTERS source)
 {
   *p++ = REG_SUB;
   *p++ = Reg_to_Reg(dest, source);
 }
+
 void x86_Machine::Sub(unsigned address, REGISTERS source)
 {
   *p++ = REG_SUB;
   Reg_Op(address, source);
 }
+
 void x86_Machine::Sub(REGISTERS source, unsigned address)
 {
   *p++ = 0x29;
   Reg_Op(address, source);
 }
+
 void x86_Machine::Mul(REGISTERS dest, REGISTERS source)
 {
   *p++ = REG_MUL_L;
   *p++ = REG_MUL_H;
   *p++ = Reg_to_Reg(dest, source);
 }
+
 void x86_Machine::Imul(unsigned address)
 {
   *p++ = REG_IMUL;
   Put_Addr(address, WID_ADR);
 }
+
 void x86_Machine::Imul(REGISTERS dest, unsigned address)
 {
   *p++ = REG_MUL_L;
   *p++ = REG_MUL_H;
   Reg_Op(address, dest);
 }
+
 void x86_Machine::Idiv(unsigned address)
 {  
   //cdq
@@ -635,6 +685,7 @@ void x86_Machine::Idiv(unsigned address)
     (int&)p[0] = (int)two_complement_32(address); p+= sizeof(int);
   }
 }
+
 void x86_Machine::Idiv(REGISTERS dest)
 {
   //cdq
@@ -643,36 +694,43 @@ void x86_Machine::Idiv(REGISTERS dest)
   *p++ = 0xF7;
   *p++ = 0xF8 + Reg_Id(dest);
 }
+
 void x86_Machine::Inc(REGISTERS dest)
 {
   *p++ = REG_INC + Reg_Id(dest);
 }
+
 void x86_Machine::Or(unsigned address, REGISTERS source)
 {
   *p++ = REG_OR;
   Reg_Op(address, source);
 }
+
 void x86_Machine::And(unsigned address, REGISTERS source)
 {
   *p++ = REG_AND;
   Reg_Op(address, source);
 }
+
 void x86_Machine::Dec(REGISTERS dest)
 {
   *p++ = REG_DEC + Reg_Id(dest);
 }
+
 void x86_Machine::Call(REGISTERS source)
 {
   Load_Register(ECX, source);
   *p++ = FAR_CAL;
   *p++ = FAR_ECX;
 }
+
 void x86_Machine::Call(void* function)
 {
   Load_Register(ECX, function);
   *p++ = FAR_CAL;
   *p++ = FAR_ECX;
 }
+
 void x86_Machine::Call(const char* function)
 {
   Load_Register(ECX, MC_ZERO);
@@ -696,6 +754,7 @@ void x86_Machine::Call(const char* function)
   *p++ = FAR_CAL;
   *p++ = FAR_ECX;
 }
+
 void x86_Machine::Return(ARG argument)
 {
   //Floats and doubles are returned on the FPU
@@ -720,18 +779,22 @@ const char* x86_Machine::Get_Version()
 {
   return COMPILER_VERSION;
 }
+
 const char* x86_Machine::Get_Name()
 {
   return prg_id.c_str();
 }
+
 std::vector<LINKER_Data> x86_Machine::Get_Links()
 {
   return call_links;
 }
+
 unsigned char x86_Machine::Reg_to_Reg(REGISTERS dest, REGISTERS source)
 {
   return 0xC0 + BYTES_8 * Reg_Id(dest) + Reg_Id(source);
 }
+
 unsigned x86_Machine::Reg_Id(REGISTERS reg)
 {
   switch(reg)
@@ -744,7 +807,8 @@ unsigned x86_Machine::Reg_Id(REGISTERS reg)
   case EDI: return 0x07;
   }
   return 0;
-} 
+}
+
 void x86_Machine::Reg_Op(unsigned address, REGISTERS source)
 {
   bool t_comp = true;
@@ -774,6 +838,7 @@ void x86_Machine::Reg_Op(unsigned address, REGISTERS source)
     }
   }
 }
+
 void x86_Machine::Put_Addr(unsigned addr, int op_offset)
 {
   if(addr < ADDER_S)
@@ -787,6 +852,7 @@ void x86_Machine::Put_Addr(unsigned addr, int op_offset)
     (int&)p[0] = (int)two_complement_32(addr); p+= sizeof(int);
   }
 }
+
 int x86_Machine::String_Address(const char* str)
 {
   int address;
@@ -800,6 +866,7 @@ int x86_Machine::String_Address(const char* str)
   }
   return Add_String(str);
 }
+
 int x86_Machine::Add_String(const char* str)
 {
   LINKER_Var var;
@@ -807,6 +874,7 @@ int x86_Machine::Add_String(const char* str)
   esp.push_back(var);
   return (int)(esp.back().name.c_str());
 }
+
 void x86_Machine::Label_Management(unsigned label, bool short_jump)
 {
    std::vector<AOT_Var>::iterator walker;
@@ -848,6 +916,7 @@ void x86_Machine::Label_Management(unsigned label, bool short_jump)
     p++;
   }
 }
+
 int x86_Machine::Float_Address(float dec)
 {
   for(unsigned i = 0; i < efp.size(); i++)
@@ -859,6 +928,7 @@ int x86_Machine::Float_Address(float dec)
   }
   return Add_Float(dec);
 }
+
 int x86_Machine::Add_Float(float dec)
 {
   LINKER_Var var;
@@ -866,6 +936,7 @@ int x86_Machine::Add_Float(float dec)
   efp.push_back(var);
   return (int)&(efp.back().flt);
 }
+
 int x86_Machine::Double_Address(double dec)
 {
   for(unsigned i = 0; i < edp.size(); i++)
@@ -877,6 +948,7 @@ int x86_Machine::Double_Address(double dec)
   }
   return Add_Double(dec);
 }
+
 int x86_Machine::Add_Double(double dec)
 {
   LINKER_Var var;
@@ -884,6 +956,7 @@ int x86_Machine::Add_Double(double dec)
   edp.push_back(var);
   return (int)&(edp.back().dec);
 }
+
 void x86_Machine::FPU_Load(ARG argument)
 {
   //AOT_Var* var;
@@ -908,26 +981,31 @@ void x86_Machine::FPU_Load(ARG argument)
     return;
   }
 }
+
 void x86_Machine::FPU_Loadf(unsigned address)
 {
   *p++ = FPU_FLOAT_OP; 
   Put_Addr(address);
 }
+
 void x86_Machine::FPU_Loadd(unsigned address)
 {
   *p++ = FPU_DOUBLE_OP;
   Put_Addr(address);
 }
+
 void x86_Machine::FPU_Loadi(unsigned address)
 {
   *p++ = FPU_INT_OP;
   Put_Addr(address);
 }
+
 void x86_Machine::FPU_Store(unsigned address)
 {
   *p++ = FPU_DOUBLE_OP;
   Put_Addr(address, FPU_FSTP);
 }
+
 void x86_Machine::FPU_Store()
 {
   //Make room
@@ -942,21 +1020,25 @@ void x86_Machine::FPU_Store()
   *p++ = LEA_EAX;
   pushed_bytes += BYTES_4;
 }
+
 void x86_Machine::FPU_Cmp(FPU_REGISTERS reg)
 {
   *p++ = FPU_COMIP;
   *p++ = 0xE8 + (unsigned)reg;
 }
+
 void x86_Machine::FPU_Add(FPU_REGISTERS reg)
 {
   *p++ = FPU_MATH;
   *p++ = FPU_ADD + (unsigned)reg;
 }
+
 void x86_Machine::FPU_Sub(FPU_REGISTERS reg)
 {
   *p++ = FPU_MATH;
   *p++ = FPU_SUB + (unsigned)reg;
 }
+
 void x86_Machine::FPU_Mul(FPU_REGISTERS reg)
 {
   *p++ = FPU_MATH;
@@ -967,66 +1049,79 @@ void x86_Machine::FPU_Div(FPU_REGISTERS reg)
   *p++ = FPU_MATH;
   *p++ = FPU_DIV + (unsigned)reg;
 }
+
 void x86_Machine::FPU_Sqr()
 {
   *p++ = FPU_80P_OP;
   *p++ = FPU_SQRT;
 }
+
 void x86_Machine::FPU_Abs()
 {
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_ABS;
 }
+
 void x86_Machine::FPU_Root()
 {
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_ROOT;
 }
+
 void x86_Machine::FPU_One()
 {
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_PUSH_ONE;
 }
+
 void x86_Machine::FPU_Zero()
 {
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_PUSH_ZERO;
 }
+
 void x86_Machine::FPU_PI()
 {
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_PUSH_PI;
 }
+
 void x86_Machine::FPU_Xchg()
 {
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_XCHNG;
 }
+
 void x86_Machine::FPU_Invert()
 {
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_INVERT;
 }
+
 void x86_Machine::FPU_Neg()
 {
   FPU_Abs();
   FPU_Invert();
 }
+
 void x86_Machine::FPU_Round()
 {
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_ROUND;
 }
+
 void x86_Machine::FPU_Sin()
 {
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_SIN;
 }
+
 void x86_Machine::FPU_Cos()
 {
   *p++ = FPU_FLOAT_OP;
   *p++ = FPU_COS;
 }
+
 void x86_Machine::Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address, bool extra_byte)
 {
   if(raw_address)

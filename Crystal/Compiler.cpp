@@ -60,9 +60,15 @@ Crystal_Compiler::~Crystal_Compiler()
   delete Machine;
 }
 
-void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsigned stack_count, unsigned arguments)
+void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsigned stack_count, unsigned arguments, Class_Info* obj, unsigned id)
 {
   Machine->Setup(name, program.load);
+
+  // Set lookups for the class object if we are in one.
+  if(obj)
+  {
+    obj->lookup[id].function = program.load;
+  }
 
   //Local and stack depth.
   locals_count = locals_used;
