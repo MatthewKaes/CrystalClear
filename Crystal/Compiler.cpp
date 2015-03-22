@@ -69,6 +69,9 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   {
     obj->lookup[id].function = program.load;
     class_encoding = true;
+
+    // Include the implicit "this" object
+    arguments++;
   }
   else
   {
@@ -85,6 +88,10 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   Machine->Allocate_Stack(stack_size);
   states.resize(locals_count + stack_depth + 1);
   
+  // Copy over all the function objects onto the stack
+  // TODO:
+  //  Optimize with with a block copy to increase speed
+  //  and reduce code bloat.
   for(unsigned i = 0; i < arguments; i++)
   {
     Machine->Push_Stk(i * 4 + 0x14);

@@ -40,7 +40,7 @@ def main()
   print(y.@depth)
   
   print_color("\nCalling area function for x:", 11)
-  x.area()
+  print(x.area())
   
   print_color("\nCalling area function for x.@2d:", 11)
   return x.@2d.area()
