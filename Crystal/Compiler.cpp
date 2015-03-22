@@ -68,6 +68,11 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   if(obj)
   {
     obj->lookup[id].function = program.load;
+    class_encoding = true;
+  }
+  else
+  {
+    class_encoding = false;
   }
 
   //Local and stack depth.
