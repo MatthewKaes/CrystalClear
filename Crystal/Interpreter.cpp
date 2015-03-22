@@ -502,11 +502,18 @@ void Crystal_Interpreter::Process_Logic()
   {
     Create_Symbol(&package_code, &sym);
     if(!sym.str.compare("def"))
+    {
       Process_Package(package_code, current_class);
+    }
     else if(!sym.str.compare("class"))
+    {
+      Create_Symbol(&package_code, &sym);
       current_class = Class_Listing[packages[sym.str.c_str()].ID];
+    }
     else if(!sym.str.compare("end"))
+    {
       current_class = NULL;
+    }
   }
 }
 
@@ -618,12 +625,16 @@ void Crystal_Interpreter::Process_Package(const char* code, Class_Info* current_
   }
 
   // Start the encoding
-  comp->Start_Encode(entry.str.c_str(), local_map.size(), syntax.Get_Depth(), arguments);
+  comp->Start_Encode(entry.str.c_str(), local_map.size(), syntax.Get_Depth(), arguments, current_class, Late_Binding(entry.str.c_str()));
+  
+  // Process all the bytecode blocks
   std::vector<Bytecode>* codes = syntax.Get_Bytecodes();
   for(unsigned i = 0; i < codes->size(); i++)
   {
     (*codes)[i].Execute(comp);
   }
+  
+  // End the encoding process and reset the syntax tree
   comp->End_Encode();
   syntax.Reset();
 }

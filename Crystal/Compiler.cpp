@@ -118,8 +118,8 @@ void Crystal_Compiler::End_Encode()
     pack.program = program;
     packages.push_back(pack);
     package_lookup[pack.name] = pack.program;
-    program.load = Machine->Location() + 1;
   }
+  program.load = Machine->Location() + 1;
 }
 
 void Crystal_Compiler::Linker()
@@ -192,7 +192,13 @@ void Crystal_Compiler::Call(const char* binding, unsigned op, unsigned ret)
 {
   Push(op);
   Machine->Push(static_cast<int>(late_bindings[binding]));
-  Machine->Call(Late_Func_Binding);
+  
+  // Seperate calling for base and refrence objects
+  if(states[op].Only(CRY_REFERENCE))
+    Machine->Call(Late_Func_Binding_Ref);
+  else
+    Machine->Call(Late_Func_Binding);
+
   Pop(1);
 
   if(ret != CRY_NULL)
@@ -210,7 +216,7 @@ void Crystal_Compiler::Call(const char* binding, unsigned op, unsigned ret)
   Machine->Call(EAX);
   if(ret != CRY_NULL)
   {
-    states[op].Obscurity();
+    states[ret].Obscurity();
   }
   Pop(2);
 }
@@ -220,10 +226,13 @@ void Crystal_Compiler::Get(const char* binding, unsigned op, unsigned ret)
   Push(ret);
   Push(op);
   Machine->Push(static_cast<int>(late_bindings[binding]));
+
+  // Seperate calling for base and refrence objects
   if(states[op].Only(CRY_REFERENCE))
     Machine->Call(Late_Attr_Binding_Ref);
   else
     Machine->Call(Late_Attr_Binding);
+
   Pop(3);
 
   states[ret].Set(CRY_REFERENCE);

@@ -39,7 +39,11 @@ def main()
   print(y.@2d.@height)
   print(y.@depth)
   
-  return x.area()
+  print_color("\nCalling area function for x:", 11)
+  x.area()
+  
+  print_color("\nCalling area function for x.@2d:", 11)
+  return x.@2d.area()
 end
 
 class Cube
@@ -49,7 +53,9 @@ class Cube
 
   # Get the area of the cube
   def area()
-    return 20
+    print(this)
+    print("In Cube's area function!")
+	return 20
   end
 end
 
@@ -60,6 +66,8 @@ class Box
 
   # Get the area of the box
   def area()
-    return @width * @height
+    print(this)
+    print("In Box's area function!")
+	return 10
   end
 end

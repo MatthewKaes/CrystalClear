@@ -384,6 +384,11 @@ void* Late_Func_Binding(int id, Crystal_Symbol* symd)
   return symd->sym->klass->lookup[id].function;
 }
 
+void* Late_Func_Binding_Ref(int id, Crystal_Symbol* symd)
+{
+  return symd->sym->sym->klass->lookup[id].function;
+}
+
 void Late_Attr_Binding(int id, Crystal_Symbol* symd, Crystal_Symbol* ret)
 {
   ret->type = CRY_REFERENCE;
