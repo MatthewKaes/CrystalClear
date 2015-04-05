@@ -14,20 +14,23 @@ Syntax_Node::Syntax_Node(std::vector<Syntax_Node*>* pool, Syntax_Tree* tree)
 
 void Syntax_Node::Process(Syntax_Node* node)
 {
-  if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.str[0] == '[') &&
-    node->sym.type == DAT_OP && node->sym.str[0] == ',' && node->priority < priority + Get_Precedence(NULL))
+  if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.str[0] == '[' || 
+    (parent && !parent->Acquire()->str.compare("."))) && node->sym.type == DAT_OP && 
+    node->sym.str[0] == ',' && node->priority < priority + Get_Precedence(NULL))
   {
     index += 1;
     if(index >= params.size())
     {
       params.push_back(0);
     }
-    if(index >= static_cast<unsigned>(sym.i32))
+
+    if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION) && index >= static_cast<unsigned>(sym.i32))
     {
       printf("WARNING: \"%s\" does not take %d arguments.", sym.str.c_str(), index + 1);
     }
     return;
   }
+
   if((!node->R_Assoc && node->priority > priority) || (node->R_Assoc && node->priority >= priority))
   {
     if(RIGHT_CHILD)
@@ -149,6 +152,7 @@ bool Syntax_Node::Evaluate()
     Force_Memory(&new_code);
   }
 
+
   // Processing of global and built in functions.
   if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
   { 
@@ -187,6 +191,23 @@ bool Syntax_Node::Evaluate()
       // Free up registers for future use.
       if(params[i]->Acquire()->type == DAT_REGISTRY)
         (*regptr)[params[i]->Acquire()->i32] = false;
+    }
+  }
+
+  // Pull up arguments for the dot operator
+  if(sym.type == DAT_OP && !sym.str.compare("."))
+  {
+    params[1]->Force_Memory(&new_code);
+    for(unsigned i = 0; i < params[1]->params.size(); i++)
+    {
+      if(params[1]->params[i])
+      {
+        new_code.elements.push_back(*params[1]->params[i]->Acquire());
+
+        // Free up registers for future use.
+        if(params[1]->params[i]->Acquire()->type == DAT_REGISTRY)
+          (*regptr)[params[1]->params[i]->Acquire()->i32] = false;
+      }
     }
   }
 

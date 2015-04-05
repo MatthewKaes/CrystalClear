@@ -176,7 +176,14 @@ bool Dot_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_D
     target->Get((*syms)[1].str.c_str(), MEM((*syms)[0]), MEMR(result));
   }
   else
-  {
+  {  
+    for(int i = 2; i <= (syms->size() - 2) / 2 + 1; i++)
+    {
+      if((*syms)[i].type != DAT_LOCAL && (*syms)[i].type != DAT_REGISTRY)
+        target->Load(Mem_Conv(target, &(*syms)[i + (syms->size() - 2) / 2]), &(*syms)[i]);
+      target->Push(Mem_Conv(target, &(*syms)[i + (syms->size() - 2) / 2]));
+    }
+
     if(result->type == DAT_NIL)
     {
       target->Call((*syms)[1].str.c_str(), MEM((*syms)[0]), CRY_NULL);
