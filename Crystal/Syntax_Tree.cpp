@@ -124,6 +124,7 @@ bool Syntax_Node::Evaluate()
   Bytecode new_code;
   for(unsigned i = 0; i < params.size(); i++)
   {
+    // Since vectors aren't shrunk ignore empty slots
     if(params[i])
     {
       evaluation = true;
@@ -135,9 +136,7 @@ bool Syntax_Node::Evaluate()
   }
   
   // Check to see if this symbol is an evaluable type.
-  if(sym.type != DAT_FUNCTION && sym.type != DAT_BIFUNCTION && 
-     sym.type != DAT_STATEMENT && sym.type != DAT_OP && 
-     sym.type != DAT_CLASS && sym.type != DAT_OBJFUNCTION && !evaluation)
+  if(!Evaluable_Type(&sym) && !evaluation)
     return true;
 
   
@@ -182,6 +181,7 @@ bool Syntax_Node::Evaluate()
 
   // Construct all the elements that this bytecode uses.
   std::vector<bool>* regptr = tree_->Get_Registers();
+
   for(unsigned i = 0; i < params.size(); i++)
   {
     if(params[i])
@@ -197,6 +197,7 @@ bool Syntax_Node::Evaluate()
   // Pull up arguments for the dot operator
   if(sym.type == DAT_OP && !sym.str.compare("."))
   {
+    // All of our arguments are aggragated into our function
     params[1]->Force_Memory(&new_code);
     for(unsigned i = 0; i < params[1]->params.size(); i++)
     {
@@ -213,10 +214,7 @@ bool Syntax_Node::Evaluate()
 
   // Stacking assignment operator without using
   // uneccesary registers.
-  if(parent != NULL && sym.type == DAT_OP && (!sym.str.compare("=") || !sym.str.compare("+=")
-      || !sym.str.compare("-=")  || !sym.str.compare("*=")
-      || !sym.str.compare("^=")  || !sym.str.compare("%=")
-      || !sym.str.compare("<>")))
+  if(parent != NULL && Assignment_Op(&sym))
   {
     sym = new_code.result = *params[0]->Acquire();
   }
@@ -232,7 +230,6 @@ bool Syntax_Node::Evaluate()
     }
     new_code.result = sym;
   }
-
   
   //Finalize Bytecode
   tree_->Get_Bytecodes()->push_back(new_code);
@@ -242,12 +239,17 @@ bool Syntax_Node::Evaluate()
 
 void Syntax_Node::Remove()
 {
+  // Remove all children of this node as well
   for(unsigned i = 0; i < params.size(); i++)
+  {
     if(params[i])
     {
       params[i]->Remove();
       params[i] = NULL;
     }
+  }
+
+  // Add this node to the pool
   pool_->push_back(this);
 }
 
@@ -257,7 +259,7 @@ Crystal_Data* Syntax_Node::Acquire()
 }
 
 void Syntax_Node::Finalize()
-{  
+{
   R_Assoc = false;
   parent = NULL;
   for(unsigned i = 0; i < params.size(); i++)
@@ -270,15 +272,9 @@ void Syntax_Node::Finalize()
   else
     index = 1;
 
-  if(sym.type == DAT_OP)
+  if(Assignment_Op(&sym))
   {
-    if(!sym.str.compare("=") || !sym.str.compare("+=")
-       || !sym.str.compare("-=")  || !sym.str.compare("*=")
-       || !sym.str.compare("^=")  || !sym.str.compare("%=")
-       || !sym.str.compare("<>"))
-    {
-      R_Assoc = true;
-    }
+    R_Assoc = true;
   }
 }
 
@@ -290,6 +286,8 @@ void Syntax_Node::Force_Memory(Bytecode* code)
     {
       code->elements.push_back(*params[i]->Acquire());
       Data_Type t = params[i]->Acquire()->type;
+      
+      // For all types not already in a memory address
       if(t != DAT_LOCAL && t != DAT_REGISTRY)
       {
         params[i]->Acquire()->type = DAT_REGISTRY;
@@ -303,6 +301,36 @@ void Syntax_Node::Force_Memory(Bytecode* code)
       }
     }
   }
+}
+
+bool Syntax_Node::Evaluable_Type(Crystal_Data* sym)
+{  
+  // List of evaluable types
+  switch(sym->type)
+  {
+  case DAT_FUNCTION:
+  case DAT_BIFUNCTION: 
+  case DAT_STATEMENT:
+  case DAT_OP: 
+  case DAT_CLASS:
+  case DAT_OBJFUNCTION:
+    return true;
+  default:
+    return false;
+  }
+}
+
+{
+  if(sym->type != DAT_OP)
+    return false;
+
+  if(!sym->str.compare("=") || !sym->str.compare("+=")
+    || !sym->str.compare("-=")  || !sym->str.compare("*=")
+    || !sym->str.compare("^=")  || !sym->str.compare("%=")
+    || !sym->str.compare("<>"))
+    return true;
+
+  return false;
 }
 
 Syntax_Tree::Syntax_Tree()

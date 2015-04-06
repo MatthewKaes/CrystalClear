@@ -22,6 +22,9 @@ public:
 
   void Force_Memory(Bytecode* code);
 
+  static bool Evaluable_Type(Crystal_Data* sym);
+  static bool Assignment_Op(Crystal_Data* sym);
+
   unsigned priority;
 
 private:
