@@ -320,6 +320,7 @@ bool Syntax_Node::Evaluable_Type(Crystal_Data* sym)
   }
 }
 
+bool Syntax_Node::Assignment_Op(Crystal_Data* sym)
 {
   if(sym->type != DAT_OP)
     return false;
