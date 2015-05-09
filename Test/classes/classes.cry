@@ -55,7 +55,7 @@ class Cube
   def area(width, height)
     print(this)
     print("In Cube's area function!")
-	return width * height
+	return @2d.area() * @depth
   end
 end
 
@@ -68,6 +68,6 @@ class Box
   def area()
     print(this)
     print("In Box's area function!")
-	return 10
+	return @width * @height
   end
 end

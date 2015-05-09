@@ -604,7 +604,7 @@ void Crystal_Interpreter::Process_Package(const char* code, Class_Info* current_
     Special_Processing(&sym);
 
     // Look up nodes that need are unknown
-    Lookup_Processing(&sym, &local_map, dot_op);
+    dot_op = Lookup_Processing(&sym, &local_map, dot_op, current_class);
 
     // Creating the node
     Syntax_Node* new_node = syntax.Acquire_Node();
@@ -639,7 +639,7 @@ void Crystal_Interpreter::Process_Package(const char* code, Class_Info* current_
   syntax.Reset();
 }
 
-void Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_map<std::string, unsigned>* local_map, bool dot_op)
+bool Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_map<std::string, unsigned>* local_map, bool dot_op, Class_Info* current_class)
 {
   // Processing Lookups
   if(sym->type == DAT_LOOKUP)
@@ -649,6 +649,12 @@ void Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_ma
     {
       sym->i32 = Late_Binding(sym->str.c_str());
       sym->type = DAT_OBJFUNCTION;
+    }
+    // Class attribute
+    else if(!dot_op && sym->str.c_str()[0] == '@')
+    {
+      sym->i32 = current_class->attributes_loc[Late_Binding(sym->str.c_str())];
+      sym->type = DAT_ATTRIBUTE;
     }
     // Crystal packages look up
     else if(packages.find(sym->str.c_str()) != packages.end())
@@ -694,12 +700,9 @@ void Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_ma
   // Processing dot operators for look ups
   if(!sym->str.compare("."))
   {
-    dot_op = true;
+    return true;
   }
-  else
-  {
-    dot_op = false;
-  }
+  return false;
 }
 
 void Crystal_Interpreter::Special_Processing(Crystal_Data* sym)

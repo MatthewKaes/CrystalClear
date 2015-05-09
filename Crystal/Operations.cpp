@@ -177,7 +177,7 @@ bool Dot_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_D
   }
   else
   {  
-    for(int i = 2; i <= (syms->size() - 2) / 2 + 1; i++)
+    for(unsigned i = 2; i <= (syms->size() - 2) / 2 + 1; i++)
     {
       if((*syms)[i].type != DAT_LOCAL && (*syms)[i].type != DAT_REGISTRY)
         target->Load(Mem_Conv(target, &(*syms)[i + (syms->size() - 2) / 2]), &(*syms)[i]);
@@ -194,6 +194,12 @@ bool Dot_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_D
     }
   }
 
+  return true;
+}
+
+bool Attribute_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  target->Array_Index_C(MEMR(result), 0, base->i32);
   return true;
 }
 

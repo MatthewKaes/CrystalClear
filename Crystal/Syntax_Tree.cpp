@@ -314,6 +314,7 @@ bool Syntax_Node::Evaluable_Type(Crystal_Data* sym)
   case DAT_OP: 
   case DAT_CLASS:
   case DAT_OBJFUNCTION:
+  case DAT_ATTRIBUTE:
     return true;
   default:
     return false;
