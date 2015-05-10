@@ -2,7 +2,6 @@
 #include "Helper.h"
 #include <functional>
 
-
 typedef void (Crystal_Compiler::*OPERATION)(unsigned, unsigned, bool);
 typedef void (Crystal_Compiler::*OPERATION_C)(unsigned, CRY_ARG, bool);
 #define PREFORM_OPERATION(op) return Generic_Operation(target, base, syms, result, &Crystal_Compiler::##op, &Crystal_Compiler::##op ## C)
@@ -200,6 +199,28 @@ bool Dot_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_D
 bool Attribute_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   target->Array_Index_C(MEMR(result), 0, base->i32);
+  return true;
+}
+
+bool Internal_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{    
+  target->Push(0);
+  for(unsigned i = 0; i < syms->size() / 2; i++)
+  {
+    if((*syms)[i].type != DAT_LOCAL && (*syms)[i].type != DAT_REGISTRY)
+      target->Load(Mem_Conv(target, &(*syms)[i + syms->size() / 2]), &(*syms)[i]);
+    target->Push(Mem_Conv(target, &(*syms)[i + syms->size() / 2]));
+  }
+
+  if(result->type == DAT_NIL)
+  {
+    target->Call(base->str.c_str(), 0, CRY_NULL);
+  }
+  else
+  {
+    target->Call(base->str.c_str(), 0, MEMR(result));
+  }
+
   return true;
 }
 

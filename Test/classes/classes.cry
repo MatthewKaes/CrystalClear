@@ -59,7 +59,6 @@ class Cube
   def area(width, height)
     print(this)
     print("In Cube's area function!")
-	@2d.info()
 	return @2d.area() * @depth
   end
 end

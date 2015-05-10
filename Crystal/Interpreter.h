@@ -36,7 +36,7 @@ private:
   void Special_Processing(Crystal_Data* sym);
   bool Lookup_Processing(Crystal_Data* sym, std::unordered_map<std::string, unsigned>* local_map, bool dot_op, Class_Info* current_class);
 
-  unsigned Late_Binding(const char* id);
+  unsigned Late_Binding(const char* id, bool exclude = false);
 
   //Private members
   Crystal_Compiler* comp;

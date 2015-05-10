@@ -612,7 +612,7 @@ void Crystal_Interpreter::Process_Package(const char** code, Class_Info* current
     // Precedence
     if(sym.type == DAT_OP)
       new_node->priority = Get_Precedence(sym.str.c_str()) + Get_Precedence(NULL) * precedence;
-    else if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
+    else if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.type == DAT_OBJFUNCTION || sym.type == DAT_INTFUNCTION)
       new_node->priority = Get_Precedence("f") + Get_Precedence(NULL) * precedence;
     else if(sym.type == DAT_STATEMENT)
       new_node->priority = Get_Precedence("k") + Get_Precedence(NULL) * precedence;
@@ -644,7 +644,12 @@ bool Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_ma
   if(sym->type == DAT_LOOKUP)
   {
     // Class function
-    if(dot_op && sym->str.c_str()[0] != '@')
+    if(!dot_op && current_class && current_class->lookup.find(Late_Binding(sym->str.c_str())) != current_class->lookup.end())
+    {
+      sym->i32 = Late_Binding(sym->str.c_str());
+      sym->type = DAT_INTFUNCTION;
+    }
+    else if(dot_op && sym->str.c_str()[0] != '@')
     {
       sym->i32 = Late_Binding(sym->str.c_str());
       sym->type = DAT_OBJFUNCTION;
@@ -740,7 +745,7 @@ void Crystal_Interpreter::Special_Processing(Crystal_Data* sym)
   }
 }
 
-unsigned Crystal_Interpreter::Late_Binding(const char* id)
+unsigned Crystal_Interpreter::Late_Binding(const char* id, bool exclude)
 {
   std::unordered_map<std::string, unsigned>::iterator index;
   
@@ -752,6 +757,9 @@ unsigned Crystal_Interpreter::Late_Binding(const char* id)
   }
   else
   {
+    if(exclude)
+      return -1;
+
     late_bindings[id] = late_bindings.size();
     return late_bindings.size() - 1;
   }

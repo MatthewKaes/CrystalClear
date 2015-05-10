@@ -17,6 +17,8 @@ GENERATOR_CODE Resolve_Generator(Crystal_Data* sym)
     return Resolve_Statement(sym);
   case DAT_ATTRIBUTE:
     return Attribute_Gen;
+  case DAT_INTFUNCTION:
+    return Internal_Gen;
   }
   return Null_Gen;
 }
