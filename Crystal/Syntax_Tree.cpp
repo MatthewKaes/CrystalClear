@@ -146,7 +146,8 @@ bool Syntax_Node::Evaluate()
   new_code.result.type = DAT_NIL;
   
   // Force arguments to be moved onto the stack for functions
-  if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.type == DAT_OBJFUNCTION)
+  if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || 
+     sym.type == DAT_OBJFUNCTION || sym.type == DAT_INTFUNCTION)
   {
     Force_Memory(&new_code);
   }
@@ -267,7 +268,8 @@ void Syntax_Node::Finalize()
     params[i] = NULL;
   }
 
-  if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.type == DAT_STATEMENT)
+  if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || 
+     sym.type == DAT_STATEMENT || sym.type == DAT_INTFUNCTION)
     index = 0;
   else
     index = 1;
