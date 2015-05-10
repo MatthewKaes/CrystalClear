@@ -503,7 +503,7 @@ void Crystal_Interpreter::Process_Logic()
     Create_Symbol(&package_code, &sym);
     if(!sym.str.compare("def"))
     {
-      Process_Package(package_code, current_class);
+      Process_Package(&package_code, current_class);
     }
     else if(!sym.str.compare("class"))
     {
@@ -517,20 +517,19 @@ void Crystal_Interpreter::Process_Logic()
   }
 }
 
-void Crystal_Interpreter::Process_Package(const char* code, Class_Info* current_class)
+void Crystal_Interpreter::Process_Package(const char** code, Class_Info* current_class)
 {
   Syntax_Tree syntax;
   Crystal_Data entry, sym;
   std::unordered_map<std::string, unsigned> local_map;
-  const char* package_code = code;
   unsigned scope = 1;
   unsigned precedence = 0;
   unsigned arguments = 0;
   bool dot_op = false;
   
   // Get the function signature data.
-  Create_Symbol(&package_code, &entry);
-  Create_Symbol(&package_code, &sym);
+  Create_Symbol(code, &entry);
+  Create_Symbol(code, &sym);
 
   // Set up the "this" object
   if(current_class)
@@ -546,13 +545,13 @@ void Crystal_Interpreter::Process_Package(const char* code, Class_Info* current_
       local_map[sym.str] = index;
       arguments++;
     }
-    Create_Symbol(&package_code, &sym);
+    Create_Symbol(code, &sym);
   }
 
   // Evaluating the contents of the package.
   while(scope)
   {
-    Create_Symbol(&package_code, &sym);
+    Create_Symbol(code, &sym);
 
     if(sym.type != DAT_STRING)
     {

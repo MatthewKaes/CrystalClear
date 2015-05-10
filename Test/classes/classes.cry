@@ -51,10 +51,15 @@ class Cube
   @2d
   @depth
 
+  def info()
+	print(type(this))
+  end
+  
   # Get the area of the cube
   def area(width, height)
     print(this)
     print("In Cube's area function!")
+	@2d.info()
 	return @2d.area() * @depth
   end
 end
@@ -63,6 +68,10 @@ class Box
   # Pull out attributes for easy documentation
   @width
   @height
+  
+  def info()
+	print(type(this))
+  end
 
   # Get the area of the box
   def area()

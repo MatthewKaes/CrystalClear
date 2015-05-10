@@ -29,7 +29,7 @@ private:
   void Format_Code();
   void Process_Lookups();
   void Process_Logic();
-  void Process_Package(const char* code, Class_Info* current_class);
+  void Process_Package(const char** code, Class_Info* current_class);
 
 
   //Processing symbols
