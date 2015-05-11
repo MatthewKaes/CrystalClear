@@ -20,14 +20,17 @@ public:
   Crystal_Data* Acquire();
   void Finalize();
 
-  void Force_Memory(Bytecode* code);
-
   static bool Evaluable_Type(Crystal_Data* sym);
   static bool Assignment_Op(Crystal_Data* sym);
 
   unsigned priority;
 
 private:
+  void Process_Parameters(Bytecode* code, Syntax_Node* node);
+  void Map_Parameters(Bytecode* code, Syntax_Node* node);
+  void Force_Memory(Bytecode* code);
+  bool Evaluate_Children();
+
   Syntax_Node* parent;
   std::vector<Syntax_Node*> params;
   std::vector<Syntax_Node*>* pool_;

@@ -101,9 +101,10 @@ void Syntax_Node::Reduce()
 
 bool Syntax_Node::Evaluate()
 {  
-  // Setup labels for prefaced control statements
+  // Setup labels for prefaced control statements.
   if(sym.type == DAT_STATEMENT)
   {
+    // For loops set up the jump back lable.
     if(!sym.str.compare("while"))
     {
       Bytecode loop_code;
@@ -111,6 +112,7 @@ bool Syntax_Node::Evaluate()
       tree_->Get_Bytecodes()->push_back(loop_code); 
     }
     
+    // For else ifs set up the jump lable for the previous if statement.
     if(!sym.str.compare("elsif"))
     {
       Bytecode loop_code;
@@ -120,97 +122,34 @@ bool Syntax_Node::Evaluate()
   }
 
   // Evaluate any children before this node is evaluated.
-  bool evaluation = false;
-  Bytecode new_code;
-  for(unsigned i = 0; i < params.size(); i++)
-  {
-    // Since vectors aren't shrunk ignore empty slots
-    if(params[i])
-    {
-      evaluation = true;
-      if(!params[i]->Evaluate())
-      {
-        return false;
-      }
-    }
-  }
+  if(!Evaluate_Children())
+    return false;
   
   // Check to see if this symbol is an evaluable type.
-  if(!Evaluable_Type(&sym) && !evaluation)
+  if(!Evaluable_Type(&sym))
     return true;
 
-  
   // Get the generator for the bytecode.
+  Bytecode new_code;
   new_code.code_gen = Resolve_Generator(&sym);
   new_code.base = sym;
   new_code.result.type = DAT_NIL;
   
-  // Force arguments to be moved onto the stack for functions
-  if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || 
-     sym.type == DAT_OBJFUNCTION || sym.type == DAT_INTFUNCTION)
-  {
-    Force_Memory(&new_code);
-  }
+  // Process all the parameters for the bytecode.
+  Map_Parameters(&new_code, this);
 
-
-  // Processing of global and built in functions.
-  if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
-  { 
-    // Check the argument count for functions.
-    if((index != sym.i32 && sym.i32 == 0) || (index != sym.i32 - 1 && sym.i32 > 0))
-      printf("ERROR: \"%s\" requires %d argument%s.\n", sym.str.c_str(), sym.i32, sym.i32 == 1 ? "" : "s");
-    
-    // Built in functions have to have a symbol to return to
-    if(sym.type == DAT_BIFUNCTION)
-    {
-      new_code.result.type = DAT_REGISTRY;
-      new_code.result.i32 = 0;
-    }
-  }
-  else 
-
-  // Force constants to be in a register or memory location for
-  // certain control statements.
-  if(sym.type == DAT_STATEMENT)
-  {
-    if(!sym.str.compare("return") || !sym.str.compare("if") ||
-      !sym.str.compare("while") || !sym.str.compare("elsif"))
-    {
-      Force_Memory(&new_code);
-    }
-  }
-
-  // Construct all the elements that this bytecode uses.
-  std::vector<bool>* regptr = tree_->Get_Registers();
-
-  for(unsigned i = 0; i < params.size(); i++)
-  {
-    if(params[i])
-    {
-      new_code.elements.push_back(*params[i]->Acquire());
-
-      // Free up registers for future use.
-      if(params[i]->Acquire()->type == DAT_REGISTRY)
-        (*regptr)[params[i]->Acquire()->i32] = false;
-    }
-  }
+  // Free up the registers from our current parameters
+  // for future use.
+  Process_Parameters(&new_code, this);
 
   // Pull up arguments for the dot operator
   if(sym.type == DAT_OP && !sym.str.compare("."))
   {
     // All of our arguments are aggragated into our function
-    params[1]->Force_Memory(&new_code);
-    for(unsigned i = 0; i < params[1]->params.size(); i++)
-    {
-      if(params[1]->params[i])
-      {
-        new_code.elements.push_back(*params[1]->params[i]->Acquire());
-
-        // Free up registers for future use.
-        if(params[1]->params[i]->Acquire()->type == DAT_REGISTRY)
-          (*regptr)[params[1]->params[i]->Acquire()->i32] = false;
-      }
-    }
+    Map_Parameters(&new_code, params[1]);
+    
+    // Process the called object's params as well.
+    Process_Parameters(&new_code, params[1]);
   }
 
   // Stacking assignment operator without using
@@ -226,8 +165,8 @@ bool Syntax_Node::Evaluate()
     sym.i32 = tree_->Get_Open_Reg();
     if(sym.i32 == -1)
     {
-      sym.i32 = regptr->size();
-      regptr->push_back(true);
+      sym.i32 = tree_->Get_Registers()->size();
+      tree_->Get_Registers()->push_back(true);
     }
     new_code.result = sym;
   }
@@ -280,6 +219,58 @@ void Syntax_Node::Finalize()
   }
 }
 
+void Syntax_Node::Process_Parameters(Bytecode* code, Syntax_Node* node)
+{
+  // Construct all the elements that this bytecode uses.
+  std::vector<bool>* regptr = tree_->Get_Registers();
+
+  for(unsigned i = 0; i < node->params.size(); i++)
+  {
+    if(node->params[i])
+    {
+      code->elements.push_back(*node->params[i]->Acquire());
+
+      // Free up registers for future use.
+      if(node->params[i]->Acquire()->type == DAT_REGISTRY)
+        (*regptr)[node->params[i]->Acquire()->i32] = false;
+    }
+  }
+}
+
+void Syntax_Node::Map_Parameters(Bytecode* code, Syntax_Node* node)
+{
+  // Force arguments to be moved onto the stack for functions
+  if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || 
+     sym.type == DAT_OBJFUNCTION || sym.type == DAT_INTFUNCTION)
+  {
+    node->Force_Memory(code);
+    // Processing of global and built in functions.
+    if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
+    { 
+      // Check the argument count for functions.
+      if((index != sym.i32 && sym.i32 == 0) || (index != sym.i32 - 1 && sym.i32 > 0))
+        printf("ERROR: \"%s\" requires %d argument%s.\n", sym.str.c_str(), sym.i32, sym.i32 == 1 ? "" : "s");
+    
+      // Built in functions have to have a symbol to return to
+      if(sym.type == DAT_BIFUNCTION)
+      {
+        code->result.type = DAT_REGISTRY;
+        code->result.i32 = 0;
+      }
+    }
+  }
+  // Force constants to be in a register or memory location for
+  // certain control statements.
+  else if(sym.type == DAT_STATEMENT)
+  {
+    if(!sym.str.compare("return") || !sym.str.compare("if") ||
+      !sym.str.compare("while") || !sym.str.compare("elsif"))
+    {
+      node->Force_Memory(code);
+    }
+  }
+}
+
 void Syntax_Node::Force_Memory(Bytecode* code)
 {
   for(unsigned i = 0; i < params.size(); i++)
@@ -303,6 +294,26 @@ void Syntax_Node::Force_Memory(Bytecode* code)
       }
     }
   }
+}
+
+bool Syntax_Node::Evaluate_Children()
+{
+  // Evaluate any children before this node is evaluated.
+  bool evaluation = false;
+  for(unsigned i = 0; i < params.size(); i++)
+  {
+    // Since vectors aren't shrunk ignore empty slots
+    if(params[i])
+    {
+      evaluation = true;
+      if(!params[i]->Evaluate())
+      {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 bool Syntax_Node::Evaluable_Type(Crystal_Data* sym)
@@ -384,6 +395,7 @@ bool Syntax_Tree::Evaluate()
 
   root->Reduce();
   bool result = root->Evaluate();
+
   root->Remove();
   root = NULL;
   for(unsigned i = 0; i < registers.size(); i++)
