@@ -158,7 +158,7 @@ bool Syntax_Node::Evaluate()
   {
     sym = new_code.result = *params[0]->Acquire();
   }
-  else
+  else if(sym.type != DAT_OBJFUNCTION)
   {
     // Move the result into a registry.
     sym.type = DAT_REGISTRY;
@@ -240,19 +240,19 @@ void Syntax_Node::Process_Parameters(Bytecode* code, Syntax_Node* node)
 void Syntax_Node::Map_Parameters(Bytecode* code, Syntax_Node* node)
 {
   // Force arguments to be moved onto the stack for functions
-  if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || 
-     sym.type == DAT_OBJFUNCTION || sym.type == DAT_INTFUNCTION)
+  if(node->sym.type == DAT_FUNCTION || node->sym.type == DAT_BIFUNCTION || 
+     node->sym.type == DAT_OBJFUNCTION || node->sym.type == DAT_INTFUNCTION)
   {
     node->Force_Memory(code);
     // Processing of global and built in functions.
-    if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION)
+    if(node->sym.type == DAT_FUNCTION || node->sym.type == DAT_BIFUNCTION)
     { 
       // Check the argument count for functions.
-      if((index != sym.i32 && sym.i32 == 0) || (index != sym.i32 - 1 && sym.i32 > 0))
-        printf("ERROR: \"%s\" requires %d argument%s.\n", sym.str.c_str(), sym.i32, sym.i32 == 1 ? "" : "s");
+      if((index != node->sym.i32 && node->sym.i32 == 0) || (index != node->sym.i32 - 1 && node->sym.i32 > 0))
+        printf("ERROR: \"%s\" requires %d argument%s.\n", node->sym.str.c_str(), node->sym.i32, node->sym.i32 == 1 ? "" : "s");
     
       // Built in functions have to have a symbol to return to
-      if(sym.type == DAT_BIFUNCTION)
+      if(node->sym.type == DAT_BIFUNCTION)
       {
         code->result.type = DAT_REGISTRY;
         code->result.i32 = 0;
@@ -263,8 +263,8 @@ void Syntax_Node::Map_Parameters(Bytecode* code, Syntax_Node* node)
   // certain control statements.
   else if(sym.type == DAT_STATEMENT)
   {
-    if(!sym.str.compare("return") || !sym.str.compare("if") ||
-      !sym.str.compare("while") || !sym.str.compare("elsif"))
+    if(!node->sym.str.compare("return") || !node->sym.str.compare("if") ||
+      !node->sym.str.compare("while") || !node->sym.str.compare("elsif"))
     {
       node->Force_Memory(code);
     }
