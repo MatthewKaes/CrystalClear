@@ -269,6 +269,29 @@ void Syntax_Node::Map_Parameters(Bytecode* code, Syntax_Node* node)
       node->Force_Memory(code);
     }
   }
+  // Force constants to be in a register or memory location for
+  // certain control statements.
+  else if(sym.type == DAT_OP)
+  {
+    if(!node->sym.str.compare("."))
+    {      
+      code->elements.push_back(*params[0]->Acquire());
+      Data_Type t = params[0]->Acquire()->type;
+      
+      // For all types not already in a memory address
+      if(t != DAT_LOCAL && t != DAT_REGISTRY)
+      {
+        params[0]->Acquire()->type = DAT_REGISTRY;
+        int index = tree_->Get_Open_Reg();
+        if(index == -1)
+        {
+          index = tree_->Get_Registers()->size();
+          tree_->Get_Registers()->push_back(true);
+        }
+        params[0]->Acquire()->i32 = index;
+      }
+    }
+  }
 }
 
 void Syntax_Node::Force_Memory(Bytecode* code)

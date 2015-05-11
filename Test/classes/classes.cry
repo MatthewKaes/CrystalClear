@@ -1,7 +1,14 @@
 def main()
+  # Primitives as objects
+  print_color("Primitive Objects:", 11)
+  print(12.type())
+  print("Hello World!".type())
+  print(1.3.type())
+  
   print_color("Class Manipulation:", 11)
-
-  File.print()
+  
+  f = File
+  f.print()
   
   # Making an object.
   x = Cube

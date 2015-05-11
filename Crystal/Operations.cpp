@@ -170,13 +170,16 @@ bool Exponent_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crys
 
 bool Dot_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
-  if((*syms)[1].str[0] == '@')
+  if((*syms)[2].str[0] == '@')
   {
-    target->Get((*syms)[1].str.c_str(), MEM((*syms)[0]), MEMR(result));
+    target->Get((*syms)[2].str.c_str(), MEM((*syms)[0]), MEMR(result));
   }
   else
   {  
-    for(unsigned i = 2; i <= (syms->size() - 2) / 2 + 1; i++)
+    if((*syms)[0].type != DAT_LOCAL && (*syms)[0].type != DAT_REGISTRY)
+      target->Load(Mem_Conv(target, &(*syms)[1]), &(*syms)[0]);
+
+    for(unsigned i = 3; i <= (syms->size() - 2) / 2 + 2; i++)
     {
       if((*syms)[i].type != DAT_LOCAL && (*syms)[i].type != DAT_REGISTRY)
         target->Load(Mem_Conv(target, &(*syms)[i + (syms->size() - 2) / 2]), &(*syms)[i]);
@@ -185,11 +188,11 @@ bool Dot_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_D
 
     if(result->type == DAT_NIL)
     {
-      target->Call((*syms)[1].str.c_str(), MEM((*syms)[0]), CRY_NULL);
+      target->Call((*syms)[2].str.c_str(), MEM((*syms)[1]), CRY_NULL);
     }
     else
     {
-      target->Call((*syms)[1].str.c_str(), MEM((*syms)[0]), MEMR(result));
+      target->Call((*syms)[2].str.c_str(), MEM((*syms)[1]), MEMR(result));
     }
   }
 

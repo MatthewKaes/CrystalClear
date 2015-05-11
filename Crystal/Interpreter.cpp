@@ -192,15 +192,17 @@ void Crystal_Interpreter::Populate_Base_Classes()
   Class_Info* current_class;
   Package_Info new_package;
   REGISTER_CLASS(Nil);
+  REGISTER_METHOD(type, Crystal_Type, 1);
   REGISTER_CLASS(Bool);
+  REGISTER_METHOD(type, Crystal_Type, 1);
   REGISTER_CLASS(Int);
+  REGISTER_METHOD(type, Crystal_Type, 1);
   REGISTER_CLASS(Int64);
+  REGISTER_METHOD(type, Crystal_Type, 1);
   REGISTER_CLASS(Double);
+  REGISTER_METHOD(type, Crystal_Type, 1);
   REGISTER_CLASS(Text);
-  REGISTER_CLASS(Reference);
-  REGISTER_CLASS(Pointer);
-  REGISTER_CLASS(String);
-  REGISTER_CLASS(Array);
+  REGISTER_METHOD(type, Crystal_Type, 1);
 }
 
 void Crystal_Interpreter::Populate_BIC()
@@ -212,6 +214,7 @@ void Crystal_Interpreter::Populate_BIC()
   REGISTER_ATTRIBUTE(filename);
   REGISTER_ATTRIBUTE(object);
   REGISTER_METHOD(print, Crystal_Print, 1);
+  REGISTER_METHOD(type, Crystal_Type, 1);
 }
 
 void Crystal_Interpreter::Cache_Code(const char* filename)

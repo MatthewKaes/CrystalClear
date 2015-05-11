@@ -1,6 +1,8 @@
 #include "Helper.h"
 #include "Lexicon.h"
 
+extern std::vector<Class_Info*> Class_Listing;
+
 int Parse_Int(Crystal_Symbol* sym)
 {
   switch(sym->type)
@@ -386,7 +388,10 @@ void Val_Binding(Crystal_Symbol* ret, Crystal_Symbol* src, int index)
 
 void* Late_Func_Binding(int id, Crystal_Symbol* symd)
 {
-  return symd->sym->klass->lookup[id].function;
+  if(symd->type != CRY_POINTER)
+    return Class_Listing[symd->type]->lookup[id].function;
+  else
+    return symd->sym->klass->lookup[id].function;
 }
 
 void* Late_Func_Binding_Ref(int id, Crystal_Symbol* symd)
