@@ -306,6 +306,13 @@ void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
     result->i32 = Fast_strcmp(dest, source);
     result->type = CRY_BOOL;
     return;
+  case CRY_CLASS_OBJ:
+    if(dest->klass != source->klass)
+    {
+      result->i32 = 0;
+      result->type = CRY_BOOL;
+      return;
+    }
   case CRY_ARRAY:
     if(dest->type != source->type)
     {

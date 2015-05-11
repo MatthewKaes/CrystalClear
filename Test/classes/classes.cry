@@ -9,8 +9,8 @@ def main()
   # Testing object types
   print_color("Type of object: " + type(x), 11)
   print(x == Cube)
-  print(x == Box)
-  print(x == [nil, nil, nil])
+  print(x == fork(x))
+  print(x == [nil, nil])
 
   # Setting Attributes of an object.
   y = 10
