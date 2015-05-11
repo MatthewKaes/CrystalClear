@@ -25,6 +25,17 @@
   new_package.ID = Class_Listing.size() - 1; \
   packages[#Name] = new_package;
 
+#define REGISTER_METHOD(Meth, func, args) \
+  { unsigned LB_ID = Late_Binding(#Meth); \
+  if(current_class->attributes_loc.find(LB_ID) == current_class->attributes_loc.end()) \
+  { \
+    Package_Info new_package; \
+    new_package.pt = PKG_EXE; \
+    new_package.info.arguments = args; \
+    new_package.function = func; \
+    current_class->lookup[LB_ID] = new_package; \
+  } }
+
 #define REGISTER_ATTRIBUTE(Attr) \
   { unsigned LB_ID = Late_Binding("@" ## #Attr); \
   if(current_class->attributes_loc.find(LB_ID) == current_class->attributes_loc.end()) \
@@ -51,6 +62,7 @@ Crystal_Interpreter::Crystal_Interpreter(Crystal_Compiler* compiler)
   comp = compiler;
   code_cache.assign(" ");
   Populate_BIP();
+  Populate_Base_Classes();
   Populate_BIC();
 }
 
@@ -175,14 +187,31 @@ void Crystal_Interpreter::Populate_BIP()
   }
 }
 
+void Crystal_Interpreter::Populate_Base_Classes()
+{
+  Class_Info* current_class;
+  Package_Info new_package;
+  REGISTER_CLASS(Nil);
+  REGISTER_CLASS(Bool);
+  REGISTER_CLASS(Int);
+  REGISTER_CLASS(Int64);
+  REGISTER_CLASS(Double);
+  REGISTER_CLASS(Text);
+  REGISTER_CLASS(Reference);
+  REGISTER_CLASS(Pointer);
+  REGISTER_CLASS(String);
+  REGISTER_CLASS(Array);
+}
+
 void Crystal_Interpreter::Populate_BIC()
 {
   Class_Info* current_class;
   Package_Info new_package;
 
-  REGISTER_CLASS(file);
+  REGISTER_CLASS(File);
   REGISTER_ATTRIBUTE(filename);
   REGISTER_ATTRIBUTE(object);
+  REGISTER_METHOD(print, Crystal_Print, 1);
 }
 
 void Crystal_Interpreter::Cache_Code(const char* filename)

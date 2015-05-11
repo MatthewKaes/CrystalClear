@@ -1,10 +1,14 @@
 def main()
   print_color("Class Manipulation:", 11)
 
+  File.print()
+  
   # Making an object.
   x = Cube
   print(x)
   print("")
+  
+  print(File)
 
   # Testing object types
   print_color("Type of object: " + type(x), 11)
