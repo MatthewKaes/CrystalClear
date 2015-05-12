@@ -132,6 +132,9 @@ bool Syntax_Node::Evaluate()
   // Get the generator for the bytecode.
   Bytecode new_code;
   new_code.code_gen = Resolve_Generator(&sym);
+  if(new_code.code_gen == Null_Gen)
+    return true;
+
   new_code.base = sym;
   new_code.result.type = DAT_NIL;
   
@@ -150,7 +153,13 @@ bool Syntax_Node::Evaluate()
     
     // Process the called object's params as well.
     Process_Parameters(&new_code, params[1]);
+
+    // Clear out function registry.
+    Clear_Registry(params[1]);
   }
+
+  // Clear out registry used.
+  Clear_Registry(this);
 
   // Stacking assignment operator without using
   // uneccesary registers.
@@ -229,10 +238,6 @@ void Syntax_Node::Process_Parameters(Bytecode* code, Syntax_Node* node)
     if(node->params[i])
     {
       code->elements.push_back(*node->params[i]->Acquire());
-
-      // Free up registers for future use.
-      if(node->params[i]->Acquire()->type == DAT_REGISTRY)
-        (*regptr)[node->params[i]->Acquire()->i32] = false;
     }
   }
 }
@@ -290,6 +295,22 @@ void Syntax_Node::Map_Parameters(Bytecode* code, Syntax_Node* node)
         }
         params[0]->Acquire()->i32 = index;
       }
+    }
+  }
+}
+
+void Syntax_Node::Clear_Registry(Syntax_Node* node)
+{
+  // Clear out all the registry used by this node.
+  std::vector<bool>* regptr = tree_->Get_Registers();
+
+  for(unsigned i = 0; i < node->params.size(); i++)
+  {
+    if(node->params[i])
+    {
+      // Free up registers for future use.
+      if(node->params[i]->Acquire()->type == DAT_REGISTRY)
+        (*regptr)[node->params[i]->Acquire()->i32] = false;
     }
   }
 }

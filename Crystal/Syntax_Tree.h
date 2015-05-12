@@ -28,6 +28,7 @@ public:
 private:
   void Process_Parameters(Bytecode* code, Syntax_Node* node);
   void Map_Parameters(Bytecode* code, Syntax_Node* node);
+  void Clear_Registry(Syntax_Node* node);
   void Force_Memory(Bytecode* code);
   bool Evaluate_Children();
 

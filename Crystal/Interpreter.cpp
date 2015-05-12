@@ -536,6 +536,8 @@ void Crystal_Interpreter::Add_Global_Methods()
   REGISTER_GLOBAL_METHOD(double, Crystal_Double, 1);
   REGISTER_GLOBAL_METHOD(string, Crystal_String, 1);
   REGISTER_GLOBAL_METHOD(nil?, Crystal_NilCheck, 1);
+  REGISTER_GLOBAL_METHOD(print, Crystal_Print, 1)
+  REGISTER_GLOBAL_METHOD(print_color, Crystal_PrintColor, 2);
 }
 
 void Crystal_Interpreter::Process_Logic()

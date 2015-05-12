@@ -1,10 +1,9 @@
 def main()
   # Primitives as objects
   print_color("Primitive Objects:", 11)
-  print(12.type())
-  print("Hello World!".type())
-  print(nil.nil?().int())
-  print(Cube.type())
+  8.type().print_color(12)
+  #"".print()
+  "  ".print()
   
   print_color("Class Manipulation:", 11)
   
@@ -82,6 +81,7 @@ class Box
   @height
   
   def info()
+    print("hello")
 	print(type(this))
   end
 
