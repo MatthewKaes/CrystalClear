@@ -29,6 +29,7 @@ private:
   //Interpret Process under the hood
   void Format_Code();
   void Process_Lookups();
+  void Add_Global_Methods();
   void Process_Logic();
   void Process_Package(const char** code, Class_Info* current_class);
 

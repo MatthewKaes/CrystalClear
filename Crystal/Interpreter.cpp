@@ -36,6 +36,13 @@
     current_class->lookup[LB_ID] = new_package; \
   } }
 
+#define REGISTER_GLOBAL_METHOD(Meth, func, args) \
+  for(unsigned i = 0; i < Class_Listing.size(); i++) \
+  { \
+    Class_Info* current_class = Class_Listing[i]; \
+    REGISTER_METHOD(Meth, func, args); \
+  } \
+
 #define REGISTER_ATTRIBUTE(Attr) \
   { unsigned LB_ID = Late_Binding("@" ## #Attr); \
   if(current_class->attributes_loc.find(LB_ID) == current_class->attributes_loc.end()) \
@@ -192,17 +199,11 @@ void Crystal_Interpreter::Populate_Base_Classes()
   Class_Info* current_class;
   Package_Info new_package;
   REGISTER_CLASS(Nil);
-  REGISTER_METHOD(type, Crystal_Type, 1);
   REGISTER_CLASS(Bool);
-  REGISTER_METHOD(type, Crystal_Type, 1);
   REGISTER_CLASS(Int);
-  REGISTER_METHOD(type, Crystal_Type, 1);
   REGISTER_CLASS(Int64);
-  REGISTER_METHOD(type, Crystal_Type, 1);
   REGISTER_CLASS(Double);
-  REGISTER_METHOD(type, Crystal_Type, 1);
   REGISTER_CLASS(Text);
-  REGISTER_METHOD(type, Crystal_Type, 1);
 }
 
 void Crystal_Interpreter::Populate_BIC()
@@ -245,13 +246,16 @@ void Crystal_Interpreter::Cache_Code(const char* filename)
 
 void Crystal_Interpreter::Interpret()
 {
-  //Format the code for the lexiconer
+  // Format the code for the lexiconer
   Format_Code();
   
-  //Process all the code's syntax
+  // Process all the code's syntax
   Process_Lookups();
+  
+  // Add all global methods for all types of objects
+  Add_Global_Methods();
 
-  //Process all the code's syntax
+  // Process all the code's executable logic
   Process_Logic();
 }
 
@@ -522,6 +526,16 @@ void Crystal_Interpreter::Process_Lookups()
   {
     printf("CRYSTAL ERROR: Hanging scope. Missing %d 'end' keywords.", scope);
   }
+}
+
+void Crystal_Interpreter::Add_Global_Methods()
+{
+  REGISTER_GLOBAL_METHOD(type, Crystal_Type, 1)
+  REGISTER_GLOBAL_METHOD(int, Crystal_Integer, 1);
+  REGISTER_GLOBAL_METHOD(bool, Crystal_Boolean, 1);
+  REGISTER_GLOBAL_METHOD(double, Crystal_Double, 1);
+  REGISTER_GLOBAL_METHOD(string, Crystal_String, 1);
+  REGISTER_GLOBAL_METHOD(nil?, Crystal_NilCheck, 1);
 }
 
 void Crystal_Interpreter::Process_Logic()

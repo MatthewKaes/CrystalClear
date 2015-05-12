@@ -302,6 +302,12 @@ void Crystal_Fork(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
   }
 }
 
+void Crystal_NilCheck(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
+{
+  ret_sym->i32 = static_cast<int>(sym->type == CRY_NIL);
+  ret_sym->type = CRY_BOOL;
+}
+
 void Crystal_Time(Crystal_Symbol* ret_sym)
 {
   ret_sym->i32 = static_cast<unsigned>(boost::posix_time::microsec_clock::local_time().time_of_day().total_milliseconds());
