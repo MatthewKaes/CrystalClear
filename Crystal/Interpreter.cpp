@@ -30,7 +30,7 @@
   if(current_class->attributes_loc.find(LB_ID) == current_class->attributes_loc.end()) \
   { \
     Package_Info new_package; \
-    new_package.pt = PKG_EXE; \
+    new_package.pt = PKG_EXT; \
     new_package.info.arguments = args; \
     new_package.function = func; \
     current_class->lookup[LB_ID] = new_package; \
@@ -692,7 +692,19 @@ bool Crystal_Interpreter::Lookup_Processing(Crystal_Data* sym, std::unordered_ma
   if(sym->type == DAT_LOOKUP)
   {
     // Class function
-    if(!dot_op && current_class && current_class->lookup.find(Late_Binding(sym->str.c_str())) != current_class->lookup.end())
+    bool internal_function = false;
+    if(!dot_op && current_class)
+    {
+      auto block = current_class->lookup.find(Late_Binding(sym->str.c_str()));
+
+      // Check if the function exist and if it's alright for internal use.
+      if(block != current_class->lookup.end() && block->second.pt != PKG_EXT)
+      {
+        internal_function = true;
+      }
+    }
+    
+    if(internal_function)
     {
       sym->i32 = Late_Binding(sym->str.c_str());
       sym->type = DAT_INTFUNCTION;

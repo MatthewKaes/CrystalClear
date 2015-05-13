@@ -80,7 +80,6 @@ class Box
   @height
   
   def info()
-    print("hello")
 	print(type(this))
   end
 
