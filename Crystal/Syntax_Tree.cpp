@@ -14,9 +14,9 @@ Syntax_Node::Syntax_Node(std::vector<Syntax_Node*>* pool, Syntax_Tree* tree)
 
 void Syntax_Node::Process(Syntax_Node* node)
 {
-  if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.str[0] == '[' || 
+  if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.str.c_str()[0] == '[' || 
     (parent && !parent->Acquire()->str.compare("."))) && node->sym.type == DAT_OP && 
-    node->sym.str[0] == ',' && node->priority < priority + Get_Precedence(NULL))
+    node->sym.str.c_str()[0] == ',' && node->priority < priority + Get_Precedence(NULL))
   {
     index += 1;
     if(index >= params.size())

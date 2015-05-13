@@ -2,8 +2,7 @@ def main()
   # Primitives as objects
   print_color("Primitive Objects:", 11)
   8.type().print_color(12)
-  #"".print()
-  "  ".print()
+  "".print()
   
   print_color("Class Manipulation:", 11)
   
