@@ -214,8 +214,6 @@ void Crystal_Interpreter::Populate_BIC()
   REGISTER_CLASS(File);
   REGISTER_ATTRIBUTE(filename);
   REGISTER_ATTRIBUTE(object);
-  REGISTER_METHOD(print, Crystal_Print, 1);
-  REGISTER_METHOD(type, Crystal_Type, 1);
 }
 
 void Crystal_Interpreter::Cache_Code(const char* filename)
