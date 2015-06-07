@@ -312,7 +312,7 @@ void Crystal_Compiler::Make_Array(unsigned var, unsigned size, unsigned capacity
     lookups.back().corruptions[var] = true;
 }
 
-void Crystal_Compiler::Make_Class(unsigned var, unsigned ID)
+void Crystal_Compiler::Make_Class(unsigned var, unsigned ID, unsigned args)
 {
   //Creation of the array object
   Push(var);
@@ -335,7 +335,7 @@ void Crystal_Compiler::Make_Class(unsigned var, unsigned ID)
   Machine->Je(label, true);
   Machine->Call(EAX);
   Machine->Make_Label(label);
-  Pop(2);
+  Pop(2 + args);
 
   //Set up types for compiler use
   states[var].Set(CRY_CLASS_OBJ);

@@ -188,7 +188,7 @@ bool Class_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal
     target->Push(Mem_Conv(target, &(*syms)[i + syms->size() / 2]));
   }
 
-  target->Make_Class(MEMR(result), base->i32);
+  target->Make_Class(MEMR(result), base->i32, syms->size() / 2);
   
   return true;
 }
