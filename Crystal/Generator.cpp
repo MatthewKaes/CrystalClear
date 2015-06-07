@@ -181,6 +181,13 @@ bool Library_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Cryst
 
 bool Class_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
+  for(int i = static_cast<int>(syms->size() / 2) - 1; i >= 0; i--)
+  {
+    if((*syms)[i].type != DAT_LOCAL && (*syms)[i].type != DAT_REGISTRY)
+      target->Load(Mem_Conv(target, &(*syms)[i + syms->size() / 2]), &(*syms)[i]);
+    target->Push(Mem_Conv(target, &(*syms)[i + syms->size() / 2]));
+  }
+
   target->Make_Class(MEMR(result), base->i32);
   
   return true;

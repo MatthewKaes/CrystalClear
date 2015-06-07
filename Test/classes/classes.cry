@@ -11,7 +11,8 @@ def main()
   f.print()
   
   # Box constructor.
-  Box.print()
+  Box(10, 30).print()
+  Box(100, 20).area().print()
   
   # Making an object.
   x = Cube
@@ -28,9 +29,7 @@ def main()
 
   # Setting Attributes of an object.
   y = 10
-  x.@2d = Box
-  x.@2d.@width = y
-  x.@2d.@height = y * 2
+  x.@2d = Box(y, y * 2)
   x.@depth = y + 11.1
 
   z = 10
@@ -67,9 +66,14 @@ class Cube
   # Pull out attributes for easy documentation
   @2d
   @depth
+  
+  def init()
+    @2d = Box(0, 0)
+    @depth = 0
+  end
 
   def info(val)
-	print("type of " + val + " is " + type(val))
+    print("type of " + val + " is " + type(val))
   end
   
   # Get the area of the cube
@@ -84,19 +88,17 @@ class Box
   @width
   @height
   
-  def init()
-	@width = 10
-	@height = 20
+  def init(width, height)
+	@width = width
+	@height = height
   end
   
   def info()
-    print(this.@width)
 	print(type(this))
   end
 
   # Get the area of the box
   def area()
-	info()
 	return @width * @height
   end
 end

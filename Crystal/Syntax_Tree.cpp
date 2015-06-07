@@ -14,8 +14,8 @@ Syntax_Node::Syntax_Node(std::vector<Syntax_Node*>* pool, Syntax_Tree* tree)
 
 void Syntax_Node::Process(Syntax_Node* node)
 {
-  if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.str.c_str()[0] == '[' || 
-    (parent && !parent->Acquire()->str.compare("."))) && node->sym.type == DAT_OP && 
+  if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.type == DAT_CLASS ||
+    sym.str.c_str()[0] == '[' || (parent && !parent->Acquire()->str.compare("."))) && node->sym.type == DAT_OP && 
     node->sym.str.c_str()[0] == ',' && node->priority < priority + Get_Precedence(NULL))
   {
     index += 1;
@@ -159,7 +159,8 @@ bool Syntax_Node::Evaluate()
   }
 
   // Clear out registry used.
-  Clear_Registry(this);
+  if(sym.type != DAT_CLASS)
+    Clear_Registry(this);
 
   // Stacking assignment operator without using
   // uneccesary registers.
@@ -180,6 +181,9 @@ bool Syntax_Node::Evaluate()
     new_code.result = sym;
   }
   
+  if(sym.type == DAT_CLASS)
+    Clear_Registry(this);
+
   //Finalize Bytecode
   tree_->Get_Bytecodes()->push_back(new_code);
 
@@ -217,7 +221,8 @@ void Syntax_Node::Finalize()
   }
 
   if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || 
-     sym.type == DAT_STATEMENT || sym.type == DAT_INTFUNCTION)
+     sym.type == DAT_STATEMENT || sym.type == DAT_INTFUNCTION ||
+     sym.type == DAT_CLASS)
     index = 0;
   else
     index = 1;
@@ -246,7 +251,8 @@ void Syntax_Node::Map_Parameters(Bytecode* code, Syntax_Node* node)
 {
   // Force arguments to be moved onto the stack for functions
   if(node->sym.type == DAT_FUNCTION || node->sym.type == DAT_BIFUNCTION || 
-     node->sym.type == DAT_OBJFUNCTION || node->sym.type == DAT_INTFUNCTION)
+     node->sym.type == DAT_OBJFUNCTION || node->sym.type == DAT_INTFUNCTION ||
+     node->sym.type == DAT_CLASS)
   {
     node->Force_Memory(code);
     // Processing of global and built in functions.
