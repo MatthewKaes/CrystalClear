@@ -170,6 +170,13 @@ void x86_Machine::Cmp(unsigned address, ARG argument)
   }
 }
 
+void x86_Machine::CmpZero(REGISTERS source)
+{
+  *p++ = CMP_WORD;
+  *p++ = Reg_Id(source) + REG_CMP;
+  *p++ = 0;
+}
+
 void x86_Machine::CmpF(unsigned address, ARG argument)
 {
   switch(argument.type)

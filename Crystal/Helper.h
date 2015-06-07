@@ -13,6 +13,7 @@ int Fast_pointercmp(Crystal_Symbol* aryl, Crystal_Symbol* aryr);
 int Fast_arraycmp(Crystal_Symbol* aryl, Crystal_Symbol* aryr);
 
 void Stack_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from);
+void This_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from);
 
 void Power_Syms(Crystal_Symbol* syml, Crystal_Symbol* symr);
 void Power_SymsR(Crystal_Symbol* syml, Crystal_Symbol* symr);

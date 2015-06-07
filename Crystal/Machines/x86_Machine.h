@@ -76,6 +76,7 @@ public:
   void Or(unsigned address, REGISTERS source);
   void And(unsigned address, REGISTERS source);
   void Cmp(unsigned address, ARG argument);
+  void CmpZero(REGISTERS source);
   void CmpF(unsigned address, ARG argument);
   void Jmp(unsigned label, bool short_jump = false);
   void Je(unsigned label, bool short_jump = false);

@@ -60,6 +60,7 @@
 #define FAR_ECX 0xD1
 #define ESP_EBP 0xE5
 #define EBP_ESP 0xEC
+#define REG_CMP 0xF8
 
 //Jump Codes
 #define CMP_BYTE 0x80

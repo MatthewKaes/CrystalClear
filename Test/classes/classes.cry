@@ -6,8 +6,12 @@ def main()
   
   print_color("Class Manipulation:", 11)
   
+  # Built in File object.
   f = File
   f.print()
+  
+  # Box constructor.
+  Box.print()
   
   # Making an object.
   x = Cube
@@ -55,6 +59,7 @@ def main()
   print_color("\nCalling area function for x.@2d:", 11)
   print(ret = x.@2d.area())
   x.info(ret)
+  
   return ret
 end
 
@@ -78,6 +83,11 @@ class Box
   # Pull out attributes for easy documentation
   @width
   @height
+  
+  def init()
+	@width = 10
+	@height = 20
+  end
   
   def info()
     print(this.@width)

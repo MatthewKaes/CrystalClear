@@ -251,7 +251,7 @@ void Construct_String(Crystal_Symbol* symd,  char* str, unsigned size)
   symd->type = CRY_POINTER;
 }
 
-void Construct_Class(Crystal_Symbol* symd, int id)
+void Construct_Class(int id, Crystal_Symbol* symd)
 {
   Class_Info* klass = Class_Listing[id];
   symd->sym = GC_Allocate();

@@ -113,6 +113,7 @@ public:
   virtual void Or(unsigned address, REGISTERS source) = 0;
   virtual void And(unsigned address, REGISTERS source) = 0;
   virtual void Cmp(unsigned address, ARG argument) = 0;
+  virtual void CmpZero(REGISTERS source) = 0;
   virtual void CmpF(unsigned address, ARG argument) = 0;
   virtual void Jmp(unsigned label, bool short_jump = false) = 0;
   virtual void Je(unsigned label, bool short_jump = false) = 0;

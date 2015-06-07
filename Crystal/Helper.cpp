@@ -252,6 +252,19 @@ void Stack_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from)
   sym_stack->type = sym_from->type;
 }
 
+void This_Copy(Crystal_Symbol* sym_stack, Crystal_Symbol* sym_from)
+{
+  if(sym_from->type == CRY_REFERENCE)
+  {
+    Stack_Copy(sym_stack, sym_from);
+  }
+  else
+  {
+    sym_stack->sym = sym_from;
+    sym_stack->type = CRY_REFERENCE;
+  }
+}
+
 void Power_Syms(Crystal_Symbol* syml, Crystal_Symbol* symr)
 {
   double l = syml->type == CRY_DOUBLE ? syml->d : syml->i32;
@@ -390,8 +403,6 @@ void* Late_Func_Binding(int id, Crystal_Symbol* symd)
 {
   if(symd->type == CRY_POINTER)
     return symd->sym->klass->lookup[id].function;
-  if(symd->type == CRY_REFERENCE)
-    return symd->sym->sym->klass->lookup[id].function;
   else
     return Class_Listing[symd->type]->lookup[id].function;
 }

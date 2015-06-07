@@ -211,6 +211,9 @@ void Crystal_Interpreter::Populate_BIC()
   Class_Info* current_class;
   Package_Info new_package;
 
+  // Initalize Function
+  Late_Binding("init");
+
   REGISTER_CLASS(File);
   REGISTER_ATTRIBUTE(filename);
   REGISTER_ATTRIBUTE(object);

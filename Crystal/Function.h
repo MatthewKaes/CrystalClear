@@ -23,7 +23,7 @@ void Crystal_Array_Append_Loc(Crystal_Symbol* symd, Crystal_Symbol* syms, Crysta
 void Construct_Array(Crystal_Symbol* symd, unsigned size, unsigned capacity, Crystal_Symbol* ary);
 void Construct_Range(Crystal_Symbol* symd, int left, int right);
 void Construct_String(Crystal_Symbol* symd,  char* str, unsigned size);
-void Construct_Class(Crystal_Symbol* symd, int id);
+void Construct_Class(int id, Crystal_Symbol* symd);
 void Clone_Class(Crystal_Symbol* symd, Crystal_Symbol* sym, Crystal_Symbol* data);
 
 #endif

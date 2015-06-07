@@ -84,15 +84,29 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   if(stack_depth == 0)
     stack_depth = 1;
 
+  // Setup the local stack.
   stack_size = (locals_count + stack_depth + 1) * VAR_SIZE + 4;
   Machine->Allocate_Stack(stack_size);
   states.resize(locals_count + stack_depth + 1);
   
+  // If it's an object member function then copy over
+  // the "this" object as a reference.
+  unsigned i = 0;
+  if(obj)
+  {
+    Machine->Push_Stk(i * 4 + 0x14);
+    Push(i);
+    Call(This_Copy);
+    Pop(2);
+    states[0].Set(CRY_REFERENCE);
+    i++;
+  }
+
   // Copy over all the function objects onto the stack
   // TODO:
   //  Optimize with with a block copy to increase speed
   //  and reduce code bloat.
-  for(unsigned i = 0; i < arguments; i++)
+  for(; i < arguments; i++)
   {
     Machine->Push_Stk(i * 4 + 0x14);
     Push(i);
@@ -109,6 +123,10 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
 
   //tidy up lookup data.
   lookups.clear();
+
+  // Set the "this" object to a reference for member functions.
+  if(obj)
+    states[0].Set(CRY_REFERENCE);
 }
 
 void Crystal_Compiler::End_Encode()
@@ -297,10 +315,28 @@ void Crystal_Compiler::Make_Array(unsigned var, unsigned size, unsigned capacity
 void Crystal_Compiler::Make_Class(unsigned var, unsigned ID)
 {
   //Creation of the array object
-  Machine->Push(static_cast<int>(ID));
   Push(var);
+  Machine->Push(static_cast<int>(ID));
   Machine->Call(Construct_Class);
-  Machine->Pop(sizeof(int) * 2);
+  Machine->Pop(sizeof(int));
+
+  // Call Init function
+  Machine->Push(0);
+  
+  // Seperate calling for base and refrence objects
+  if(states[var].Only(CRY_REFERENCE))
+    Machine->Call(Late_Func_Binding_Ref);
+  else
+    Machine->Call(Late_Func_Binding);
+
+  // Init functions can't return.
+  unsigned label = Machine->Reserve_Label();
+  Machine->CmpZero(EAX);
+  Machine->Je(label, true);
+  Machine->Call(EAX);
+  Machine->Make_Label(label);
+  Pop(2);
+
   //Set up types for compiler use
   states[var].Set(CRY_CLASS_OBJ);
   //Corrupt the state of the object
