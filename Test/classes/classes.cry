@@ -80,11 +80,13 @@ class Box
   @height
   
   def info()
+    print(this.@width)
 	print(type(this))
   end
 
   # Get the area of the box
   def area()
+	info()
 	return @width * @height
   end
 end

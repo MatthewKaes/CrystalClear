@@ -388,10 +388,12 @@ void Val_Binding(Crystal_Symbol* ret, Crystal_Symbol* src, int index)
 
 void* Late_Func_Binding(int id, Crystal_Symbol* symd)
 {
-  if(symd->type != CRY_POINTER)
-    return Class_Listing[symd->type]->lookup[id].function;
-  else
+  if(symd->type == CRY_POINTER)
     return symd->sym->klass->lookup[id].function;
+  if(symd->type == CRY_REFERENCE)
+    return symd->sym->sym->klass->lookup[id].function;
+  else
+    return Class_Listing[symd->type]->lookup[id].function;
 }
 
 void* Late_Func_Binding_Ref(int id, Crystal_Symbol* symd)
