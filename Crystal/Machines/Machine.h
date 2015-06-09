@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <vector>
+#include <unordered_map>
 
 #define DEBUG_PROGRAM -1
 #define NON_EXECUTABLE -2
@@ -61,7 +62,8 @@ public:
   //==========================
   //Get the hooks
   virtual ~AOT_Compiler(){};
-  virtual void Setup(std::string name, BYTE* program) = 0;
+  virtual void Setup(BYTE* base) = 0;
+  virtual void Function(std::string name, BYTE* program) = 0;
   virtual BYTE* Location() = 0;
   //Compiler info
   virtual const char* Get_Version() = 0;
@@ -176,14 +178,22 @@ public:
   //--------------------------
   // Special Functions
   //--------------------------
-  virtual void Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address = false, bool extra_byte = false) = 0;  
+  virtual void Strcpy(REGISTERS dest, unsigned address, int length, bool extra_byte = false) = 0;  
+  virtual void Strcpy(REGISTERS dest, const char* str, int length, bool extra_byte = false) = 0;  
   
   //--------------------------
   // Memory Functions
   //--------------------------
-  virtual int String_Address(const char* str) = 0;
-  virtual int Double_Address(double dec) = 0;
-  virtual int Float_Address(float dec) = 0;
+  virtual int String_Address(const char* str, unsigned address) = 0;
+  virtual int Double_Address(double dec, unsigned address) = 0;
+  virtual int Float_Address(float dec, unsigned address) = 0;
+  
+  //--------------------------
+  // Linker Functions
+  //--------------------------
+  virtual std::unordered_map<std::string, std::vector<unsigned>>* Get_Strings() = 0;
+  virtual std::unordered_map<float, std::vector<unsigned>>* Get_Floats() = 0;
+  virtual std::unordered_map<double, std::vector<unsigned>>* Get_Doubles() = 0;
 
   //==========================
   // Compiler Components
@@ -195,13 +205,6 @@ public:
     unsigned adr;
     BYTE* loc;
     VAR_TYPES type;
-  };
-  struct LINKER_Var
-  {
-    std::string name;
-    double dec;
-    float flt;
-    std::vector<BYTE*> refrence_list;
   };
 };
 

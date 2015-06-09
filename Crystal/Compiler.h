@@ -9,10 +9,10 @@
 #include "Clarity_Filter.h"
 #include "Library.h"
 #include "Machines\Machine.h"
+#include "Linker.h"
 
 //Crystal Constants
 #define STRING_POOL 0xFFFF
-#define STACK_RESERVE 0xFF
 #define MIN_BLOCK_SIZE 0x20
 //Return Address should be the side of a symbol
 //This allows us to have cache alignment on the stack.
@@ -42,15 +42,15 @@ public:
   CRY_ARG(__int64 lrg) : lrg_(lrg), type(CRY_INT64), filt(CRY_INT64){};
   CRY_ARG(bool bol) : bol_(bol), type(CRY_BOOL), filt(CRY_BOOL){};
   CRY_ARG(double dec) : dec_(dec), type(CRY_DOUBLE), filt(CRY_DOUBLE){};
-  CRY_ARG(const char* str);
+  CRY_ARG(const char* str) : str_(str), type(CRY_TEXT), filt(CRY_TEXT){};
   CRY_ARG(Crystal_Data* sym);
   union{
     int num_;
     __int64 lrg_;
     bool bol_;
     double dec_;
-    char* str_;
   };
+  std::string str_;
   Symbol_Type type;
   Clarity_Filter filt;
 
@@ -144,6 +144,11 @@ private:
   // Machine Code
   //==========================
   AOT_Compiler* Machine;
+
+  //==========================
+  // Linker
+  //==========================
+  Crystal_Linker linker;
 
   //==========================
   // Optimization Management

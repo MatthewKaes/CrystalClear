@@ -3,15 +3,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include <vector>
+#include <string>
 
 #include "Machine.h"
 #include "x86_Codes.h"
 
 #define COMPILER_VERSION "1.0.4"
 #define WORD_VARIANT WRD_OFF
-#define STACK_SIZE 0xFF
 
 class x86_Machine : public AOT_Compiler
 {
@@ -19,9 +17,9 @@ public:
   //==========================
   // Compiler Functionallity
   //==========================
-  x86_Machine();
   //Get the hooks
-  void Setup(std::string name, BYTE* program);
+  void Setup(BYTE* base);
+  void Function(std::string name, BYTE* program);
   BYTE* Location();
   //Compiler info
   const char* Get_Version();
@@ -137,14 +135,23 @@ public:
   //--------------------------
   // Special Functions
   //--------------------------
-  void Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address = false, bool extra_byte = false);
+  void Strcpy(REGISTERS dest, unsigned address, int length, bool extra_byte = false);
+  void Strcpy(REGISTERS dest, const char* str, int length, bool extra_byte = false);
 
   //--------------------------
   // Memory Functions
   //--------------------------
-  int String_Address(const char* str);
-  int Double_Address(double dec);
-  int Float_Address(float dec);
+  int String_Address(const char* str, unsigned address);
+  int Double_Address(double dec, unsigned address);
+  int Float_Address(float dec, unsigned address);
+  
+  //--------------------------
+  // Linker Functions
+  //--------------------------
+  std::unordered_map<std::string, std::vector<unsigned>>* Get_Strings();
+  std::unordered_map<float, std::vector<unsigned>>* Get_Floats();
+  std::unordered_map<double, std::vector<unsigned>>* Get_Doubles();
+
 private:
   //==========================
   // Compiler Components
@@ -160,9 +167,6 @@ private:
   //Addressing functions used for AOT execution mode.
   //Linker functions
   void Label_Management(unsigned label, bool short_jump = false);
-  int Add_Double(double dec);
-  int Add_Float(float dec);
-  int Add_String(const char* str);
 
   //Compiler Information Crawl
   //Compiler lable set
@@ -175,11 +179,11 @@ private:
   //==========================
   //Linker Information Crawl
   //Executable string pool
-  std::vector<LINKER_Var> esp;
+  std::unordered_map<std::string, std::vector<unsigned>> esp;
   //Executable float pool
-  std::vector<LINKER_Var> efp;
+  std::unordered_map<float, std::vector<unsigned>> efp;
   //Executable double pool
-  std::vector<LINKER_Var> edp;
+  std::unordered_map<double, std::vector<unsigned>> edp;
   //DATA Section mapping
   unsigned d_section_adr;
 
@@ -192,6 +196,7 @@ private:
   //==========================
   // State Management
   //==========================
+  BYTE* start;
   BYTE* p;
   unsigned stack_size;
   unsigned pushed_bytes;

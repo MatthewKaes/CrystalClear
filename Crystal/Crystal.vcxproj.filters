@@ -46,11 +46,14 @@
     <Filter Include="Library\Headers">
       <UniqueIdentifier>{06aafa68-9198-4c1d-af91-3d197f28314d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Compiler">
+      <UniqueIdentifier>{ad915148-ce9d-4ae7-a4cb-8153175771fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Compiler\Header">
+      <UniqueIdentifier>{c57fc57c-8f02-40b3-90d0-806ef5d2fdc4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Compiler.cpp">
-      <Filter>Core Sources</Filter>
-    </ClCompile>
     <ClCompile Include="Machines\x86_Machine.cpp">
       <Filter>Machines</Filter>
     </ClCompile>
@@ -111,12 +114,15 @@
     <ClCompile Include="OS.cpp">
       <Filter>Extensions</Filter>
     </ClCompile>
+    <ClCompile Include="Linker.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="Compiler.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Crystal.h">
-      <Filter>Core Sources\Core Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Compiler.h">
       <Filter>Core Sources\Core Headers</Filter>
     </ClInclude>
     <ClInclude Include="Machines\Machine.h">
@@ -187,6 +193,12 @@
     </ClInclude>
     <ClInclude Include="OS.h">
       <Filter>Extensions\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Linker.h">
+      <Filter>Compiler\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Compiler.h">
+      <Filter>Compiler\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

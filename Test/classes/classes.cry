@@ -3,8 +3,10 @@ def main()
   print_color("Primitive Objects:", 11)
   8.type().print_color(12)
   "".print()
+  11.50.print()
   
   print_color("Class Manipulation:", 11)
+  "".print()
   
   # Built in File object.
   f = File

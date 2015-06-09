@@ -156,6 +156,7 @@
     <ClCompile Include="Filesystems.cpp" />
     <ClCompile Include="Garbage_Collector.cpp" />
     <ClCompile Include="IO.cpp" />
+    <ClCompile Include="Linker.cpp" />
     <ClCompile Include="Marshal.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Function.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="Filesystems.h" />
     <ClInclude Include="Garbage_Collector.h" />
     <ClInclude Include="IO.h" />
+    <ClInclude Include="Linker.h" />
     <ClInclude Include="Marshal.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="Function.h" />

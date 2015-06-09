@@ -4,19 +4,9 @@
 #include "Helper.h"
 #include "Function.h"
 #include "Garbage_Collector.h"
-
-int CRY_ARG::poolindex = 0;
-char CRY_ARG::strpool[STRING_POOL] = {0};
+#include "Linker.h"
 
 extern std::unordered_map<std::string, unsigned> late_bindings;
-
-CRY_ARG::CRY_ARG(const char* str) : type(CRY_TEXT), filt(CRY_TEXT)
-{
-  str_ = strpool + poolindex;
-  strcpy(str_, str);
-  poolindex += strlen(str) + 2;
-  strpool[poolindex - 1] = '\0';
-}
 
 CRY_ARG::CRY_ARG(Crystal_Data* sym)
 {
@@ -39,10 +29,7 @@ CRY_ARG::CRY_ARG(Crystal_Data* sym)
     break;
   case DAT_STRING:
     type = CRY_TEXT;
-    str_ = strpool + poolindex;
-    strcpy(str_, sym->str.c_str());
-    poolindex += sym->str.size() + 2;
-    strpool[poolindex - 1] = '\0';
+    str_ = sym->str;
     break;
   }
   filt.Set(type);
@@ -52,17 +39,19 @@ Crystal_Compiler::Crystal_Compiler(AOT_Compiler* target)
 {
   Machine = target;
   program.load = (byte*)VirtualAllocEx( GetCurrentProcess(), 0, 1<<16, MEM_COMMIT | MEM_RESERVE , PAGE_EXECUTE_READWRITE);
+  program.base = program.load;
+  Machine->Setup(program.load);
 }
 
 Crystal_Compiler::~Crystal_Compiler()
 {
-  VirtualFreeEx(GetCurrentProcess(), program.load, 1<<16, MEM_RELEASE);
+  VirtualFreeEx(GetCurrentProcess(), program.base, 1<<16, MEM_RELEASE);
   delete Machine;
 }
 
 void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsigned stack_count, unsigned arguments, Class_Info* obj, unsigned id)
 {
-  Machine->Setup(name, program.load);
+  Machine->Function(name, program.load);
 
   // Set lookups for the class object if we are in one.
   if(obj)
@@ -161,6 +150,10 @@ void Crystal_Compiler::Linker()
       }
     }
   }
+
+  linker.Set_Double(Machine->Get_Doubles());
+  linker.Set_String(Machine->Get_Strings());
+  linker.Link(program.base);
 }
 
 int Crystal_Compiler::Execute(Crystal_Symbol* ret)
@@ -389,7 +382,7 @@ void Crystal_Compiler::Array_Index_C(unsigned dest, unsigned var, CRY_ARG index)
     Push_C(static_cast<int>(index.dec_));
     break;
   case CRY_TEXT:
-    Push_C(atoi(index.str_));
+    Push_C(atoi(index.str_.c_str()));
     break;
   }
 
@@ -421,7 +414,7 @@ void Crystal_Compiler::Push_C(CRY_ARG var)
     Machine->Push(var.dec_);
     return;
   case CRY_TEXT:
-    Machine->Push(reinterpret_cast<int>(var.str_));
+    Machine->Push(var.str_.c_str());
     return;
   }
 }
@@ -673,8 +666,8 @@ void Crystal_Compiler::Load(unsigned var, CRY_ARG val)
     break;
   //Text can be loaded as constanst since strings cant.
   case CRY_TEXT:
-    Machine->Load_Mem(offset - DATA_UPPER, val.str_);
-    Machine->Load_Mem(offset - DATA_LOWER, static_cast<int>(strlen(val.str_)));
+    Machine->Load_Mem(offset - DATA_UPPER, val.str_.c_str());
+    Machine->Load_Mem(offset - DATA_LOWER, static_cast<int>(val.str_.size()));
     //Machine->Load_Mem(offset - DATA_UPPER, EAX);
     break;
   }
@@ -706,7 +699,7 @@ void Crystal_Compiler::Ref_Load(unsigned var, CRY_ARG val)
     Pop(3);
     break;
   case CRY_TEXT:
-    Push_C(val.str_);
+    Push_C(val.str_.c_str());
     Call(Push_Text);
     Pop(2);
     break;
@@ -872,7 +865,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
         Machine->Call(malloc);
         Machine->Pop(4);
         Machine->Strcpy(EAX, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER);
-        Machine->Strcpy(EDI, offset_source - DATA_UPPER, offset_source - DATA_LOWER, false, true);
+        Machine->Strcpy(EDI, offset_source - DATA_UPPER, offset_source - DATA_LOWER, true);
         Machine->Push(EBX);
         Machine->Push(EAX);
         Push(dest);
@@ -1011,12 +1004,12 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
         if(left)
         {
           Machine->Strcpy(EAX, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER);
-          Machine->Strcpy(EDI, static_cast<unsigned>(Machine->String_Address(converted.c_str())), converted.length(), true, true);
+          Machine->Strcpy(EDI, static_cast<unsigned>(Machine->String_Address(converted.c_str(), -1)), converted.length(), true);
         }
         else
         {
-          Machine->Strcpy(EAX, static_cast<unsigned>(Machine->String_Address(converted.c_str())), converted.length(), true);
-          Machine->Strcpy(EDI, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER, false, true);
+          Machine->Strcpy(EAX, static_cast<unsigned>(Machine->String_Address(converted.c_str(), -1)), converted.length());
+          Machine->Strcpy(EDI, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER, true);
         }
         Machine->Dec(EBX);
         Machine->Push(EBX);
@@ -1026,8 +1019,8 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
       }
       else
       {
-        Machine->Push(static_cast<int>(strlen(const_.str_)));
-        Machine->Push(Machine->String_Address(const_.str_));
+        Machine->Push(static_cast<int>(const_.str_.size()));
+        Machine->Push(const_.str_.c_str());
         Push(dest);
         if(left)
           Call(Crystal_Const_Append_T);
@@ -1071,7 +1064,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
           converted.assign("nil");
         }
         Machine->Push(static_cast<int>(converted.length()));
-        Machine->Push(Machine->String_Address(converted.c_str()));
+        Machine->Push(Machine->String_Address(converted.c_str(), -1));
       }
       Push(dest);
       Call(left ? Crystal_Text_Append_C : Crystal_Text_Append_CR);

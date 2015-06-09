@@ -8,7 +8,7 @@
 
 //Crystal Constants
 #define CRY_COPYRIGHT "Crystal Clear Copyright Matthew Kaes 2014"
-#define CRY_VERSION "0.7.4"
+#define CRY_VERSION "0.9.10"
 #define CRY_MACHINE "x86"
 
 //Crystal Macros
@@ -18,7 +18,7 @@
       break;
 
 //Crystal Types
-typedef int (*FuncPtr)(void *);
+typedef int (*CrystalProgram)(void *);
 typedef unsigned char BYTE;
 
 
@@ -33,13 +33,16 @@ enum Data_Type : char { DAT_NIL, DAT_LOOKUP, DAT_INT, DAT_INT64, DAT_DOUBLE, DAT
 enum PACKAGE_TYPE { PKG_EXE, PKG_CLASS, PKG_EXT };
 
 union funcptr {
-  FuncPtr call;
+  CrystalProgram call;
   BYTE* load;
 };
 
-union CryProg {
-  FuncPtr call;
-  BYTE* load;
+struct CryProg {
+  union {
+    CrystalProgram call;
+    BYTE* load;
+  };
+  BYTE* base;
 };
 
 struct Package_Info {

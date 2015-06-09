@@ -12,17 +12,12 @@ unsigned x86_Machine::two_complement_32(unsigned id)
   return (0xFFFFFFFF - id) + 1;
 }
 
-x86_Machine::x86_Machine()
+void x86_Machine::Setup(BYTE* base)
 {
-  //Obviously since these are used in direct addressing
-  //we can't have them go and reallocating themselves.
-  //When they grow we will get a copy and we don't want that.
-  esp.reserve(STACK_SIZE);
-  efp.reserve(STACK_SIZE);
-  edp.reserve(STACK_SIZE);
+  start = base;
 }
 
-void x86_Machine::Setup(std::string name, BYTE* program)
+void x86_Machine::Function(std::string name, BYTE* program)
 {
   p = program;
   prg_id = name;
@@ -403,12 +398,16 @@ void x86_Machine::Push(ARG argument)
       (int&)p[0] = (unsigned)(argument.num_); p+= sizeof(int);
     }
     return;
+  case AOT_STRING:
+    *p++ = PSH_INT_W;
+    (int&)p[0] = (unsigned)(String_Address(argument.str_, (int)p)); p+= sizeof(int);
+    return;
   case AOT_DOUBLE:
 
     //Double
     *p++ = FPU_DOUBLE_OP;
     *p++ = FPU_LOAD_ADDR;
-    (int&)p[0] = (int)Double_Address(argument.dec_); p+= sizeof(int);
+    (int&)p[0] = (int)Double_Address(argument.dec_, (int)p); p+= sizeof(int);
 
     //Make room
     *p++ = STK_POP;
@@ -426,7 +425,7 @@ void x86_Machine::Push(ARG argument)
     //Float
     *p++ = FPU_FLOAT_OP;
     *p++ = FPU_LOAD_ADDR;
-    (int&)p[0] = (int)Float_Address(argument.flt_); p+= sizeof(int);
+    (int&)p[0] = (int)Float_Address(argument.flt_, (int)p); p+= sizeof(int);
 
     //Make room
     *p++ = STK_POP;
@@ -512,7 +511,7 @@ void x86_Machine::Load_Mem(unsigned address, ARG argument)
   case AOT_STRING:
     *p++ = ESP_WORD;
     Put_Addr(address);
-    (int&)p[0] = (int)argument.str_; p+= sizeof(int);
+    (int&)p[0] = String_Address(argument.str_, (int)p); p+= sizeof(int);
     return;
   case AOT_BOOL:
   case AOT_CHAR:
@@ -526,7 +525,7 @@ void x86_Machine::Load_Mem(unsigned address, ARG argument)
   case AOT_DOUBLE:
     *p++ = FPU_DOUBLE_OP;
     *p++ = FPU_LOAD_ADDR;
-    (int&)p[0] = Double_Address(argument.dec_); p+= sizeof(int);
+    (int&)p[0] = Double_Address(argument.dec_, (int)p); p+= sizeof(int);
     *p++ = FPU_DOUBLE_OP;
     Put_Addr(address, FPU_PUSH);
     return;
@@ -551,6 +550,17 @@ void x86_Machine::Load_Register(REGISTERS reg, ARG argument)
     }
     *p++ = REG_LOD + Reg_Id(reg); // mov eax
     (int&)p[0] = argument.num_; p+= sizeof(int);
+    return;
+  case AOT_STRING:
+    if(reg == EAX && argument.str_ == NULL)
+    {
+      //xor eax, eax
+      *p++ = REG_XOR;
+      *p++ = OPR_EAX;
+      return;
+    }
+    *p++ = REG_LOD + Reg_Id(reg); // mov eax
+    (int&)p[0] = String_Address(argument.str_, (int)p); p+= sizeof(int);
     return;
   }
 }
@@ -860,28 +870,6 @@ void x86_Machine::Put_Addr(unsigned addr, int op_offset)
   }
 }
 
-int x86_Machine::String_Address(const char* str)
-{
-  int address;
-  for(unsigned i = 0; i < esp.size(); i++)
-  {
-    if(!esp[i].name.compare(str))
-    {
-      address = (int)esp[i].name.c_str();
-      return address;
-    }
-  }
-  return Add_String(str);
-}
-
-int x86_Machine::Add_String(const char* str)
-{
-  LINKER_Var var;
-  var.name.assign(str);
-  esp.push_back(var);
-  return (int)(esp.back().name.c_str());
-}
-
 void x86_Machine::Label_Management(unsigned label, bool short_jump)
 {
    std::vector<AOT_Var>::iterator walker;
@@ -924,44 +912,39 @@ void x86_Machine::Label_Management(unsigned label, bool short_jump)
   }
 }
 
-int x86_Machine::Float_Address(float dec)
+int x86_Machine::String_Address(const char* str, unsigned address)
 {
-  for(unsigned i = 0; i < efp.size(); i++)
-  {
-    if(efp[i].flt == dec)
-    {
-      return (int)&(efp[i].flt);
-    }
-  }
-  return Add_Float(dec);
+  esp[str].push_back(address - (int)start);
+
+  return NULL;
 }
 
-int x86_Machine::Add_Float(float dec)
+int x86_Machine::Float_Address(float dec, unsigned address)
 {
-  LINKER_Var var;
-  var.flt = dec;
-  efp.push_back(var);
-  return (int)&(efp.back().flt);
+  efp[dec].push_back(address - (int)start);
+
+  return NULL;
 }
 
-int x86_Machine::Double_Address(double dec)
+int x86_Machine::Double_Address(double dec, unsigned address)
 {
-  for(unsigned i = 0; i < edp.size(); i++)
-  {
-    if(edp[i].dec == dec)
-    {
-      return (int)&(edp[i].dec);
-    }
-  }
-  return Add_Double(dec);
+  edp[dec].push_back(address - (int)start);
+
+  return NULL;
 }
 
-int x86_Machine::Add_Double(double dec)
+std::unordered_map<std::string, std::vector<unsigned>>* x86_Machine::Get_Strings()
 {
-  LINKER_Var var;
-  var.dec = dec;
-  edp.push_back(var);
-  return (int)&(edp.back().dec);
+  return &esp;
+}
+
+std::unordered_map<float, std::vector<unsigned>>* x86_Machine::Get_Floats()
+{
+  return &efp;
+}
+std::unordered_map<double, std::vector<unsigned>>* x86_Machine::Get_Doubles()
+{
+  return &edp;
 }
 
 void x86_Machine::FPU_Load(ARG argument)
@@ -972,19 +955,19 @@ void x86_Machine::FPU_Load(ARG argument)
   case AOT_FLOAT:    
     *p++ = FPU_FLOAT_OP;
     *p++ = FPU_LOAD_ADDR;
-    (int&)p[0] = (int)Float_Address(argument.flt_); p+= sizeof(int);
+    (int&)p[0] = (int)Float_Address(argument.flt_, (int)p); p+= sizeof(int);
     return;
   case AOT_DOUBLE:    
     *p++ = FPU_DOUBLE_OP;
     *p++ = FPU_LOAD_ADDR;
-    (int&)p[0] = (int)Double_Address(argument.dec_); p+= sizeof(int);
+    (int&)p[0] = (int)Double_Address(argument.dec_, (int)p); p+= sizeof(int);
     return;
     //FPU can't actually load integer values
     //so we need to load it as an "address":
   case AOT_INT:    
     *p++ = FPU_FLOAT_OP;
     *p++ = FPU_LOAD_ADDR;
-    (int&)p[0] = (int)Float_Address((float)argument.num_); p+= sizeof(int);
+    (int&)p[0] = (int)Float_Address((float)argument.num_, (int)p); p+= sizeof(int);
     return;
   }
 }
@@ -1129,20 +1112,28 @@ void x86_Machine::FPU_Cos()
   *p++ = FPU_COS;
 }
 
-void x86_Machine::Strcpy(REGISTERS dest, unsigned address, int length, bool raw_address, bool extra_byte)
+void x86_Machine::Strcpy(REGISTERS dest, unsigned address, int length, bool extra_byte)
 {
-  if(raw_address)
-    Load_Register(ECX, length);
-  else
-    Mov(ECX, length);
+  Mov(ECX, length);
 
   if(extra_byte)
     Inc(ECX);
 
-  if(raw_address)
-    Load_Register(ESI, static_cast<int>(address));
-  else
-    Mov(ESI, address);
+  Mov(ESI, address);
+
+  Move_Register(EDI, dest);
+  *p++ = REP;
+  *p++ = MOVSB;
+}
+
+void x86_Machine::Strcpy(REGISTERS dest, const char* str, int length, bool extra_byte)
+{
+  Load_Register(ECX, length);
+
+  if(extra_byte)
+    Inc(ECX);
+
+  Load_Register(ESI, str);
 
   Move_Register(EDI, dest);
   *p++ = REP;
