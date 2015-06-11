@@ -1,5 +1,6 @@
 def main()
   # Primitives as objects
+  func(150)
   print_color("Primitive Objects:", 11)
   8.type().print_color(12)
   "".print()
@@ -83,6 +84,10 @@ class Cube
 	info(val = @2d.area() * @depth)
 	return val
   end
+end
+
+def func()
+  print("Hello")
 end
 
 class Box

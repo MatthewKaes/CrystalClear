@@ -95,12 +95,15 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   // TODO:
   //  Optimize with with a block copy to increase speed
   //  and reduce code bloat.
-  for(; i < arguments; i++)
+  for(; i < locals_count + stack_depth + 1; i++)
   {
-    Machine->Push_Stk(i * 4 + 0x14);
-    Push(i);
-    Call(Stack_Copy);
-    Pop(2);
+    if(i < arguments)
+    {
+      Machine->Push_Stk(i * 4 + 0x14);
+      Push(i);
+      Call(Stack_Copy);
+      Pop(2);
+    }
     states[i].Obscurity();
   }
 
@@ -145,6 +148,7 @@ void Crystal_Compiler::Linker()
       BYTE* call = package_lookup[packages[i].links[j].name].load;
       for(unsigned w = 0; w < packages[i].links[j].refrence_list.size(); w++)
       {
+        //linker.Add_Internal((unsigned)call - (unsigned)program.base, (unsigned)packages[i].links[j].refrence_list[w] - (unsigned)program.base);
         int* adder = (int*)packages[i].links[j].refrence_list[w];
         *adder = (int)call;
       }
