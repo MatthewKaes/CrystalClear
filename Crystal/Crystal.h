@@ -32,7 +32,7 @@ enum Data_Type : char { DAT_NIL, DAT_LOOKUP, DAT_INT, DAT_INT64, DAT_DOUBLE, DAT
 
 enum PACKAGE_TYPE { PKG_EXE, PKG_CLASS, PKG_EXT };
 
-union funcptr {
+union CryFunc {
   CrystalProgram call;
   BYTE* load;
 };

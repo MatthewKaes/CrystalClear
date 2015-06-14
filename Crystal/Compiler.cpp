@@ -129,45 +129,29 @@ void Crystal_Compiler::End_Encode()
   //Construct Package
   if(!class_encoding)
   {
-    CryPackage pack;
-    pack.name = Machine->Get_Name();
-    pack.links = Machine->Get_Links();
-    pack.program = program;
-    packages.push_back(pack);
-    package_lookup[pack.name] = pack.program;
+    std::unordered_map<std::string, PackageLinks>* links = Machine->Get_Links();
+    (*links)[Machine->Get_Name()].package_offset = program.load - program.base;
   }
   program.load = Machine->Location() + 1;
 }
 
 void Crystal_Compiler::Linker()
 {
-  for(unsigned i = 0; i < packages.size(); i++)
-  {
-    for(unsigned j = 0; j < packages[i].links.size(); j++)
-    {
-      BYTE* call = package_lookup[packages[i].links[j].name].load;
-      for(unsigned w = 0; w < packages[i].links[j].refrence_list.size(); w++)
-      {
-        //linker.Add_Internal((unsigned)call - (unsigned)program.base, (unsigned)packages[i].links[j].refrence_list[w] - (unsigned)program.base);
-        int* adder = (int*)packages[i].links[j].refrence_list[w];
-        *adder = (int)call;
-      }
-    }
-  }
-
-  linker.Set_Double(Machine->Get_Doubles());
-  linker.Set_String(Machine->Get_Strings());
+  linker.Set_Functions(Machine->Get_Links());
+  linker.Set_Doubles(Machine->Get_Doubles());
+  linker.Set_Strings(Machine->Get_Strings());
   linker.Link(program.base);
 }
 
 int Crystal_Compiler::Execute(Crystal_Symbol* ret)
 {
-  if(package_lookup.find("main") == package_lookup.end())
-  {
-    //Error
+  CryProg entry;
+
+  // Check to see if we have a main entry point.
+  if((*Machine->Get_Links())["main"].package_offset == static_cast<unsigned>(-1))
     return -1;
-  }
-  CryProg entry = package_lookup["main"];
+
+  entry.load = (*Machine->Get_Links())["main"].package_offset + program.base;
   return entry.call(ret);
 }
 

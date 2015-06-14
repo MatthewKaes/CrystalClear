@@ -24,7 +24,7 @@ public:
   //Compiler info
   const char* Get_Version();
   const char* Get_Name();
-  std::vector<LINKER_Data> Get_Links();
+  std::unordered_map<std::string, PackageLinks>* Get_Links();
 
   //==========================
   // Assembler Functionallity
@@ -191,7 +191,7 @@ private:
   // Crystal Components
   //==========================
   //function links
-  std::vector<LINKER_Data> call_links;
+  std::unordered_map<std::string, PackageLinks> call_links;
 
   //==========================
   // State Management

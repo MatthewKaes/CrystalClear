@@ -21,7 +21,6 @@ void x86_Machine::Function(std::string name, BYTE* program)
 {
   p = program;
   prg_id = name;
-  call_links.clear();
 }
 
 BYTE* x86_Machine::Location(){
@@ -751,23 +750,13 @@ void x86_Machine::Call(void* function)
 void x86_Machine::Call(const char* function)
 {
   Load_Register(ECX, MC_ZERO);
-  bool found = false;
-  for(unsigned i = 0; i < call_links.size();i++)
+  
+  if(call_links.find(function) == call_links.end())
   {
-    if(!call_links[i].name.compare(function))
-    {
-      found = true;
-      call_links[i].refrence_list.push_back(p - BYTES_4);
-      break;
-    }
+    call_links[function].package_offset = -1;
   }
-  if(found == false)
-  {
-    LINKER_Data dat;
-    dat.name = function;
-    dat.refrence_list.push_back(p - BYTES_4);
-    call_links.push_back(dat);
-  }
+  call_links[function].links.push_back(p - BYTES_4 - start);
+
   *p++ = FAR_CAL;
   *p++ = FAR_ECX;
 }
@@ -802,9 +791,9 @@ const char* x86_Machine::Get_Name()
   return prg_id.c_str();
 }
 
-std::vector<LINKER_Data> x86_Machine::Get_Links()
+std::unordered_map<std::string, PackageLinks>* x86_Machine::Get_Links()
 {
-  return call_links;
+  return &call_links;
 }
 
 unsigned char x86_Machine::Reg_to_Reg(REGISTERS dest, REGISTERS source)

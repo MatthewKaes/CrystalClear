@@ -22,10 +22,11 @@ enum FPU_REGISTERS { ST0, ST1, ST2, ST3, ST4, ST5, ST6, ST7 };
 typedef int (*FuncPtr)(void *);
 typedef unsigned char BYTE;
 
-struct LINKER_Data
+// Struct for all of the package links
+struct PackageLinks
 {
-  std::string name;
-  std::vector<BYTE*> refrence_list;
+  std::vector<unsigned> links;
+  unsigned package_offset;
 };
 
 class ARG
@@ -68,7 +69,7 @@ public:
   //Compiler info
   virtual const char* Get_Version() = 0;
   virtual const char* Get_Name() = 0;
-  virtual std::vector<LINKER_Data> Get_Links() = 0;
+  virtual std::unordered_map<std::string, PackageLinks>* Get_Links() = 0;
 
   //==========================
   // Assembler Functionallity

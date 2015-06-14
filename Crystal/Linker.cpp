@@ -20,7 +20,7 @@ void Crystal_Linker::Add_Double(double value, unsigned offset)
   doubles[value].push_back(offset);
 }
 
-void Crystal_Linker::Set_Double(std::unordered_map<double, std::vector<unsigned>>* values)
+void Crystal_Linker::Set_Doubles(const std::unordered_map<double, std::vector<unsigned>>* values)
 {
   doubles = *values;
 }
@@ -30,7 +30,7 @@ void Crystal_Linker::Add_String(const char* str, unsigned offset)
   strings[str].push_back(offset);
 }
 
-void Crystal_Linker::Set_String(std::unordered_map<std::string, std::vector<unsigned>>* values)
+void Crystal_Linker::Set_Strings(const std::unordered_map<std::string, std::vector<unsigned>>* values)
 {
   strings = *values;
 }
@@ -38,6 +38,17 @@ void Crystal_Linker::Set_String(std::unordered_map<std::string, std::vector<unsi
 void Crystal_Linker::Add_Function(unsigned func, unsigned offset)
 {
   functions[func].push_back(offset);
+}
+
+void Crystal_Linker::Set_Functions(const std::unordered_map<std::string, PackageLinks>* values)
+{
+  // Copy over all the locations that need to be fixed up by the
+  // linker for user defined functions.
+  for(auto iter = values->begin(); iter != values->end(); iter++)
+  {
+    // Discard the name. We only actually care about the offset pairs.
+    functions[iter->second.package_offset] = iter->second.links;
+  }
 }
 
 void Crystal_Linker::Add_Internal(unsigned address, unsigned offset)

@@ -8,7 +8,6 @@
 #include "Crystal.h"
 #include "Clarity_Filter.h"
 #include "Library.h"
-#include "Machines\Machine.h"
 #include "Linker.h"
 
 //Crystal Constants
@@ -26,13 +25,6 @@
 #define DATA_UPPER (unsigned)&(((Crystal_Symbol *)0)->UPPER)
 #define DATA_TYPE (unsigned)&(((Crystal_Symbol *)0)->type)
 #define DATA_PNTR (unsigned)&(((Crystal_Symbol *)0)->sym)
-
-struct CryPackage
-{
-  std::vector<LINKER_Data> links;
-  CryProg program;
-  std::string name;
-};
 
 class CRY_ARG
 {
@@ -163,8 +155,6 @@ private:
   unsigned stack_size;
   unsigned stack_depth;
   bool class_encoding;
-  std::vector<CryPackage> packages;
-  std::unordered_map<std::string, CryProg> package_lookup;
   
   //==========================
   // Function Management
