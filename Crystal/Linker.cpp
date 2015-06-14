@@ -3,8 +3,10 @@
 
 Crystal_Linker::Crystal_Linker()
 {
+  executable = NULL;
   read_only_memory = NULL;
   code_size = 0;
+  entry_point = 0;
 }
 
 Crystal_Linker::~Crystal_Linker()
@@ -37,6 +39,10 @@ void Crystal_Linker::Set_Strings(const std::unordered_map<std::string, std::vect
 
 void Crystal_Linker::Add_Function(unsigned func, unsigned offset)
 {
+  // When loading the first function is the entry point
+  if(entry_point == static_cast<unsigned>(-1))
+    entry_point = func;
+
   functions[func].push_back(offset);
 }
 
@@ -46,7 +52,11 @@ void Crystal_Linker::Set_Functions(const std::unordered_map<std::string, Package
   // linker for user defined functions.
   for(auto iter = values->begin(); iter != values->end(); iter++)
   {
-    // Discard the name. We only actually care about the offset pairs.
+    // Get the entry point.
+    if(!iter->first.compare("main"))
+      entry_point = iter->second.package_offset;
+
+    // Grab all of the offset pairs.
     functions[iter->second.package_offset] = iter->second.links;
   }
 }
@@ -61,6 +71,8 @@ BYTE* Crystal_Linker::Link(BYTE* code)
   unsigned double_index = 0;
   unsigned string_index = double_index + doubles.size() * sizeof(double);
   unsigned index;
+
+  executable = code;
 
   // Size of strings
   code_size = string_index;
@@ -119,4 +131,9 @@ BYTE* Crystal_Linker::Link(BYTE* code)
   }
     
   return code;
+}
+
+BYTE* Crystal_Linker::Entry()
+{
+  return executable + entry_point;
 }

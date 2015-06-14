@@ -132,26 +132,32 @@ void Crystal_Compiler::End_Encode()
     std::unordered_map<std::string, PackageLinks>* links = Machine->Get_Links();
     (*links)[Machine->Get_Name()].package_offset = program.load - program.base;
   }
+
+  // Move to the next segment of memory so we can start loading
+  // our next function.
   program.load = Machine->Location() + 1;
 }
 
 void Crystal_Compiler::Linker()
 {
+  // Grab the functions from the machine.
   linker.Set_Functions(Machine->Get_Links());
+
+  // Grab all double locations from the machine.
   linker.Set_Doubles(Machine->Get_Doubles());
+  
+  // Grab all string locations from the machine.
   linker.Set_Strings(Machine->Get_Strings());
+
+  // Link the program directly so it can be executed later.
   linker.Link(program.base);
 }
 
 int Crystal_Compiler::Execute(Crystal_Symbol* ret)
 {
+  // Grab the entry point and run it.
   CryProg entry;
-
-  // Check to see if we have a main entry point.
-  if((*Machine->Get_Links())["main"].package_offset == static_cast<unsigned>(-1))
-    return -1;
-
-  entry.load = (*Machine->Get_Links())["main"].package_offset + program.base;
+  entry.load = linker.Entry();
   return entry.call(ret);
 }
 
