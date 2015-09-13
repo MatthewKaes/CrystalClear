@@ -138,8 +138,8 @@ public:
   virtual void Setbe(unsigned address) = 0;
   //Calls
   virtual void Call(REGISTERS source) = 0;
-  virtual void Call(void* function) = 0;
   virtual void Call(const char* function) = 0;
+  virtual void Runtime(const char* function) = 0;
   virtual void Return(ARG argument = 0) = 0;
 
   //--------------------------
@@ -195,6 +195,7 @@ public:
   virtual std::unordered_map<std::string, std::vector<unsigned>>* Get_Strings() = 0;
   virtual std::unordered_map<float, std::vector<unsigned>>* Get_Floats() = 0;
   virtual std::unordered_map<double, std::vector<unsigned>>* Get_Doubles() = 0;
+  virtual std::unordered_map<std::string, std::vector<unsigned>>* Get_Internals() = 0;
 
   //==========================
   // Compiler Components

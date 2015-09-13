@@ -1,11 +1,16 @@
 #ifndef CRYSTAL_CONFIG
 #define CRYSTAL_CONFIG
 
-//=================================
+//==================================
 //Use this config file to configure
 //your compiler features.
-//=================================
+//==================================
 
+//==================================
+//Functionality
+//==================================
+// Enables plugable DLL model for extending Crystal Functionality.
+#define USE_CRYSTAL_EXTENSIONS 0
 
 //==================================
 //Python

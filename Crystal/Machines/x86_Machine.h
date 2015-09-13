@@ -94,8 +94,8 @@ public:
   void Setb(unsigned address);
   void Setbe(unsigned address);
   void Call(REGISTERS source);
-  void Call(void* function);
   void Call(const char* function);
+  void Runtime(const char* function);
   void Return(ARG argument = 0);
 
   //--------------------------
@@ -151,6 +151,7 @@ public:
   std::unordered_map<std::string, std::vector<unsigned>>* Get_Strings();
   std::unordered_map<float, std::vector<unsigned>>* Get_Floats();
   std::unordered_map<double, std::vector<unsigned>>* Get_Doubles();
+  std::unordered_map<std::string, std::vector<unsigned>>* Get_Internals();
 
 private:
   //==========================
@@ -192,6 +193,7 @@ private:
   //==========================
   //function links
   std::unordered_map<std::string, PackageLinks> call_links;
+  std::unordered_map<std::string, std::vector<unsigned>> internal_links;
 
   //==========================
   // State Management

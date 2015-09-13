@@ -85,7 +85,7 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   {
     Machine->Push_Stk(i * 4 + 0x14);
     Push(i);
-    Call(This_Copy);
+    Runtime("This_Copy");
     Pop(2);
     states[0].Set(CRY_REFERENCE);
     i++;
@@ -101,7 +101,7 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
     {
       Machine->Push_Stk(i * 4 + 0x14);
       Push(i);
-      Call(Stack_Copy);
+      Runtime("Stack_Copy");
       Pop(2);
     }
     states[i].Obscurity();
@@ -110,7 +110,7 @@ void Crystal_Compiler::Start_Encode(std::string name, unsigned locals_used, unsi
   //set up a new generation for the garbage collector.
   Machine->Push(static_cast<int>(locals_count + stack_depth + 1));
   Push(0);
-  Machine->Call(GC_Branch);
+  Machine->Runtime("GC_Branch");
   Pop(2);
 
   //tidy up lookup data.
@@ -149,34 +149,56 @@ void Crystal_Compiler::Linker()
   // Grab all string locations from the machine.
   linker.Set_Strings(Machine->Get_Strings());
 
+  // Grab all of the internal lookups
+  linker.Set_Internal(Machine->Get_Internals());
+
   // Link the program directly so it can be executed later.
   linker.Link(program.base);
 }
 
-int Crystal_Compiler::Execute(Crystal_Symbol* ret)
+int Crystal_Compiler::Execute(Crystal_Symbol* ret, std::vector<Crystal_Symbol>* args)
 {
   // Grab the entry point and run it.
   CryProg entry;
   entry.load = linker.Entry();
+
+  // Load arguments for "main"
+  for (int i = static_cast<int>(args->size()) - 1; i >= 0; i--)
+  {
+    Crystal_Symbol* sym = &(*args)[i];
+    __asm{
+      mov eax, sym
+      push eax
+    }
+  }
+ 
+  // Call "main"
   return entry.call(ret);
+
+  // Pop off the added values.
+  int argsize = args->size() * 4;
+  __asm{
+    mov eax, argsize
+    pop eax
+  }
 }
 
 void Crystal_Compiler::Print(unsigned var)
 {
   Push(var);
-  Call(Crystal_Print);
+  Runtime("Crystal_Print");
   Pop(1);
 }
 
-void Crystal_Compiler::Call(void* function)
+void Crystal_Compiler::Runtime(const char* runtime_function)
 {
-  Machine->Call(function);
+  Machine->Runtime(runtime_function);
 }
 
-void Crystal_Compiler::Call(void* function, unsigned var)
+void Crystal_Compiler::Runtime(const char* runtime_function, unsigned var)
 {
   Push(var);
-  Machine->Call(function);
+  Machine->Runtime(runtime_function);
   states[var].Obscurity();
 }
 
@@ -207,9 +229,9 @@ void Crystal_Compiler::Call(const char* binding, unsigned op, unsigned ret)
   
   // Seperate calling for base and refrence objects
   if(states[op].Only(CRY_REFERENCE))
-    Machine->Call(Late_Func_Binding_Ref);
+    Machine->Runtime("Late_Func_Binding_Ref");
   else
-    Machine->Call(Late_Func_Binding);
+    Machine->Runtime("Late_Func_Binding");
 
   Pop(1);
 
@@ -241,9 +263,9 @@ void Crystal_Compiler::Get(const char* binding, unsigned op, unsigned ret)
 
   // Seperate calling for base and refrence objects
   if(states[op].Only(CRY_REFERENCE))
-    Machine->Call(Late_Attr_Binding_Ref);
+    Machine->Runtime("Late_Attr_Binding_Ref");
   else
-    Machine->Call(Late_Attr_Binding);
+    Machine->Runtime("Late_Attr_Binding");
 
   Pop(3);
 
@@ -256,12 +278,12 @@ void Crystal_Compiler::Convert(unsigned reg, Symbol_Type type)
   switch(type)
   {
   case CRY_INT:
-    Call(Parse_Int);
+    Runtime("Parse_Int");
     Pop(1);
     Machine->Push(EAX);
     break;
   case CRY_DOUBLE:
-    Call(Parse_Double);
+    Runtime("Parse_Double");
     Pop(1);
     Machine->FPU_Store();
     break;
@@ -278,7 +300,7 @@ void Crystal_Compiler::Allocate(unsigned sym_count)
     Machine->Push(static_cast<int>(MIN_BLOCK_SIZE));
   else
     Machine->Push(static_cast<int>(sym_count));
-  Machine->Call(calloc);
+  Machine->Runtime("calloc");
   Machine->Pop(sizeof(int) * 2);
   //Push it for later use
   Machine->Push(EAX);
@@ -290,7 +312,7 @@ void Crystal_Compiler::Make_Array(unsigned var, unsigned size, unsigned capacity
   Machine->Push(static_cast<int>(capacity));
   Machine->Push(static_cast<int>(size));
   Push(var);
-  Machine->Call(Construct_Array);
+  Machine->Runtime("Construct_Array");
   Machine->Pop(sizeof(int) * 4);
   //Set up types for compiler use
   states[var].Set(CRY_ARRAY);
@@ -304,7 +326,7 @@ void Crystal_Compiler::Make_Class(unsigned var, unsigned ID, unsigned args)
   //Creation of the array object
   Push(var);
   Machine->Push(static_cast<int>(ID));
-  Machine->Call(Construct_Class);
+  Machine->Runtime("Construct_Class");
   Machine->Pop(sizeof(int));
 
   // Call Init function
@@ -312,9 +334,9 @@ void Crystal_Compiler::Make_Class(unsigned var, unsigned ID, unsigned args)
   
   // Seperate calling for base and refrence objects
   if(states[var].Only(CRY_REFERENCE))
-    Machine->Call(Late_Func_Binding_Ref);
+    Machine->Runtime("Late_Func_Binding_Ref");
   else
-    Machine->Call(Late_Func_Binding);
+    Machine->Runtime("Late_Func_Binding");
 
   // Init functions can't return.
   unsigned label = Machine->Reserve_Label();
@@ -335,7 +357,7 @@ void Crystal_Compiler::Make_Range(unsigned var)
 {
   //Creation of the array object
   Push(var);
-  Machine->Call(Construct_Range);
+  Machine->Runtime("Construct_Range");
   Machine->Pop(sizeof(int) * 3);
   //Set up types for compiler use
   states[var].Set(CRY_ARRAY);
@@ -349,7 +371,7 @@ void Crystal_Compiler::Array_Index(unsigned dest, unsigned var, unsigned index)
   Convert(index, CRY_INT);
   Push(var);
   Push(dest);
-  Call(Val_Binding);
+  Runtime("Val_Binding");
   Pop(3);
 
   states[dest].Set(CRY_REFERENCE);
@@ -382,7 +404,7 @@ void Crystal_Compiler::Array_Index_C(unsigned dest, unsigned var, CRY_ARG index)
 
   Push(var);
   Push(dest);
-  Call(Val_Binding);
+  Runtime("Val_Binding");
   Pop(3);
   
   states[dest].Set(CRY_REFERENCE);
@@ -448,7 +470,7 @@ void Crystal_Compiler::Return(unsigned var)
     Machine->Jne(label);
 
     Push(var);
-    Machine->Call(GC_Extend_Generation);
+    Machine->Runtime("GC_Extend_Generation");
     Pop(1);
   }
 
@@ -456,7 +478,7 @@ void Crystal_Compiler::Return(unsigned var)
   Machine->Make_Label(label);
 
   //Collect garbage
-  Machine->Call(GC_Collect);
+  Machine->Runtime("GC_Collect");
 
   Machine->Return();
 }
@@ -475,7 +497,7 @@ void Crystal_Compiler::Return()
   Machine->Make_Label(label);
   
   //Clean up accumulated garbage
-  Machine->Call(GC_Collect);
+  Machine->Runtime("GC_Collect");
 
   Machine->Return();
 }
@@ -679,22 +701,22 @@ void Crystal_Compiler::Ref_Load(unsigned var, CRY_ARG val)
   {
   case CRY_INT:
     Push_C(val.num_);
-    Call(Push_Int);
+    Runtime("Push_Int");
     Pop(2);
     break;
   case CRY_BOOL:
     Push_C(val.bol_);
-    Call(Push_Bool);
+    Runtime("Push_Bool");
     Pop(2);
     break;
   case CRY_DOUBLE:
     Push_C(val.dec_);
-    Call(Push_Double);
+    Runtime("Push_Double");
     Pop(3);
     break;
   case CRY_TEXT:
     Push_C(val.str_.c_str());
-    Call(Push_Text);
+    Runtime("Push_Text");
     Pop(2);
     break;
   }
@@ -714,7 +736,7 @@ void Crystal_Compiler::Copy(unsigned dest, unsigned source)
   {
     Push(source);
     Push(dest);
-    Call(Copy_Ref);
+    Runtime("Copy_Ref");
     Pop(2);
   }
   else 
@@ -856,14 +878,14 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
         //Make room for zero
         Machine->Inc(EBX);
         Machine->Push(EBX);
-        Machine->Call(malloc);
+        Machine->Runtime("malloc");
         Machine->Pop(4);
         Machine->Strcpy(EAX, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER);
         Machine->Strcpy(EDI, offset_source - DATA_UPPER, offset_source - DATA_LOWER, true);
         Machine->Push(EBX);
         Machine->Push(EAX);
         Push(dest);
-        Machine->Call(Construct_String);
+        Machine->Runtime("Construct_String");
         resolve = CRY_STRING;
       }
       //complex slower text handling:
@@ -872,9 +894,9 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
         Push(source);
         Push(dest);
         if(left)
-          Call(Crystal_Text_Append);
+          Runtime("Crystal_Text_Append");
         else
-          Call(Crystal_Text_Append_Rev);
+          Runtime("Crystal_Text_Append_Rev");
         Pop(2);
       }
       //we now have a string.
@@ -884,18 +906,18 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
       Push(source);
       Push(dest);
       if(left)
-        Call(Crystal_Text_Append);
+        Runtime("Crystal_Text_Append");
       else
-        Call(Crystal_Text_Append_Rev);
+        Runtime("Crystal_Text_Append_Rev");
       Pop(2);
       break;
     case CRY_ARRAY:
       Push(source);
       Push(dest);
       if(left)
-        Call(Crystal_Array_Append);
+        Runtime("Crystal_Array_Append");
       else
-        Call(Crystal_Array_Append_Rev);
+        Runtime("Crystal_Array_Append_Rev");
       Pop(2);
       break;
     NO_SUPPORT(CRY_POINTER);
@@ -907,7 +929,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(left ? Obscure_Addition : Obscure_AdditionR);
+    Machine->Runtime(left ? "Obscure_Addition" : "Obscure_AdditionR");
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -993,7 +1015,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
         Machine->Load_Register(EBX, static_cast<int>(converted.length()) + 1);
         Machine->Add(EBX, EAX);
         Machine->Push(EBX);
-        Machine->Call(malloc);
+        Machine->Runtime("malloc");
         Machine->Pop(4);
         if(left)
         {
@@ -1009,7 +1031,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
         Machine->Push(EBX);
         Machine->Push(EAX);
         Push(dest);
-        Machine->Call(Construct_String);
+        Machine->Runtime("Construct_String");
       }
       else
       {
@@ -1017,9 +1039,9 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
         Machine->Push(const_.str_.c_str());
         Push(dest);
         if(left)
-          Call(Crystal_Const_Append_T);
+          Runtime("Crystal_Const_Append_T");
         else
-          Call(Crystal_Const_Append_TL);
+          Runtime("Crystal_Const_Append_TL");
         Pop(3);
       }
       //we now have a string.
@@ -1061,7 +1083,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
         Machine->Push(Machine->String_Address(converted.c_str(), -1));
       }
       Push(dest);
-      Call(left ? Crystal_Text_Append_C : Crystal_Text_Append_CR);
+      Call(left ? "Crystal_Text_Append_C" : "Crystal_Text_Append_CR");
       Pop(3);
       break;
     case CRY_ARRAY:
@@ -1069,9 +1091,9 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
       Push(Addr_Reg(stack_depth));
       Push(dest);
       if(left)
-        Call(Crystal_Array_Append);
+        Call("Crystal_Array_Append");
       else
-        Call(Crystal_Array_Append_Rev);
+        Call("Crystal_Array_Append_Rev");
       Pop(2);
       break;
     //Lacking Support
@@ -1086,7 +1108,7 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(left ? Obscure_Addition : Obscure_AdditionR);
+    Machine->Runtime(left ? "Obscure_Addition" : "Obscure_AdditionR");
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
@@ -1165,7 +1187,7 @@ void Crystal_Compiler::Sub(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(left ? Obscure_Subtraction : Obscure_SubtractionR);
+    Machine->Runtime(left ? "Obscure_Subtraction" : "Obscure_SubtractionR");
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -1259,7 +1281,7 @@ void Crystal_Compiler::SubC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(left ? Obscure_Subtraction : Obscure_SubtractionR);
+    Machine->Runtime(left ? "Obscure_Subtraction" : "Obscure_SubtractionR");
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
@@ -1323,7 +1345,7 @@ void Crystal_Compiler::Mul(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(Obscure_Multiplication);
+    Machine->Runtime("Obscure_Multiplication");
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -1386,7 +1408,7 @@ void Crystal_Compiler::MulC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(Obscure_Multiplication);
+    Machine->Runtime("Obscure_Multiplication");
     Pop(2);
     //Copy(dest, Addr_Reg(stack_depth));
     Clarity_Filter::Combind(states[dest], const_.filt);
@@ -1447,7 +1469,7 @@ void Crystal_Compiler::Div(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(left ? Obscure_Division : Obscure_DivisionR);
+    Machine->Runtime(left ? "Obscure_Division" : "Obscure_DivisionR");
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -1516,7 +1538,7 @@ void Crystal_Compiler::DivC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(left ? Obscure_Division : Obscure_DivisionR);
+    Machine->Runtime(left ? "Obscure_Division" : "Obscure_DivisionR");
     Pop(2);
     //Copy(dest, Addr_Reg(stack_depth));
     Clarity_Filter::Combind(states[dest], const_.filt);
@@ -1558,7 +1580,7 @@ void Crystal_Compiler::Mod(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(left ? Obscure_Modulo : Obscure_ModuloR);
+    Machine->Runtime(left ? "Obscure_Modulo" : "Obscure_ModuloR");
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -1607,7 +1629,7 @@ void Crystal_Compiler::ModC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(left ? Obscure_Modulo : Obscure_ModuloR);
+    Machine->Runtime(left ? "Obscure_Modulo" : "Obscure_ModuloR");
     Pop(2);
     //Copy(dest, Addr_Reg(stack_depth));
     Clarity_Filter::Combind(states[dest], const_.filt);
@@ -1654,7 +1676,7 @@ void Crystal_Compiler::Pow(unsigned dest, unsigned source, bool left)
     case CRY_DOUBLE:
       Push(source);
       Push(dest);
-      Machine->Call(left ? Power_Syms : Power_SymsR);
+      Machine->Runtime(left ? "Power_Syms" : "Power_SymsR");
       Pop(2);
       break;
     //Lacking Support
@@ -1670,7 +1692,7 @@ void Crystal_Compiler::Pow(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(left ? Obscure_Power : Obscure_PowerR);
+    Machine->Runtime(left ? "Obscure_Power" : "Obscure_PowerR");
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -1724,7 +1746,7 @@ void Crystal_Compiler::PowC(unsigned dest, CRY_ARG const_, bool left)
       Load(Addr_Reg(stack_depth), const_);
       Push(Addr_Reg(stack_depth));
       Push(dest);
-      Machine->Call(left ? Power_Syms : Power_SymsR);
+      Machine->Runtime(left ? "Power_Syms" : "Power_SymsR");
       Pop(2);
       break;
     //Lacking Support
@@ -1742,7 +1764,7 @@ void Crystal_Compiler::PowC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(left ? Obscure_Power : Obscure_PowerR);
+    Machine->Runtime(left ? "Obscure_Power" : "Obscure_PowerR");
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
@@ -1753,7 +1775,7 @@ void Crystal_Compiler::And(unsigned dest, unsigned source, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   Push(source);
   Push(dest);
-  Machine->Call(Crystal_And);
+  Machine->Runtime("Crystal_And");
   Pop(2);
   Machine->Mov(offset_dest - DATA_LOWER, EAX);
   Runtime_Resovle(dest, CRY_BOOL);
@@ -1765,7 +1787,7 @@ void Crystal_Compiler::AndC(unsigned dest, CRY_ARG const_, bool left)
   Load(Addr_Reg(stack_depth), const_);
   Push(Addr_Reg(stack_depth));
   Push(dest);
-  Machine->Call(Crystal_And);
+  Machine->Runtime("Crystal_And");
   Pop(2);
   Machine->Mov(offset_dest - DATA_LOWER, EAX);
   Runtime_Resovle(dest, CRY_BOOL);
@@ -1776,7 +1798,7 @@ void Crystal_Compiler::Or(unsigned dest, unsigned source, bool left)
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
   Push(source);
   Push(dest);
-  Machine->Call(Crystal_Or);
+  Machine->Runtime("Crystal_Or");
   Pop(2);
   Machine->Mov(offset_dest - DATA_LOWER, EAX);
   Runtime_Resovle(dest, CRY_BOOL);
@@ -1788,7 +1810,7 @@ void Crystal_Compiler::OrC(unsigned dest, CRY_ARG const_, bool left)
   Load(Addr_Reg(stack_depth), const_);
   Push(Addr_Reg(stack_depth));
   Push(dest);
-  Machine->Call(Crystal_Or);
+  Machine->Runtime("Crystal_Or");
   Pop(2);
   Machine->Mov(offset_dest - DATA_LOWER, EAX);
   Runtime_Resovle(dest, CRY_BOOL);
@@ -1855,7 +1877,7 @@ void Crystal_Compiler::Eql(unsigned dest, unsigned source, bool left)
       {
         Push(source);
         Push(dest);
-        Machine->Call(Fast_strcmp);
+        Machine->Runtime("Fast_strcmp");
         Pop(2);
         Machine->Mov(offset_dest - DATA_LOWER, EAX);
       }
@@ -1867,7 +1889,7 @@ void Crystal_Compiler::Eql(unsigned dest, unsigned source, bool left)
     case CRY_CLASS_OBJ:
       Push(source);
       Push(dest);
-      Machine->Call(Fast_pointercmp);
+      Machine->Runtime("Fast_pointercmp");
       Pop(2);
       Machine->Mov(offset_dest - DATA_LOWER, EAX);
       break;
@@ -1882,7 +1904,7 @@ void Crystal_Compiler::Eql(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(Obscure_Equal);
+    Machine->Runtime("Obscure_Equal");
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -1945,7 +1967,7 @@ void Crystal_Compiler::EqlC(unsigned dest, CRY_ARG const_, bool left)
       Load(Addr_Reg(stack_depth), const_);
       Push(Addr_Reg(stack_depth));
       Push(dest);
-      Machine->Call(Fast_strcmp);
+      Machine->Runtime("Fast_strcmp");
       Pop(2);
       Machine->Mov(offset_dest - DATA_LOWER, EAX);
       break;
@@ -1961,7 +1983,7 @@ void Crystal_Compiler::EqlC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(Obscure_Equal);
+    Machine->Runtime("Obscure_Equal");
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
@@ -2028,7 +2050,7 @@ void Crystal_Compiler::Dif(unsigned dest, unsigned source, bool left)
       {
         Push(source);
         Push(dest);
-        Machine->Call(Fast_strcmp);
+        Machine->Runtime("Fast_strcmp");
         Pop(2);
         Machine->Mov(offset_dest - DATA_LOWER, EAX);
       }
@@ -2048,7 +2070,7 @@ void Crystal_Compiler::Dif(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(Obscure_Diffrence);
+    Machine->Runtime("Obscure_Diffrence");
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -2112,7 +2134,7 @@ void Crystal_Compiler::DifC(unsigned dest, CRY_ARG const_, bool left)
       Load(Addr_Reg(stack_depth), const_);
       Push(Addr_Reg(stack_depth));
       Push(dest);
-      Machine->Call(Fast_strcmp);
+      Machine->Runtime("Fast_strcmp");
       Pop(2);
       Machine->Mov(offset_dest - DATA_LOWER, EAX);
       break;
@@ -2128,7 +2150,7 @@ void Crystal_Compiler::DifC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(Obscure_Diffrence);
+    Machine->Runtime("Obscure_Diffrence");
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
@@ -2187,7 +2209,7 @@ void Crystal_Compiler::Les(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(left ? Obscure_Less : Obscure_Greater);
+    Machine->Runtime(left ? "Obscure_Less" : "Obscure_Greater");
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -2242,7 +2264,7 @@ void Crystal_Compiler::LesC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(left ? Obscure_Less : Obscure_Greater);
+    Machine->Runtime(left ? "Obscure_Less" : "Obscure_Greater");
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
@@ -2301,7 +2323,7 @@ void Crystal_Compiler::LesEql(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(left ? Obscure_Less_Equal : Obscure_Greater_Equal);
+    Machine->Runtime(left ? "Obscure_Less_Equal" : "Obscure_Greater_Equal");
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -2356,7 +2378,7 @@ void Crystal_Compiler::LesEqlC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(left ? Obscure_Less_Equal : Obscure_Greater_Equal);
+    Machine->Runtime(left ? "Obscure_Less_Equal" : "Obscure_Greater_Equal");
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
@@ -2415,7 +2437,7 @@ void Crystal_Compiler::Gtr(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(!left ? Obscure_Less : Obscure_Greater);
+    Machine->Runtime(!left ? "Obscure_Less" : "Obscure_Greater");
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -2470,7 +2492,7 @@ void Crystal_Compiler::GtrC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(!left ? Obscure_Less : Obscure_Greater);
+    Machine->Runtime(!left ? "Obscure_Less" : "Obscure_Greater");
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }
@@ -2529,7 +2551,7 @@ void Crystal_Compiler::GtrEql(unsigned dest, unsigned source, bool left)
   {
     Push(source);
     Push(dest);
-    Machine->Call(!left ? Obscure_Less_Equal : Obscure_Greater_Equal);
+    Machine->Runtime(!left ? "Obscure_Less_Equal" : "Obscure_Greater_Equal");
     Pop(2);
     Clarity_Filter::Combind(states[dest], states[source]);
   }
@@ -2584,7 +2606,7 @@ void Crystal_Compiler::GtrEqlC(unsigned dest, CRY_ARG const_, bool left)
     Load(Addr_Reg(stack_depth), const_);
     Push(Addr_Reg(stack_depth));
     Push(dest);
-    Machine->Call(!left ? Obscure_Less_Equal : Obscure_Greater_Equal);
+    Machine->Runtime(!left ? "Obscure_Less_Equal" : "Obscure_Greater_Equal");
     Pop(2);
     Clarity_Filter::Combind(states[dest], const_.filt);
   }

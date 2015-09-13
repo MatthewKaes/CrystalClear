@@ -1,6 +1,11 @@
 # Testing usage of filesystem functions
 
 def main()
+  # Get information about Crystal Functionality
+  print(environ("ProgramData"))
+  help(nil)
+  help("print_color")
+
   # Make a relative path
   print("Making directory")
   if make_path("temp\\folder")
@@ -12,23 +17,26 @@ def main()
   print_color("Size of Crystal File:", 12)
   print(file_size("files.cry") + " bytes\n")
 
-  print("files in current directory: " + cry_root())
+  print_color("files in current directory: " + cry_root(), 11)
   files = list_files("")
 
   x = 0
   while x < size(files)
     print(files[x])
+	if is_file(files[x])
+	  print("File: " + files[x])
+	elsif is_dir(files [x])
+	  print("Directory: " + files[x])
+	  # Remove a path along with all subdirectories if they exist
+	  print("Removing directory")
+	  if remove_path(files[x])
+      print_color("Success", 10)
+	  else
+      print_color("Failure", 12)
+	  end
+	end
     x += 1
   end
 
   print("")
-
-  # Remove a path along with all subdirectories if they exist
-  print("Removing directory")
-  if remove_path("temp")
-  	print_color("Success", 10)
-  else
-  	print_color("Failure", 12)
-  end
-
 end

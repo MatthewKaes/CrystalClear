@@ -8,7 +8,9 @@
 
 //Crystal Constants
 #define CRY_COPYRIGHT "Crystal Clear Copyright Matthew Kaes 2014"
-#define CRY_VERSION "0.9.10"
+#define CRY_VERSION  "0.10.4"
+#define CRY_COMPILER "0.10.4"
+#define CRY_LINKER   "0.10.4"
 #define CRY_MACHINE "x86"
 
 //Crystal Macros
@@ -53,6 +55,11 @@ struct Package_Info {
   } info;
   unsigned ID;
   void* function;
+  const char* lookup;
+  std::string name;
+  std::string discript;
+  std::string returndis;
+  std::vector<std::string> argtext;
 };
 
 struct Class_Info {
@@ -112,7 +119,6 @@ public:
     double d;
     bool b;
   };
-  void* external;
   Data_Type type;
   std::string str;
 };

@@ -58,14 +58,14 @@ public:
   void Start_Encode(std::string name, unsigned locals_used, unsigned stack_size, unsigned arguments = 0, Class_Info* obj = 0, unsigned id = 0);
   void End_Encode();
   void Linker();
-  int Execute(Crystal_Symbol* ret = 0);
+  int Execute(Crystal_Symbol* ret, std::vector<Crystal_Symbol> *args);
 
   //System calls
   void Print(unsigned var);
 
   //System Functions
-  void Call(void* function);
-  void Call(void* function, unsigned reg);
+  void Runtime(const char* runtime_function);
+  void Runtime(const char* runtime_function, unsigned reg);
   void Call(const char* cry_function, unsigned reg = CRY_NULL);
   void Call(const char* binding, unsigned op, unsigned ret);
   void Get(const char* binding, unsigned op, unsigned ret);

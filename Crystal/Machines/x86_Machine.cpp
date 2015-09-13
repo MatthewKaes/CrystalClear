@@ -345,7 +345,7 @@ void x86_Machine::Allocate_Stack(unsigned bytes)
   //Push the address last
   *p++ = REG_PSH;
   //Construct the symbols
-  Call(memset);
+  Runtime("memset");
   //Restore stack frame
   *p++ = STK_POP; *p++ = ADD_ESP; *p++ = BYTES_12; //12 bytes
   stack_allocated = true;
@@ -373,7 +373,7 @@ void x86_Machine::Print(ARG argument)
     (int&)p[0] = (int)"%d\n"; p+= sizeof(int);
     break;
   }
-  Call(printf);
+  Runtime("printf");
   Pop();
 }
 
@@ -740,9 +740,12 @@ void x86_Machine::Call(REGISTERS source)
   *p++ = FAR_ECX;
 }
 
-void x86_Machine::Call(void* function)
+void x86_Machine::Runtime(const char* function)
 {
   Load_Register(ECX, function);
+  
+  internal_links[function].push_back(p - BYTES_4 - start);
+
   *p++ = FAR_CAL;
   *p++ = FAR_ECX;
 }
@@ -934,6 +937,11 @@ std::unordered_map<float, std::vector<unsigned>>* x86_Machine::Get_Floats()
 std::unordered_map<double, std::vector<unsigned>>* x86_Machine::Get_Doubles()
 {
   return &edp;
+}
+
+std::unordered_map<std::string, std::vector<unsigned>>* x86_Machine::Get_Internals()
+{
+  return &internal_links;
 }
 
 void x86_Machine::FPU_Load(ARG argument)

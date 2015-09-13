@@ -15,6 +15,7 @@ public:
   void Add_Function(unsigned func, unsigned offset);
   void Set_Functions(const std::unordered_map<std::string, PackageLinks>* values);
   void Add_Internal(unsigned address, unsigned offset);
+  void Set_Internal(const std::unordered_map<std::string, std::vector<unsigned>>* values);
   BYTE* Link(BYTE* code);
   BYTE* Entry();
 
@@ -23,6 +24,7 @@ private:
   std::unordered_map<std::string, std::vector<unsigned>> strings;
   std::unordered_map<unsigned, std::vector<unsigned>> functions;
   std::unordered_map<unsigned, std::vector<unsigned>> internals;
+  std::unordered_map<std::string, void*> supported_functions;
   BYTE* executable;
   BYTE* read_only_memory;
   unsigned code_size;

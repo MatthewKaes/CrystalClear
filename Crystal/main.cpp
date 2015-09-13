@@ -101,7 +101,16 @@ int main(int argc, const char **argv)
     Crystal_Symbol exit_sym;
     memset(&exit_sym, 0, sizeof(exit_sym));
 
-    if(comp.Execute(&exit_sym))
+    std::vector<Crystal_Symbol> crystal_args;
+    for (int i = 2; i < argc; i++)
+    {
+      Crystal_Symbol var;
+      var.type = CRY_TEXT;
+      var.text = argv[i];
+      crystal_args.push_back(var);
+    }
+
+    if (comp.Execute(&exit_sym, &crystal_args))
     {
       printf("CRYSTAL ERROR: could not file entry point.\nA file needs to include a \"main\" package.\n");
       return 1;

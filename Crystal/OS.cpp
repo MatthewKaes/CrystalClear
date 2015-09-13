@@ -4,24 +4,6 @@
 
 extern const char* CRY_ROOT;
 
-void Crystal_CrystalCopyright(Crystal_Symbol* ret_sym)
-{
-  ret_sym->text = CRY_COPYRIGHT;
-  ret_sym->type = CRY_TEXT;
-}
-
-void Crystal_CrystalVersion(Crystal_Symbol* ret_sym)
-{
-  ret_sym->text = CRY_VERSION;
-  ret_sym->type = CRY_TEXT;
-}
-
-void Crystal_CrystalTarget(Crystal_Symbol* ret_sym)
-{
-  ret_sym->text = CRY_MACHINE;
-  ret_sym->type = CRY_TEXT;
-}
-
 void Crystal_Environ(Crystal_Symbol* ret_sym, Crystal_Symbol* sym)
 {
   std::string var;

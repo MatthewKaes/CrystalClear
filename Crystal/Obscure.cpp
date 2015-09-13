@@ -297,7 +297,7 @@ void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
     return;
   case CRY_TEXT:
   case CRY_STRING:
-    if(source->type != CRY_TEXT || source->type != CRY_STRING)
+    if(source->type != CRY_TEXT && source->type != CRY_STRING)
     {
       result->i32 = 0;
       result->type = CRY_BOOL;

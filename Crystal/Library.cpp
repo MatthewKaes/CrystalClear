@@ -7,7 +7,6 @@
 // Boost functionalities
 #include <boost\date_time.hpp>
 #include <boost\thread.hpp>
-#include <boost\regex.hpp>
 
 extern const char* CRY_ROOT;
 

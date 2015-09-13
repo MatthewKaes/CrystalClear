@@ -1,9 +1,9 @@
 def main()
   # Primitives as objects
-  func(150)
+  func("World")
   print_color("Primitive Objects:", 11)
   8.type().print_color(12)
-  "".print()
+  "val".print()
   11.50.print()
   
   print_color("Class Manipulation:", 11)
@@ -86,8 +86,8 @@ class Cube
   end
 end
 
-def func()
-  print("Hello")
+def func(value)
+  print("Hello" + value + "\n")
 end
 
 class Box

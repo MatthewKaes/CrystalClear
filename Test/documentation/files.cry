@@ -1,0 +1,18 @@
+# Real time constantly up to date documentation.
+
+def main(first, last)
+  functions = help(nil)
+  
+  x = 0
+  while(x < size(functions))
+    help(functions[x])
+    x += 1
+  end
+  input()
+  
+  # while(x != "exit")
+    # help(x)
+    # print("type 'exit' to terminate documentation\n")
+    # x = input()
+  # end
+end

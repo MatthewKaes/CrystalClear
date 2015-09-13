@@ -127,6 +127,7 @@ void Resolve_Type(Crystal_Data* sym)
   {
     return;
   }
+
   if(sym->str[0] == '\"')
   {
     sym->type = DAT_STRING;
@@ -172,6 +173,7 @@ bool str_to_b(const std::string* object)
     return true;
   return false;
 }
+
 double str_to_d(const std::string* object)
 {  
   double convert = 0.0;
@@ -197,6 +199,7 @@ double str_to_d(const std::string* object)
       convert += (*object)[i] - '0';
     }
   }
+
   double convert_dec = 0.0;
   unsigned j = 0;
   for(; i + j + 1 < object->size(); j++)
@@ -208,6 +211,7 @@ double str_to_d(const std::string* object)
 
   return convert + convert_dec;
 }
+
 int str_to_i(const std::string* object)
 {
   int convert = 0;
@@ -260,6 +264,7 @@ void i_to_str(int object, std::string* value)
     Reverse_Str(value);
   }
 }
+
 void l_to_str(__int64 object, std::string* value)
 {
   if(object > 0)
@@ -289,6 +294,7 @@ void l_to_str(__int64 object, std::string* value)
     Reverse_Str(value);
   }
 }
+
 void d_to_str(double object, std::string* value)
 {    
   value->clear();  
@@ -364,6 +370,7 @@ void d_to_str(double object, std::string* value)
     }
   }
 }
+
 void b_to_str(bool object, std::string* value)
 {
   if(object)

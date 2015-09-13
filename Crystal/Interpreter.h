@@ -46,7 +46,6 @@ private:
   std::string code_out;
   Syntax_Tree stree;
   std::unordered_map<std::string, Package_Info> packages;
-  std::unordered_map<std::string, Package_Info> built_in;
 };
 
 #endif
