@@ -173,14 +173,18 @@ int Crystal_Compiler::Execute(Crystal_Symbol* ret, std::vector<Crystal_Symbol>* 
   }
  
   // Call "main"
-  return entry.call(ret);
+  int return_value = entry.call(ret);
 
   // Pop off the added values.
-  int argsize = args->size() * 4;
-  __asm{
-    mov eax, argsize
-    pop eax
+  for (int i = static_cast<int>(args->size()) - 1; i >= 0; i--)
+  {
+    Crystal_Symbol* sym = &(*args)[i];
+    __asm{
+      pop eax
+    }
   }
+
+  return return_value;
 }
 
 void Crystal_Compiler::Print(unsigned var)

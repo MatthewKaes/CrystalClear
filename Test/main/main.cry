@@ -1,0 +1,9 @@
+# Real time constantly up to date documentation.
+
+def main(first, last)
+  return hello(first, last)
+end
+
+def hello(first, last)
+  return "Hello " + first + " " + last
+end
