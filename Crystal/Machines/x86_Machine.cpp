@@ -742,7 +742,7 @@ void x86_Machine::Call(REGISTERS source)
 
 void x86_Machine::Runtime(const char* function)
 {
-  Load_Register(ECX, function);
+  Load_Register(ECX, MC_ZERO);
   
   internal_links[function].push_back(p - BYTES_4 - start);
 

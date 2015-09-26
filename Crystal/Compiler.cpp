@@ -153,7 +153,7 @@ void Crystal_Compiler::Linker()
   linker.Set_Internal(Machine->Get_Internals());
 
   // Link the program directly so it can be executed later.
-  linker.Link(program.base);
+  linker.Link(program.base, program.load - program.base);
 }
 
 int Crystal_Compiler::Execute(Crystal_Symbol* ret, std::vector<Crystal_Symbol>* args)
