@@ -54,6 +54,7 @@ Crystal_Linker::Crystal_Linker()
   // Standard Library
   REGISTER_SUPPORT(memset);
   REGISTER_SUPPORT(calloc);
+  REGISTER_SUPPORT(malloc);
 
   // Linking Support Functionallity
   REGISTER_SUPPORT(Copy_Ref);
@@ -73,6 +74,7 @@ Crystal_Linker::Crystal_Linker()
   // Linking Complex Support Functionallity
   REGISTER_SUPPORT(Construct_Class);
   REGISTER_SUPPORT(Construct_Array);
+  REGISTER_SUPPORT(Construct_String);
   REGISTER_SUPPORT(Array_Add_Nil);
   REGISTER_SUPPORT(Push_Int);
   REGISTER_SUPPORT(Push_Double);

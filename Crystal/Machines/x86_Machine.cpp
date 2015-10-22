@@ -906,7 +906,10 @@ void x86_Machine::Label_Management(unsigned label, bool short_jump)
 
 int x86_Machine::String_Address(const char* str, unsigned address)
 {
-  esp[str].push_back(address - (int)start);
+  if (address == static_cast<unsigned>(-1))
+    esp[str].push_back((int)p - (int)start);
+  else
+    esp[str].push_back(address - (int)start);
 
   return NULL;
 }

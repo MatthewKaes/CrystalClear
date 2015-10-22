@@ -8,9 +8,9 @@
 
 //Crystal Constants
 #define CRY_COPYRIGHT "Crystal Clear Copyright Matthew Kaes 2014"
-#define CRY_VERSION  "0.10.4"
-#define CRY_COMPILER "0.10.4"
-#define CRY_LINKER   "0.10.4"
+#define CRY_VERSION  "0.10.5"
+#define CRY_COMPILER "0.10.5"
+#define CRY_LINKER   "0.10.5"
 #define CRY_MACHINE "x86"
 
 //Crystal Macros

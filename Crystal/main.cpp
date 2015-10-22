@@ -24,6 +24,18 @@ extern std::vector<Class_Info*> Class_Listing;
 
 typedef void (*CRY_EXPORT)();
 
+void Usage()
+{
+  printf("USAGE: CRYSTAL target [output]\n");
+  printf("  target  : The target of the crystal compiler. \n");
+  printf(" [output] : If provided, a compiled Crystal File will be produced. \n");
+  printf("            An output file can only be specified if target is a directory.\n");
+  printf("Compiles and runs a crystal program for a collection of crystal source code.\n");
+  printf("If the target is a directory source code will be pulled form the target directory\n");
+  printf("and aggragated for use. If the target is a compiled crystal file then the crystal\n\n");
+  printf("the program is used for the entire execution.\n");
+}
+
 int Process_Root(Crystal_Compiler* comp, const char* rootdir)
 {
   //Set the root for other functions to use
@@ -79,7 +91,7 @@ int main(int argc, const char **argv)
   Py_Initialize();
 #endif
 
-  if(argc > 1)
+  if(argc > 1 && strcmp(argv[1], "\?"))
   {
     Crystal_Compiler comp(new x86_Machine);
 
@@ -122,10 +134,7 @@ int main(int argc, const char **argv)
   }
   else
   {
-    printf("USAGE: CRYSTAL directory\n");
-    printf("  directory: The root directory of the target crystal project. \n\n");
-    printf("Compiles and runs a crystal program for a collection of crystal source code.\n");
-    printf("Source code will be pulled for the target directory and aggragated for use.\n\n");
+    Usage();
   }  
 
   //Clean up code

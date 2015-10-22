@@ -15,7 +15,7 @@ def main()
   
   print(choice == "accurate")
   if(choice == "accurate")
-        print_color("accurate clock", 12)
+    print_color("accurate clock", 12)
   	ret = accurate_clock(x + " World")
   else
 	ret = clock(x + " World")
@@ -49,8 +49,8 @@ def accurate_clock( val )
 
     # Wait loop
     while((time - start_time) < x)
-	#prevent thrashing
-	sleep(2)
+      #prevent thrashing
+      sleep(2)
     end
 
     y += (time - start_time)
