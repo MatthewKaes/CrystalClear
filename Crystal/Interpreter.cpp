@@ -450,7 +450,7 @@ void Crystal_Interpreter::Process_Lookups()
       }
       else if(current_class != NULL && current_class->lookup.find(Late_Binding(pkg.str.c_str())) != current_class->lookup.end())
       {
-        printf("CRYSTAL ERROR: function '%s' is defined multiple times in scope '%s'\n", current_class->name);
+        printf("CRYSTAL ERROR: function '%s' is defined multiple times in scope '%s'\n", pkg.str.c_str(), current_class->name.c_str());
       }
       else
       {

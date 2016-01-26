@@ -47,7 +47,7 @@ void Crystal_Help(Crystal_Symbol* ret_sym, Crystal_Symbol* command)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 11);
     printf("\nCrystal v%s ", CRY_VERSION);
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-    printf("Functionality:\n", CRY_VERSION);
+    printf("Functionality:\n");
 
     std::vector<std::string> functions;
     for (auto itr = built_in.begin(); itr != built_in.end(); itr++)

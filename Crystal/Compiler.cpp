@@ -1024,11 +1024,11 @@ void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
         if(left)
         {
           Machine->Strcpy(EAX, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER);
-          Machine->Strcpy(EDI, static_cast<unsigned>(Machine->String_Address(converted.c_str(), -1)), converted.length(), true);
+          Machine->Strcpy(EDI, converted.c_str(), converted.length(), true);
         }
         else
         {
-          Machine->Strcpy(EAX, static_cast<unsigned>(Machine->String_Address(converted.c_str(), -1)), converted.length());
+          Machine->Strcpy(EAX, converted.c_str(), converted.length());
           Machine->Strcpy(EDI, offset_dest - DATA_UPPER, offset_dest - DATA_LOWER, true);
         }
         Machine->Dec(EBX);

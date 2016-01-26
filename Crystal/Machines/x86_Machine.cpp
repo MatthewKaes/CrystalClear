@@ -1133,7 +1133,7 @@ void x86_Machine::Strcpy(REGISTERS dest, const char* str, int length, bool extra
   if(extra_byte)
     Inc(ECX);
 
-  Load_Register(ESI, str);
+  Load_Register(ESI, String_Address(str, (unsigned)p - (unsigned)start + 1));
 
   Move_Register(EDI, dest);
   *p++ = REP;

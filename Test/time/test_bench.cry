@@ -1,5 +1,5 @@
 def main()
-  val = 1000000
+  val = 10 ^ 7
   start_time = time()
   print("\nTiming Test using Standard Operations:")
   while(val)
@@ -7,25 +7,25 @@ def main()
   end
   print(((time() - start_time) / 1000.0) + " seconds")
 
+  x = "hello"
+  
+  print("World" + x)
+  
   #Call a clock function using sleep
   print_color("\nEnter \"accurate\" for a precise clock.", 11)
   print_color("Otherwise the default clock will be used.", 11)
   choice = input
-  x = "Hello"
   
   print(choice == "accurate")
   if(choice == "accurate")
     print_color("accurate clock", 12)
-  	ret = accurate_clock(x + " World")
+  	accurate_clock()
   else
-	ret = clock(x + " World")
+	  clock()
   end
-
-  print("return from clock: " + ret)
-  return ret
 end
 
-def clock( val )
+def clock()
   x = 100
   y = 0
   start_time = time()
@@ -39,7 +39,7 @@ def clock( val )
 end
 
 
-def accurate_clock( val )
+def accurate_clock()
   x = 100
   y = 0
   base_time = start_time = time
