@@ -26,7 +26,7 @@ typedef void (*CRY_EXPORT)();
 
 void Usage()
 {
-  printf("USAGE: CRYSTAL target [output]\n");
+  printf("USAGE: CRYSTAL target [--c 'output']\n");
   printf("  target  : The target of the crystal compiler. \n");
   printf(" [output] : If provided, a compiled Crystal File will be produced. \n");
   printf("            An output file can only be specified if target is a directory.\n");
@@ -36,48 +36,60 @@ void Usage()
   printf("the program is used for the entire execution.\n");
 }
 
-int Process_Root(Crystal_Compiler* comp, const char* rootdir)
+int Process_Root(Crystal_Compiler* comp, const char* target)
 {
-  //Set the root for other functions to use
-  unsigned size = strlen(rootdir);
-  CRY_BASE = strcpy(new char[size + 2], rootdir);
-  if(CRY_BASE[size - 1] != '\\')
+  if (!boost::filesystem::exists(target))
   {
-    CRY_BASE[size] = '\\';
-    CRY_BASE[size + 1] = '\0';
-  }
-  CRY_ROOT = CRY_BASE;
-
-  //Create the interpreter
-  Crystal_Interpreter interpreter(comp);
-  boost::filesystem::path root(rootdir);
-  int Files_Read = 0;
-
-  if(!boost::filesystem::exists(root) || !boost::filesystem::is_directory(root))
-  {
-    printf("CRYSTAL ERROR: Root path is not a directory. Crystal must be pointed to a directory to run. \n\n");
-    return 1;
+    printf("CRYSTAL ERROR: Try target is does not exist. The target must be a directory or a \".crystal\" file.\n\n");
   }
 
-  for (boost::filesystem::directory_iterator it(root); it != boost::filesystem::directory_iterator(); ++it)
+  if (boost::filesystem::is_directory(target))
   {
-    if(boost::filesystem::is_regular_file(it->path()))
+    //Set the root for other functions to use
+    unsigned size = strlen(target);
+    CRY_BASE = strcpy(new char[size + 2], target);
+    if(CRY_BASE[size - 1] != '\\')
     {
-      if(!it->path().extension().compare(std::string(".cry")))
+      CRY_BASE[size] = '\\';
+      CRY_BASE[size + 1] = '\0';
+    }
+    CRY_ROOT = CRY_BASE;
+
+    //Create the interpreter
+    boost::filesystem::path root(target);
+    Crystal_Interpreter interpreter(comp);
+
+    int Files_Read = 0;
+    // Load all of the files into memory.
+    for (boost::filesystem::directory_iterator it(root); it != boost::filesystem::directory_iterator(); ++it)
+    {
+      if(boost::filesystem::is_regular_file(it->path()))
       {
-        Files_Read++;
-        interpreter.Cache_Code(it->path().generic_string().c_str());
+        if(!it->path().extension().compare(std::string(".cry")))
+        {
+          Files_Read++;
+          interpreter.Cache_Code(it->path().generic_string().c_str());
+        }
       }
     }
-  }
     
-  if(!Files_Read)
+    if(!Files_Read)
+    {
+      printf("CRYSTAL ERROR: Root project empty. The Root project must contain one or more files. \n\n");
+      return 1;
+    }
+
+    // Interpret what the execution is and what the code does.
+    interpreter.Interpret();
+
+    // Link together all of the interpreted packages.
+    comp->Linker();
+  }
+  else
   {
-    printf("CRYSTAL ERROR: Root project empty. The Root project must contain one or more files. \n\n");
-    return 1;
+    comp->Read_Binary(target);
   }
 
-  interpreter.Interpret();
   return 0;
  }
 
@@ -102,9 +114,13 @@ int main(int argc, const char **argv)
     }
     
     //========================
-    //Link all packages
+    //If requested use the linker to write out a "crystal" file.
     //========================
-    comp.Linker();
+    if(argc == 4 && (!strcmp(argv[2], "--c") || !strcmp(argv[2], "--C")))
+    {
+      comp.Write_Binary(argv[3]);
+      return 0;
+    }
     
     //========================
     //Execute packages and return terminating crystal

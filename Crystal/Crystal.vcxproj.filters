@@ -75,9 +75,6 @@
     <ClCompile Include="Operations.cpp">
       <Filter>Syntax</Filter>
     </ClCompile>
-    <ClCompile Include="Library.cpp">
-      <Filter>Extensions</Filter>
-    </ClCompile>
     <ClCompile Include="Reductions.cpp">
       <Filter>Syntax</Filter>
     </ClCompile>
@@ -123,6 +120,12 @@
     <ClCompile Include="Core.cpp">
       <Filter>Extensions</Filter>
     </ClCompile>
+    <ClCompile Include="Native.cpp">
+      <Filter>Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="Library.cpp">
+      <Filter>Compiler</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Crystal.h">
@@ -151,9 +154,6 @@
     </ClInclude>
     <ClInclude Include="Bytecode.h">
       <Filter>Syntax\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="Library.h">
-      <Filter>Extensions\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Reductions.h">
       <Filter>Syntax\Headers</Filter>
@@ -205,6 +205,12 @@
     </ClInclude>
     <ClInclude Include="Core.h">
       <Filter>Extensions\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Native.h">
+      <Filter>Extensions\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Library.h">
+      <Filter>Compiler\Header</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

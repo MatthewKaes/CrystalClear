@@ -3,6 +3,7 @@
 
 #include "Machines\Machine.h"
 #include "Crystal.h"
+#include "Library.h"
 #include <stdio.h>
 
 class Crystal_Linker {
@@ -32,7 +33,7 @@ public:
   void Read_Functions(FILE* input);
   void Read_Code(FILE* input);
 
-
+  static Crystal_Library library;
 private:
   std::unordered_map<double, std::vector<unsigned>> doubles;
   std::unordered_map<std::string, std::vector<unsigned>> strings;
@@ -40,7 +41,6 @@ private:
   std::unordered_map<unsigned, std::vector<unsigned>> internals;
   std::unordered_map<std::string, std::vector<unsigned>> raw_internals;
   std::unordered_map<std::string, PackageLinks> raw_functions;
-  std::unordered_map<std::string, void*> supported_functions;
   BYTE* executable;
   BYTE* read_only_memory;
   unsigned code_size;

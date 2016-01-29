@@ -7,7 +7,7 @@
 
 #include "Crystal.h"
 #include "Clarity_Filter.h"
-#include "Library.h"
+#include "Native.h"
 #include "Linker.h"
 
 //Crystal Constants
@@ -58,6 +58,8 @@ public:
   void Start_Encode(std::string name, unsigned locals_used, unsigned stack_size, unsigned arguments = 0, Class_Info* obj = 0, unsigned id = 0);
   void End_Encode();
   void Linker();
+  void Read_Binary(const char* exe_name);
+  void Write_Binary(const char* exe_name);
   int Execute(Crystal_Symbol* ret, std::vector<Crystal_Symbol> *args);
 
   //System calls

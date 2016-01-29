@@ -1,7 +1,7 @@
 #include "Linker.h"
 #include <windows.h>
 
-#include "Library.h"
+#include "Native.h"
 #include "Function.h"
 #include "Filesystems.h"
 #include "Helper.h"
@@ -11,11 +11,8 @@
 
 extern const char* CRY_ROOT;
 
-extern std::unordered_map<std::string, Package_Info> built_in;
-
 #define CRYSTAL_HEADER "MK15CC"
 #define CRYSTAL_PADDING 0xCFCFCFCF
-#define REGISTER_SUPPORT(function) supported_functions[#function] = function;
 
 #define WRITE_HEADER(string) fwrite(string, 1, strlen(string), output);
 #define WRITE_BLOCK(object) fwrite(&object, sizeof(object), 1, output);
@@ -50,60 +47,6 @@ Crystal_Linker::Crystal_Linker()
   read_only_memory = NULL;
   code_size = 0;
   entry_point = 0;
-
-  // Standard Library
-  REGISTER_SUPPORT(memset);
-  REGISTER_SUPPORT(calloc);
-  REGISTER_SUPPORT(malloc);
-
-  // Linking Support Functionallity
-  REGISTER_SUPPORT(Copy_Ref);
-  REGISTER_SUPPORT(This_Copy);
-  REGISTER_SUPPORT(Stack_Copy);
-  REGISTER_SUPPORT(Parse_Int);
-  REGISTER_SUPPORT(Parse_Bool);
-  REGISTER_SUPPORT(Parse_Double);
-  REGISTER_SUPPORT(Parse_String);
-  REGISTER_SUPPORT(Fast_strcmp);
-  REGISTER_SUPPORT(Fast_pointercmp);
-  REGISTER_SUPPORT(Late_Func_Binding);
-  REGISTER_SUPPORT(Late_Attr_Binding);
-  REGISTER_SUPPORT(Late_Func_Binding_Ref);
-  REGISTER_SUPPORT(Late_Attr_Binding_Ref);
-
-  // Linking Complex Support Functionallity
-  REGISTER_SUPPORT(Construct_Class);
-  REGISTER_SUPPORT(Construct_Array);
-  REGISTER_SUPPORT(Construct_String);
-  REGISTER_SUPPORT(Array_Add_Nil);
-  REGISTER_SUPPORT(Push_Int);
-  REGISTER_SUPPORT(Push_Double);
-  REGISTER_SUPPORT(Push_Text);
-  REGISTER_SUPPORT(Val_Binding);
-
-  // Linking Garbage Collection
-  REGISTER_SUPPORT(GC_Branch);
-  REGISTER_SUPPORT(GC_Extend_Generation);
-  REGISTER_SUPPORT(GC_Collect);
-
-  // Linking Dynamic Math Support
-  REGISTER_SUPPORT(Obscure_Addition);
-  REGISTER_SUPPORT(Obscure_Subtraction);
-  REGISTER_SUPPORT(Obscure_Multiplication);
-  REGISTER_SUPPORT(Obscure_Division);
-  REGISTER_SUPPORT(Obscure_Modulo);
-  REGISTER_SUPPORT(Obscure_Power);
-  REGISTER_SUPPORT(Obscure_Equal);
-  REGISTER_SUPPORT(Obscure_Diffrence);
-  REGISTER_SUPPORT(Obscure_Less);
-  REGISTER_SUPPORT(Obscure_Greater);
-  REGISTER_SUPPORT(Obscure_Less_Equal);
-  REGISTER_SUPPORT(Obscure_Greater_Equal);
-  REGISTER_SUPPORT(Obscure_AdditionR);
-  REGISTER_SUPPORT(Obscure_SubtractionR);
-  REGISTER_SUPPORT(Obscure_DivisionR);
-  REGISTER_SUPPORT(Obscure_ModuloR);
-  REGISTER_SUPPORT(Obscure_PowerR);
 }
 
 Crystal_Linker::~Crystal_Linker()
@@ -147,16 +90,16 @@ void Crystal_Linker::Set_Functions(const std::unordered_map<std::string, Package
 void Crystal_Linker::Set_Internal(const std::unordered_map<std::string, std::vector<unsigned>>* values)
 {
   // Linking the Crystal Built in Library
-  for (auto itr = built_in.begin(); itr != built_in.end(); itr++)
+  for (auto itr = Crystal_Linker::library.built_in.begin(); itr != Crystal_Linker::library.built_in.end(); itr++)
   {
-    supported_functions[itr->second.name] = itr->second.function;
+    library.supported_functions[itr->second.name] = itr->second.function;
   }
 
   // Copy over all the locations that need to be fixed up by the
   // linker for user defined functions.
   for (auto iter = values->begin(); iter != values->end(); iter++)
   {
-    if (supported_functions.find(iter->first) == supported_functions.end())
+    if (library.supported_functions.find(iter->first) == library.supported_functions.end())
     {
       printf("Failed to link function '%s'.\n", iter->first.c_str());
       continue;
@@ -164,7 +107,7 @@ void Crystal_Linker::Set_Internal(const std::unordered_map<std::string, std::vec
 
     // Grab all of the offset pairs.
     for (unsigned i = 0; i < iter->second.size(); i++)
-      internals[reinterpret_cast<unsigned>(supported_functions[iter->first])].push_back(iter->second[i]);
+      internals[reinterpret_cast<unsigned>(library.supported_functions[iter->first])].push_back(iter->second[i]);
   }
 
   // Save the raw internals that were passed in.

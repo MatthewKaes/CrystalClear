@@ -167,6 +167,7 @@
     <ClCompile Include="Filesystems.cpp" />
     <ClCompile Include="Garbage_Collector.cpp" />
     <ClCompile Include="IO.cpp" />
+    <ClCompile Include="Library.cpp" />
     <ClCompile Include="Linker.cpp" />
     <ClCompile Include="Marshal.cpp" />
     <ClCompile Include="Math.cpp" />
@@ -175,7 +176,7 @@
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="Lexicon.cpp" />
-    <ClCompile Include="Library.cpp" />
+    <ClCompile Include="Native.cpp" />
     <ClCompile Include="Machines\x86_Machine.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Obscure.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="Filesystems.h" />
     <ClInclude Include="Garbage_Collector.h" />
     <ClInclude Include="IO.h" />
+    <ClInclude Include="Library.h" />
     <ClInclude Include="Linker.h" />
     <ClInclude Include="Marshal.h" />
     <ClInclude Include="Math.h" />
@@ -201,7 +203,7 @@
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Interpreter.h" />
     <ClInclude Include="Lexicon.h" />
-    <ClInclude Include="Library.h" />
+    <ClInclude Include="Native.h" />
     <ClInclude Include="Machines\Machine.h" />
     <ClInclude Include="Machines\Machine_Code.h" />
     <ClInclude Include="Machines\x86_Codes.h" />

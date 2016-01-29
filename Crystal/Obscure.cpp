@@ -1,6 +1,6 @@
 #include "Obscure.h"
 #include "Helper.h"
-#include "Library.h"
+#include "Native.h"
 #include "Function.h"
 
 void Obscure_Addition(Crystal_Symbol* dest, Crystal_Symbol* source)

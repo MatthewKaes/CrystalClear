@@ -22,7 +22,6 @@ private:
   Crystal_Interpreter();
 
   //Populate the data for built in packages.
-  void Populate_BIP();
   void Populate_Base_Classes();
   void Populate_BIC();
   

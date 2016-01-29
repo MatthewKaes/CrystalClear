@@ -1,0 +1,5 @@
+def main()
+  print("Hello World!")
+  print("Running Crystal: " + cry_version)
+  print(cry_copyright)
+end

@@ -7,6 +7,7 @@
 #include "Linker.h"
 
 extern std::unordered_map<std::string, unsigned> late_bindings;
+Crystal_Library Crystal_Linker::library;
 
 CRY_ARG::CRY_ARG(Crystal_Data* sym)
 {
@@ -154,6 +155,16 @@ void Crystal_Compiler::Linker()
 
   // Link the program directly so it can be executed later.
   linker.Link(program.base, program.load - program.base);
+}
+
+void Crystal_Compiler::Read_Binary(const char* exe_name)
+{
+  linker.Read(exe_name);
+}
+
+void Crystal_Compiler::Write_Binary(const char* exe_name)
+{
+  linker.Write(exe_name, program.base, program.load - program.base);
 }
 
 int Crystal_Compiler::Execute(Crystal_Symbol* ret, std::vector<Crystal_Symbol>* args)
