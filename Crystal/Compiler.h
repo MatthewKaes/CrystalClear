@@ -96,6 +96,7 @@ public:
   void Ref_Load(unsigned var, CRY_ARG val = CRY_ARG());
   void Copy(unsigned dest, unsigned source);
   void Swap(unsigned dest, unsigned source);
+  void Not(unsigned dest);
   void Add(unsigned dest, unsigned source, bool left = true);
   void AddC(unsigned dest, CRY_ARG const_, bool left = true);
   void Sub(unsigned dest, unsigned source, bool left = true);

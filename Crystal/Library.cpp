@@ -57,10 +57,19 @@ Crystal_Library::Crystal_Library()
   REGISTER_SUPPORT(Construct_Class);
   REGISTER_SUPPORT(Construct_Array);
   REGISTER_SUPPORT(Construct_String);
+  REGISTER_SUPPORT(Construct_Range);
   REGISTER_SUPPORT(Array_Add_Nil);
+  REGISTER_SUPPORT(Push_Nil);
+  REGISTER_SUPPORT(Push_Bool);
   REGISTER_SUPPORT(Push_Int);
   REGISTER_SUPPORT(Push_Double);
   REGISTER_SUPPORT(Push_Text);
+  REGISTER_SUPPORT(Array_Add_Nil);
+  REGISTER_SUPPORT(Array_Add_Bool);
+  REGISTER_SUPPORT(Array_Add_Int);
+  REGISTER_SUPPORT(Array_Add_Double);
+  REGISTER_SUPPORT(Array_Add_Text);
+  REGISTER_SUPPORT(Array_Add_Stack);
   REGISTER_SUPPORT(Val_Binding);
 
   // Linking Garbage Collection
@@ -81,11 +90,18 @@ Crystal_Library::Crystal_Library()
   REGISTER_SUPPORT(Obscure_Greater);
   REGISTER_SUPPORT(Obscure_Less_Equal);
   REGISTER_SUPPORT(Obscure_Greater_Equal);
+  REGISTER_SUPPORT(Obscure_Not);
   REGISTER_SUPPORT(Obscure_AdditionR);
   REGISTER_SUPPORT(Obscure_SubtractionR);
   REGISTER_SUPPORT(Obscure_DivisionR);
   REGISTER_SUPPORT(Obscure_ModuloR);
   REGISTER_SUPPORT(Obscure_PowerR);
+
+  // Linking Crystal Functions
+  REGISTER_SUPPORT(Crystal_Text_Append);
+  REGISTER_SUPPORT(Crystal_Text_Append_Rev);
+  REGISTER_SUPPORT(Crystal_Array_Append);
+  REGISTER_SUPPORT(Crystal_Array_Append_Rev);
 
   Populate_Built_In();
 }

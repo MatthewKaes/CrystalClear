@@ -118,6 +118,18 @@ bool Greater_Equal_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector
   PREFORM_OPERATION(GtrEql);
 }
 
+bool Not_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  if (MEM((*syms)[0]) == MEMR(result))
+    target->Not(MEM((*syms)[0]));
+  else
+  {
+    target->Copy(MEMR(result), MEM((*syms)[0]));
+    target->Not(MEMR(result));
+  }
+
+  return true;
+}
 
 bool Generic_Assignment(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result, OPERATION func, OPERATION_C func_const)
 {

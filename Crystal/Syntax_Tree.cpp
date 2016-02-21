@@ -31,7 +31,7 @@ void Syntax_Node::Process(Syntax_Node* node)
     return;
   }
 
-  if((!node->R_Assoc && node->priority > priority) || (node->R_Assoc && node->priority >= priority))
+  if((!node->R_Assoc && node->priority > priority) || (node->R_Assoc && node->priority >= priority) || (node->sym.str[0] == '!'))
   {
     if(RIGHT_CHILD)
     {

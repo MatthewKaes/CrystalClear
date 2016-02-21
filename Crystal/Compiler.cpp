@@ -836,6 +836,14 @@ void Crystal_Compiler::Swap(unsigned dest, unsigned source)
   states[dest] = states[source];
   states[source] = temp;
 }
+
+void Crystal_Compiler::Not(unsigned dest)
+{
+  Push(dest);
+  Machine->Runtime("Obscure_Not");
+  Pop(1);
+}
+
 void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;
@@ -949,6 +957,7 @@ void Crystal_Compiler::Add(unsigned dest, unsigned source, bool left)
     Clarity_Filter::Combind(states[dest], states[source]);
   }
 }
+
 void Crystal_Compiler::AddC(unsigned dest, CRY_ARG const_, bool left)
 {
   unsigned offset_dest = stack_size - dest * VAR_SIZE;

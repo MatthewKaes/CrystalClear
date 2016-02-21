@@ -75,11 +75,10 @@ GENERATOR_CODE Resolve_Operator(Crystal_Data* sym)
     }
     break;
   case '!':
-    switch(sym->str.c_str()[1])
-    {
-    case '=':
+    if (sym->str.c_str()[1] == '=')
       return Diffrent_Gen;
-    }
+    else
+      return Not_Gen;
     break;
   case '+':
     if(sym->str.c_str()[1] == '=')

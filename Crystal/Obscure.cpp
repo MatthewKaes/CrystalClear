@@ -422,6 +422,15 @@ void Obscure_Greater_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
   dest->i32 = !dest->i32;
 }
 
+void Obscure_Not(Crystal_Symbol* dest)
+{
+  if (dest->type == CRY_NIL)
+    return;
+
+  dest->type = CRY_BOOL;
+  dest->i32 = !dest->i32;
+}
+
 //Reversals
 void Obscure_AdditionR(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
