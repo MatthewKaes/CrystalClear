@@ -79,6 +79,12 @@ void Crystal_Interpreter::Populate_Base_Classes()
   REGISTER_CLASS(Int64);
   REGISTER_CLASS(Double);
   REGISTER_CLASS(Text);
+  REGISTER_CLASS(Reference);
+  REGISTER_CLASS(Pointer);
+  REGISTER_CLASS(String);
+  REGISTER_CLASS(Array);
+  REGISTER_CLASS(Object);
+  REGISTER_CLASS(Symbol);
 }
 
 void Crystal_Interpreter::Populate_BIC()
