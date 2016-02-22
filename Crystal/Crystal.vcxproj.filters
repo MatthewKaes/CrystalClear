@@ -126,6 +126,9 @@
     <ClCompile Include="Library.cpp">
       <Filter>Compiler</Filter>
     </ClCompile>
+    <ClCompile Include="Containers.cpp">
+      <Filter>Extensions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Crystal.h">
@@ -211,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="Library.h">
       <Filter>Compiler\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="Containers.h">
+      <Filter>Extensions\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

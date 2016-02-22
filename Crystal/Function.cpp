@@ -4,6 +4,56 @@
 
 extern std::vector<Class_Info*> Class_Listing;
 
+bool Crystal_Compare(Crystal_Symbol* left, Crystal_Symbol* right)
+{
+  Cry_Derefrence(&left);
+  Cry_Derefrence(&right);
+
+  switch (left->type)
+  {
+  case CRY_NIL:
+    return right->type == CRY_NIL;
+  case CRY_BOOL:
+    if (right->type != left->type)
+    {
+      return false;
+    }
+    return (right->b == left->b);
+  case CRY_INT:
+    if (right->type != left->type)
+    {
+      return false;
+    }
+    return (right->i32 == left->i32);
+  case CRY_DOUBLE:
+    if (right->type != left->type)
+    {
+      return false;
+    }
+    return (right->d == left->d);
+  case CRY_TEXT:
+  case CRY_STRING:
+    if (right->type != CRY_TEXT && right->type != CRY_STRING)
+    {
+      return false;
+    }
+    return Fast_strcmp(right, left);
+  case CRY_CLASS_OBJ:
+    if (right->klass != left->klass)
+    {
+      return false;
+    }
+  case CRY_ARRAY:
+    if (right->type != left->type)
+    {
+      return false;
+    }
+    return Fast_arraycmp(right, left) == 1;
+  default:
+    return false;
+  }
+}
+
 int Crystal_And(Crystal_Symbol* left, Crystal_Symbol* right)
 {
   return Parse_Bool(left) && Parse_Bool(right);

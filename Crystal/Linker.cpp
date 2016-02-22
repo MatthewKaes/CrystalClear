@@ -8,6 +8,7 @@
 #include "Garbage_Collector.h"
 #include "Obscure.h"
 #include "Core.h"
+#include "Containers.h"
 
 extern const char* CRY_ROOT;
 

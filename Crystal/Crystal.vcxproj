@@ -163,6 +163,7 @@
     <ClCompile Include="Bytecode.cpp" />
     <ClCompile Include="Clarity_Filter.cpp" />
     <ClCompile Include="Compiler.cpp" />
+    <ClCompile Include="Containers.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="Filesystems.cpp" />
     <ClCompile Include="Garbage_Collector.cpp" />
@@ -190,6 +191,7 @@
     <ClInclude Include="Clarity_Filter.h" />
     <ClInclude Include="Compiler.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="Containers.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="Crystal.h" />
     <ClInclude Include="Filesystems.h" />

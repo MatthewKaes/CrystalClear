@@ -1,5 +1,6 @@
 #include "Interpreter.h"
 #include "Core.h"
+#include "Containers.h"
 #include "Native.h"
 #include "Filesystems.h"
 #include "IO.h"
@@ -82,7 +83,11 @@ void Crystal_Interpreter::Populate_Base_Classes()
   REGISTER_CLASS(Reference);
   REGISTER_CLASS(Pointer);
   REGISTER_CLASS(String);
+  REGISTER_METHOD(size, Crystal_Size, 1);
   REGISTER_CLASS(Array);
+  REGISTER_METHOD(size, Crystal_Size, 1);
+  REGISTER_METHOD(include? , Crystal_Contains, 1);
+  REGISTER_METHOD(find, Crystal_Index, 1);
   REGISTER_CLASS(Object);
   REGISTER_CLASS(Symbol);
 }
@@ -424,7 +429,7 @@ void Crystal_Interpreter::Add_Global_Methods()
   REGISTER_GLOBAL_METHOD(double, Crystal_Double, 1);
   REGISTER_GLOBAL_METHOD(string, Crystal_String, 1);
   REGISTER_GLOBAL_METHOD(nil?, Crystal_NilCheck, 1);
-  REGISTER_GLOBAL_METHOD(print, Crystal_Print, 1)
+  REGISTER_GLOBAL_METHOD(print, Crystal_Print, 1);
   REGISTER_GLOBAL_METHOD(print_color, Crystal_PrintColor, 2);
 }
 

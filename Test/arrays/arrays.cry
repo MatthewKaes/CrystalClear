@@ -7,6 +7,16 @@ def main()
   # Create an array object
   x = [2, nil, true, "Hello", 6.10, nil, val, val + val]
   
+  print_color("Container test for array X:" , 11) 
+  ("array contains 2: " + x.include?(2)).print
+  ("array contains nil: " + x.include?(nil)).print
+  ("array contains 'Hello': " + x.include?("Hello")).print
+  ("array contains false: " + x.include?(false)).print
+  
+  ("array index of 2: " + x.find(2)).print
+  ("array index of nil: " + x.find(nil)).print
+  ("array index of 'Hello': " + x.find("Hello")).print
+  
   # Make a subarray
   x[1] = [[true, [val, "Hello"]], 3]
   
@@ -19,7 +29,7 @@ def main()
   print_color("Unroll X:", 11)
 
   index = 0
-  while(index < size(x))
+  while(index < x.size)
     print(x[index])
     
     # Test subarray contents
@@ -36,13 +46,13 @@ def main()
   y = 0 ... 11
   print_color("Range Y:", 11) 
   print(y)
-  print("Size: " + size(y) + "\n")
+  print("Size: " + y.size + "\n")
 
   # Unrolling an array
   print_color("Powers of 2:", 11) 
   
   index = 0
-  while(index < size(y))
+  while(index < y.size)
    print(2 ^ y[index])
    index += 1
   end

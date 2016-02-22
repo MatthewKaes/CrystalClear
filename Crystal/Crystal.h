@@ -8,7 +8,7 @@
 
 //Crystal Constants
 #define CRY_COPYRIGHT "Crystal Clear Copyright Matthew Kaes 2014"
-#define CRY_VERSION  "0.11.4"
+#define CRY_VERSION  "0.11.5"
 #define CRY_COMPILER "0.11.3"
 #define CRY_LINKER   "0.11.4"
 #define CRY_MACHINE "x86"
@@ -88,6 +88,7 @@ public:
   unsigned short UNUSED;
   union {
     Crystal_Symbol* sym;
+    Crystal_Symbol* ary;
     char* str;
   };
   union {

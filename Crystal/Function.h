@@ -3,6 +3,8 @@
 
 #include "Crystal.h"
 
+bool Crystal_Compare(Crystal_Symbol* left, Crystal_Symbol* right);
+
 int Crystal_And(Crystal_Symbol* left, Crystal_Symbol* right);
 int Crystal_Or(Crystal_Symbol* left, Crystal_Symbol* right);
 
