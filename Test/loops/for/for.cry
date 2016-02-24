@@ -1,0 +1,8 @@
+#Simple crystal code for testing
+
+def main()
+  x = 1 ... 100
+  for val in x
+    val.print
+  end
+end

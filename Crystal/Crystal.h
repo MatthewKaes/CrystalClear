@@ -75,6 +75,7 @@ struct CryLookup
   int lable_id;
   int lable_block_id;
   int loop_back_lable;
+  bool indexed;
   std::vector<bool> corruptions;
 
   static const int NO_LABLE = -1;

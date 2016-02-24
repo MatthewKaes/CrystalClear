@@ -119,6 +119,14 @@ bool Syntax_Node::Evaluate()
       loop_code.code_gen = ElseIf_Preface_Gen;
       tree_->Get_Bytecodes()->push_back(loop_code); 
     }
+
+    // Set up the special byte code header for for loops
+    if (!sym.str.compare("for"))
+    {
+      Bytecode loop_code;
+      loop_code.code_gen = For_Gen;
+      tree_->Get_Bytecodes()->push_back(loop_code);
+    }
   }
 
   // Evaluate any children before this node is evaluated.
@@ -134,6 +142,9 @@ bool Syntax_Node::Evaluate()
   new_code.code_gen = Resolve_Generator(&sym);
   if(new_code.code_gen == Null_Gen)
     return true;
+
+  if (new_code.code_gen == In_Gen)
+    params[0] = params[0]->params[1];
 
   new_code.base = sym;
   new_code.result.type = DAT_NIL;
@@ -221,7 +232,7 @@ void Syntax_Node::Finalize()
   }
 
   if(sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || 
-     sym.type == DAT_STATEMENT || sym.type == DAT_INTFUNCTION ||
+     sym.type == DAT_INTFUNCTION ||
      sym.type == DAT_CLASS)
     index = 0;
   else

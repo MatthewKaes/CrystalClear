@@ -398,7 +398,7 @@ void Crystal_Interpreter::Process_Lookups()
         current_class = NULL;
       }
     }      
-    else if(!sym.str.compare("if") || !sym.str.compare("while"))
+    else if (!sym.str.compare("if") || !sym.str.compare("while") || !sym.str.compare("for"))
     {
       scope += 1;
     }
@@ -529,12 +529,12 @@ void Crystal_Interpreter::Process_Package(const char** code, Class_Info* current
           continue;
         sym.type = DAT_STATEMENT;
       }
-      else if(!sym.str.compare("if") || !sym.str.compare("while"))
+      else if (!sym.str.compare("if") || !sym.str.compare("while") || !sym.str.compare("for"))
       {
         scope += 1;
         sym.type = DAT_STATEMENT;
       }
-      else if(!sym.str.compare("else") || !sym.str.compare("elsif"))
+      else if (!sym.str.compare("else") || !sym.str.compare("elsif") || !sym.str.compare("in"))
       {
         sym.type = DAT_STATEMENT;
       }

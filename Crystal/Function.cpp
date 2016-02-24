@@ -64,6 +64,19 @@ int Crystal_Or(Crystal_Symbol* left, Crystal_Symbol* right)
   return Parse_Bool(left) || Parse_Bool(right);
 }
 
+int Crystal_Elements(Crystal_Symbol* sym)
+{
+  if ((sym->type == CRY_POINTER || sym->type == CRY_REFERENCE) &&
+    sym->sym->type == CRY_ARRAY)
+  {
+    return sym->sym->size;
+  }
+  else
+  {
+    return 0;
+  }
+}
+
 void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms)
 {
   std::string val_left;

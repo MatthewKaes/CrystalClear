@@ -130,7 +130,10 @@ GENERATOR_CODE Resolve_Statement(Crystal_Data* sym)
   case 'r':
     return Return_Gen;
   case 'i':
-    return If_Gen;
+    if (!sym->str.compare("if"))
+      return If_Gen;
+    if (!sym->str.compare("in"))
+      return In_Gen;
   case 'w':
     return While_Gen;
   case 'e':
@@ -215,6 +218,18 @@ bool End_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_D
 bool Loop_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
 {
   target->Loop();
+  return true;
+}
+
+bool For_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  target->For();
+  return true;
+}
+
+bool In_Gen(Crystal_Compiler* target, Crystal_Data* base, std::vector<Crystal_Data>* syms, Crystal_Data* result)
+{
+  target->In(MEM((*syms)[0]), MEM((*syms)[1]));
   return true;
 }
 

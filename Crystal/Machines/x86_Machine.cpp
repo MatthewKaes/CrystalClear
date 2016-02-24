@@ -164,6 +164,12 @@ void x86_Machine::Cmp(unsigned address, ARG argument)
   }
 }
 
+void x86_Machine::Cmp(REGISTERS source, REGISTERS target)
+{
+  *p++ = CMP_REG;
+  *p++ = Reg_to_Reg(source, target);
+}
+
 void x86_Machine::CmpZero(REGISTERS source)
 {
   *p++ = CMP_WORD;
@@ -498,6 +504,11 @@ void x86_Machine::Pop(unsigned bytes)
   }
 }
 
+void x86_Machine::Pop(REGISTERS reg)
+{
+  *p++ = POP_REG + Reg_Id(reg);
+}
+
 void x86_Machine::Load_Mem(unsigned address, ARG argument)
 {
   switch(argument.type)
@@ -735,24 +746,24 @@ void x86_Machine::Dec(REGISTERS dest)
 
 void x86_Machine::Call(REGISTERS source)
 {
-  Load_Register(ECX, source);
+  Load_Register(EDX, source);
   *p++ = FAR_CAL;
-  *p++ = FAR_ECX;
+  *p++ = FAR_EDX;
 }
 
 void x86_Machine::Runtime(const char* function)
 {
-  Load_Register(ECX, MC_ZERO);
+  Load_Register(EDX, MC_ZERO);
   
   internal_links[function].push_back(p - BYTES_4 - start);
 
   *p++ = FAR_CAL;
-  *p++ = FAR_ECX;
+  *p++ = FAR_EDX;
 }
 
 void x86_Machine::Call(const char* function)
 {
-  Load_Register(ECX, MC_ZERO);
+  Load_Register(EDX, MC_ZERO);
   
   if(call_links.find(function) == call_links.end())
   {
@@ -761,7 +772,7 @@ void x86_Machine::Call(const char* function)
   call_links[function].links.push_back(p - BYTES_4 - start);
 
   *p++ = FAR_CAL;
-  *p++ = FAR_ECX;
+  *p++ = FAR_EDX;
 }
 
 void x86_Machine::Return(ARG argument)

@@ -47,6 +47,7 @@ public:
   void Push_Stk(unsigned address);
   void Push_LD(unsigned address, ARG_TYPES type);
   void Pop(unsigned bytes = 0);
+  void Pop(REGISTERS reg);
   //By name addressing
   void Load_Mem(unsigned address, ARG argument);
   //Register Addressing
@@ -74,6 +75,7 @@ public:
   void Or(unsigned address, REGISTERS source);
   void And(unsigned address, REGISTERS source);
   void Cmp(unsigned address, ARG argument);
+  void Cmp(REGISTERS address, REGISTERS argument);
   void CmpZero(REGISTERS source);
   void CmpF(unsigned address, ARG argument);
   void Jmp(unsigned label, bool short_jump = false);

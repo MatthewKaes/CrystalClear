@@ -23,6 +23,7 @@ extern const char* CRY_ROOT;
     WRITE_BLOCK(len); \
     fwrite(string, 1, len, output); \
   }
+
 #define WRITE_VALUE(object) { \
     unsigned obj = object; \
     WRITE_BLOCK(obj); \
@@ -33,6 +34,7 @@ extern const char* CRY_ROOT;
     fread(val, 1, strlen(CRYSTAL_HEADER), input); \
     string.assign(val); \
   }
+
 #define READ_BLOCK(object) fread(&object, sizeof(object), 1, input);
 #define READ_BLOCKS(block, length) fread(block, sizeof(*block), length, input);
 #define READ_STRING(string) { \

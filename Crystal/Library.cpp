@@ -12,9 +12,7 @@
 #include "OS.h"
 #include "IO.h"
 
-
 #define REGISTER_SUPPORT(function) supported_functions[#function] = function;
-
 
 #define REGISTER_FUNCTION(Name, Func, Args, Info, Ret, ...) \
     { Package_Info new_package; \
@@ -54,6 +52,7 @@ Crystal_Library::Crystal_Library()
   REGISTER_SUPPORT(Late_Attr_Binding_Ref);
 
   // Linking Complex Support Functionallity
+  REGISTER_SUPPORT(Crystal_Elements);
   REGISTER_SUPPORT(Construct_Class);
   REGISTER_SUPPORT(Construct_Array);
   REGISTER_SUPPORT(Construct_String);
@@ -171,64 +170,4 @@ void Crystal_Library::Populate_Built_In()
 
   //Hooks to other langauges
   REGISTER_FUNCTION(python, Crystal_Python, 2, Runs a python script and translates any return values., "VALUE The returned value from the python script.", "STRING The path to the python script to run.", "STRING The python function to run. If \"nil\" is passed then the GLOBAL function is run.");
-
-  /*
-#if _DEBUG
-  //Load extensions
-  //Get the debug version of the dll.
-  boost::filesystem::path externals("Extensions\\Debug\\External");
-#else
-  //Load extensions
-  boost::filesystem::path externals("Extensions\\External");
-#endif
-  if (boost::filesystem::exists(externals) && boost::filesystem::is_directory(externals))
-  {
-    for (boost::filesystem::directory_iterator it(externals); it != boost::filesystem::directory_iterator(); ++it)
-    {
-      if (!it->path().extension().compare(std::string(".dll")))
-      {
-        wchar_t name[256];
-        mbstowcs(name, it->path().string().c_str(), it->path().string().length());
-        name[it->path().string().length()] = 0;
-        HINSTANCE Crystal_Lib = LoadLibrary(name);
-      }
-    }
-  }
-
-#if USE_CRYSTAL_EXTENSIONS
-#if _DEBUG
-  //Load extensions
-  //Get the debug version of the dll.
-  boost::filesystem::path extensions("Extensions\\Debug");
-#else
-  //Load extensions
-  boost::filesystem::path extensions("Extensions");
-#endif
-  if (boost::filesystem::exists(extensions) && boost::filesystem::is_directory(extensions))
-  {
-    for (boost::filesystem::directory_iterator it(extensions); it != boost::filesystem::directory_iterator(); ++it)
-    {
-      if (boost::filesystem::is_regular_file(it->path()))
-      {
-        if (!it->path().extension().compare(std::string(".dll")))
-        {
-          wchar_t name[256];
-          mbstowcs(name, it->path().string().c_str(), it->path().string().length());
-          name[it->path().string().length()] = 0;
-          HINSTANCE Crystal_Lib = LoadLibrary(name);
-          CRY_EXPORT import = (CRY_EXPORT)GetProcAddress(Crystal_Lib, "CrystalExports");
-          if (import)
-          {
-            //Call the CrystalExports function which contains all the REGISTER_FUNCTION
-            //calls that builds up the built_in object;
-            import(&built_in, CRY_ROOT);
-            //Add the library to save it
-            Extension_Libs.push_back(Crystal_Lib);
-          }
-        }
-      }
-    }
-  }
-#endif
-  */
 }

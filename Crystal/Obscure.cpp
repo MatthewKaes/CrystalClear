@@ -255,79 +255,8 @@ void Obscure_Power(Crystal_Symbol* dest, Crystal_Symbol* source)
 
 void Obscure_Equal(Crystal_Symbol* dest, Crystal_Symbol* source)
 {
-  Crystal_Symbol* result = dest;
-  Cry_Derefrence(&dest);
-  Cry_Derefrence(&source);
-
-  switch(dest->type)
-  {
-  case CRY_NIL:
-    result->i32 = source->type == CRY_NIL;
-    result->type = CRY_BOOL;
-    return;
-  case CRY_BOOL:
-    if(dest->type != source->type)
-    {
-      result->i32 = 0;
-      result->type = CRY_BOOL;
-      return;
-    }
-    result->i32 = (dest->b == source->b);
-    result->type = CRY_BOOL;
-    return;
-  case CRY_INT:
-    if(dest->type != source->type)
-    {
-      result->i32 = 0;
-      result->type = CRY_BOOL;
-      return;
-    }
-    result->i32 = (dest->i32 == source->i32);
-    result->type = CRY_BOOL;
-    return;
-  case CRY_DOUBLE:
-    if(result->type != source->type)
-    {
-      result->i32 = 0;
-      result->type = CRY_BOOL;
-      return;
-    }
-    result->i32 = (dest->d == source->d);
-    result->type = CRY_BOOL;
-    return;
-  case CRY_TEXT:
-  case CRY_STRING:
-    if(source->type != CRY_TEXT && source->type != CRY_STRING)
-    {
-      result->i32 = 0;
-      result->type = CRY_BOOL;
-      return;
-    }
-    result->i32 = Fast_strcmp(dest, source);
-    result->type = CRY_BOOL;
-    return;
-  case CRY_CLASS_OBJ:
-    if(dest->klass != source->klass)
-    {
-      result->i32 = 0;
-      result->type = CRY_BOOL;
-      return;
-    }
-  case CRY_ARRAY:
-    if(dest->type != source->type)
-    {
-      result->i32 = 0;
-      result->type = CRY_BOOL;
-      return;
-    }
-    result->i32 = Fast_arraycmp(dest, source);
-    result->type = CRY_BOOL;
-    return;
-  default:
-    result->i32 = 0;
-    result->type = CRY_BOOL;
-    return;
-  }
+  dest->i32 = Crystal_Compare(dest, source);
+  dest->type = CRY_BOOL;
 }
 
 void Obscure_Diffrence(Crystal_Symbol* dest, Crystal_Symbol* source)

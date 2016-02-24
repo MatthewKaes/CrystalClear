@@ -89,6 +89,7 @@ public:
   virtual void Push_Stk(unsigned address) = 0;
   virtual void Push_LD(unsigned address, ARG_TYPES type) = 0;
   virtual void Pop(unsigned bytes = 0) = 0;
+  virtual void Pop(REGISTERS reg) = 0;
   //By name addressing
   virtual void Load_Mem(unsigned address, ARG argument) = 0;
   //Register Addressing
@@ -116,6 +117,7 @@ public:
   virtual void Or(unsigned address, REGISTERS source) = 0;
   virtual void And(unsigned address, REGISTERS source) = 0;
   virtual void Cmp(unsigned address, ARG argument) = 0;
+  virtual void Cmp(REGISTERS address, REGISTERS argument) = 0;
   virtual void CmpZero(REGISTERS source) = 0;
   virtual void CmpF(unsigned address, ARG argument) = 0;
   virtual void Jmp(unsigned label, bool short_jump = false) = 0;

@@ -217,6 +217,7 @@ int Fast_arraycmp(Crystal_Symbol* aryl, Crystal_Symbol* aryr)
         {
           return 0;
         }
+        continue;
       }
       else if(aryr->sym[i].type != CRY_STRING)
       {
@@ -224,6 +225,7 @@ int Fast_arraycmp(Crystal_Symbol* aryl, Crystal_Symbol* aryr)
         {
           return 0;
         }
+        continue;
       }
       else
       {
@@ -416,7 +418,10 @@ void* Late_Func_Binding(int id, Crystal_Symbol* symd)
 
 void* Late_Func_Binding_Ref(int id, Crystal_Symbol* symd)
 {
-  return symd->sym->sym->klass->lookup[id].function;
+  if (symd->type > CRY_SYMS)
+    return symd->sym->klass->lookup[id].function;
+  else
+    return Class_Listing[symd->sym->type]->lookup[id].function;
 }
 
 void Late_Attr_Binding(int id, Crystal_Symbol* symd, Crystal_Symbol* ret)

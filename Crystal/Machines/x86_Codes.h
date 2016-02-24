@@ -50,6 +50,7 @@
 #define PSH_EDX 0x52
 #define PSH_EBP 0x55
 #define POP_EDX 0x5A
+#define POP_REG 0x58
 #define POP_ESI 0x5E
 #define POP_EBP 0x5D
 #define REG_XCH 0x87
@@ -57,7 +58,7 @@
 #define EAX_XCH 0x90
 #define OPR_EAX 0xC0
 #define REG_LOD 0xB8
-#define FAR_ECX 0xD1
+#define FAR_EDX 0xD2
 #define ESP_EBP 0xE5
 #define EBP_ESP 0xEC
 #define REG_CMP 0xF8

@@ -7,6 +7,7 @@ bool Crystal_Compare(Crystal_Symbol* left, Crystal_Symbol* right);
 
 int Crystal_And(Crystal_Symbol* left, Crystal_Symbol* right);
 int Crystal_Or(Crystal_Symbol* left, Crystal_Symbol* right);
+int Crystal_Elements(Crystal_Symbol* sym);
 
 //No BIP (built in package) functions.
 void Crystal_Text_Append(Crystal_Symbol* symd, Crystal_Symbol* syms);

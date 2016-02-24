@@ -85,8 +85,10 @@ public:
   void Return(unsigned var);
   void Return();
   void Loop();
-  void While(unsigned var);
   void If(unsigned var);
+  void While(unsigned var);
+  void For();
+  void In(unsigned target, unsigned container);
   void Else();
   void ElseIf_Pre();
   void ElseIf(unsigned var);

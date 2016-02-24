@@ -529,28 +529,11 @@ void Crystal_Compiler::Loop()
   new_lookup.loop_back_lable = Machine->Reserve_Label();
   new_lookup.lable_id = Machine->Reserve_Label();
   new_lookup.lable_block_id = new_lookup.lable_id;
+  new_lookup.indexed = false;
 
   //While procedure
   Machine->Make_Label(new_lookup.loop_back_lable);
   lookups.push_back(new_lookup);
-}
-
-void Crystal_Compiler::While(unsigned var)
-{
-  unsigned offset_dest = stack_size - var * VAR_SIZE;
-  CryLookup new_lookup = lookups.back();
-  //Loops have to obscure all their symbols because we don't know what state they
-  //will be in when we jump back
-  for(unsigned i = 0; i < (locals_count + stack_depth + 1); i++)
-  {
-    states[i].Obscurity();
-  }
-  //No special checking because a symbol could be nil or whatever
-  //at any possible time.
-  Machine->Cmp(offset_dest - DATA_LOWER, 0);
-  Machine->Je(new_lookup.lable_id);
-  Machine->Cmp(offset_dest - DATA_TYPE, static_cast<char>(CRY_NIL));
-  Machine->Je(new_lookup.lable_id);
 }
 
 void Crystal_Compiler::If(unsigned var)
@@ -566,6 +549,7 @@ void Crystal_Compiler::If(unsigned var)
   new_lookup.loop_back_lable = CryLookup::NO_LABLE;
   new_lookup.lable_id = Machine->Reserve_Label();
   new_lookup.lable_block_id = Machine->Reserve_Label();
+  new_lookup.indexed = false;
   //IF procedure
   if(!(states[var].Test(CRY_NIL) && states[var].Size() == 1))
   {
@@ -578,6 +562,68 @@ void Crystal_Compiler::If(unsigned var)
     Machine->Je(new_lookup.lable_id);
   }
   lookups.push_back(new_lookup);
+}
+
+void Crystal_Compiler::While(unsigned var)
+{
+  unsigned offset_dest = stack_size - var * VAR_SIZE;
+  CryLookup new_lookup = lookups.back();
+
+  //Loops have to obscure all their symbols because we don't know what state they
+  //will be in when we jump back
+  for(unsigned i = 0; i < (locals_count + stack_depth + 1); i++)
+  {
+    states[i].Obscurity();
+  }
+
+  //No special checking because a symbol could be nil or whatever
+  //at any possible time.
+  Machine->Cmp(offset_dest - DATA_LOWER, 0);
+  Machine->Je(new_lookup.lable_id);
+  Machine->Cmp(offset_dest - DATA_TYPE, static_cast<char>(CRY_NIL));
+  Machine->Je(new_lookup.lable_id);
+}
+
+void Crystal_Compiler::For()
+{
+  Machine->Load_Register(EBX, 0);
+  Loop();
+}
+
+void Crystal_Compiler::In(unsigned target, unsigned container)
+{
+  CryLookup new_lookup = lookups.back();
+  lookups.back().indexed = true;
+
+  //Loops have to obscure all their symbols because we don't know what state they
+  //will be in when we jump back
+  for (unsigned i = 0; i < (locals_count + stack_depth + 1); i++)
+  {
+    states[i].Obscurity();
+  }
+
+  //No special checking because a symbol could be nil or whatever
+  //at any possible time.
+  Push(container);
+  Machine->Runtime("Crystal_Elements");
+  Pop(1);
+  Machine->Cmp(EBX, EAX);
+  Machine->Jge(new_lookup.lable_id);
+
+  // Aquire the reference
+  Machine->Push(EBX);
+  Push(container);
+  Push(target);
+  Runtime("Val_Binding");
+  Pop(3);
+
+  states[target].Set(CRY_REFERENCE);
+  //Corrupt the state of the object
+  if (lookups.size())
+    lookups.back().corruptions[target] = true;
+
+  Machine->Inc(EBX);
+  Machine->Push(EBX);
 }
 
 void Crystal_Compiler::Else()
@@ -595,6 +641,7 @@ void Crystal_Compiler::Else()
   new_lookup.loop_back_lable = CryLookup::NO_LABLE;
   new_lookup.lable_block_id = from_lookup.lable_block_id;
   new_lookup.lable_id = from_lookup.lable_block_id;
+  new_lookup.indexed = false;
 
   //Else procedure
   Machine->Jmp(new_lookup.lable_block_id);
@@ -618,8 +665,9 @@ void Crystal_Compiler::ElseIf_Pre()
   new_lookup.loop_back_lable = CryLookup::NO_LABLE;
   new_lookup.lable_block_id = from_lookup.lable_block_id;
   new_lookup.lable_id = Machine->Reserve_Label();
+  new_lookup.indexed = false;
 
-  ////Else procedure
+  //Else procedure
   Machine->Jmp(new_lookup.lable_block_id);
   Machine->Make_Label(from_lookup.lable_id);
 
@@ -649,6 +697,13 @@ void Crystal_Compiler::End()
   // Create Loop backs for loops
   if(lookups.back().loop_back_lable != CryLookup::NO_LABLE)
   {
+    // Pop the value for ECX for indexed loops to restore
+    // the counter state of the loop.
+    if (lookups.back().indexed)
+    {
+      Machine->Pop(EBX);
+    }
+
     Machine->Jmp(lookups.back().loop_back_lable);
   }
   
