@@ -1,5 +1,8 @@
 def main()
 
+  # Create and manipulate an array
+  [1, 2, 3].print
+  
   # Create a string object
   val = "Crystal"
   val += " " + "Clear"

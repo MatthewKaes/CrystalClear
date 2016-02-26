@@ -13,6 +13,7 @@ class Syntax_Tree;
 class Syntax_Node {
 public:
   Syntax_Node(std::vector<Syntax_Node*>* pool, Syntax_Tree* tree);
+  void ProcessRoot();
   void Process(Syntax_Node* node);
   void Reduce();
   bool Evaluate();

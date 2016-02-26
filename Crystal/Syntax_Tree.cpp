@@ -12,6 +12,17 @@ Syntax_Node::Syntax_Node(std::vector<Syntax_Node*>* pool, Syntax_Tree* tree)
   params.push_back(0);
 }
 
+void Syntax_Node::ProcessRoot()
+{
+  // If an array starts as a root we need to
+  // treat the array as an object.
+  if (!sym.str.compare("["))
+  {
+    index = 0;
+    sym.i32 = GETTER_ID;
+  }
+}
+
 void Syntax_Node::Process(Syntax_Node* node)
 {
   if((sym.type == DAT_FUNCTION || sym.type == DAT_BIFUNCTION || sym.type == DAT_CLASS ||
@@ -443,10 +454,15 @@ void Syntax_Tree::Process(Syntax_Node* node)
     return;
   node->Finalize();
 
-  if(!root)
+  if (!root)
+  {
     root = node;
+    root->ProcessRoot();
+  }
   else
+  {
     root->Process(node);
+  }
 }
 
 bool Syntax_Tree::Evaluate()
