@@ -94,7 +94,17 @@ void Syntax_Node::Reduce()
       eval = true;
     }
   }
-  if(!eval || !params[0] || !params[1])
+
+  if (!sym.str.compare("!"))
+  {
+    if (Reduction(&sym, params[1]->Acquire(), NULL))
+    {
+      params[1]->Remove();
+      params[1] = NULL;
+    }
+  }
+
+  if (!eval || !params[0] || !params[1])
     return;
 
   if(Reduction(&sym, params[0]->Acquire(), params[1]->Acquire()))

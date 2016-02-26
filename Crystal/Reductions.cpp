@@ -8,6 +8,12 @@
        Reduce_##func(sym, left, right); \
        return true; \
     }
+#define REDUCTION_UNI(val, func) case val: \
+    if(sym->str.c_str()[1] == '\0') \
+        { \
+       Reduce_##func(sym, left); \
+       return true; \
+        }
 #define REDUCTION_EX(val, val2, func) case val: \
     if(sym->str.c_str()[1] == val2) \
     { \
@@ -37,7 +43,7 @@ bool Can_Reduce(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
 
   if(reduceable.find(left->type) == reduceable.end())
     return false;
-  if(reduceable.find(right->type) == reduceable.end())
+  if(right && reduceable.find(right->type) == reduceable.end())
     return false;
 
   return true;
@@ -63,7 +69,8 @@ bool Reduction(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
     REDUCTION_EX('&', '&', And)
     REDUCTION_EX('|', '|', Or)
     REDUCTION_EX('=', '=', Equal)
-    REDUCTION_EX('!', '=', Diffrence)
+    REDUCTION_UNI('!', Not)
+    APPEND_REDUCTION('=', Diffrence)
   }
 
   return false;
@@ -433,7 +440,7 @@ void Reduce_Less_Equal(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* righ
   Data_Type resolve = left->type > right->type ? left->type : right->type;
   switch(resolve)
   {
-  case CRY_INT:
+  case DAT_INT:
     if(left->type != right->type)
     {
       sym->type = DAT_NIL;
@@ -442,7 +449,7 @@ void Reduce_Less_Equal(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* righ
     sym->b = (left->i32 <= right->i32);
     sym->type = DAT_BOOL;
     return;
-  case CRY_DOUBLE:
+  case DAT_DOUBLE:
     if(left->type == DAT_NIL || right->type == DAT_NIL)
       sym->type = DAT_NIL;
     else
@@ -464,7 +471,7 @@ void Reduce_Greater(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
   Data_Type resolve = left->type > right->type ? left->type : right->type;
   switch(resolve)
   {
-  case CRY_INT:
+  case DAT_INT:
     if(left->type != right->type)
     {
       sym->type = DAT_NIL;
@@ -473,7 +480,7 @@ void Reduce_Greater(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* right)
     sym->b = (left->i32 > right->i32);
     sym->type = DAT_BOOL;
     return;
-  case CRY_DOUBLE:
+  case DAT_DOUBLE:
     if(left->type == DAT_NIL || right->type == DAT_NIL)
       sym->type = DAT_NIL;
     else
@@ -495,7 +502,7 @@ void Reduce_Greater_Equal(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* r
   Data_Type resolve = left->type > right->type ? left->type : right->type;
   switch(resolve)
   {
-  case CRY_INT:
+  case DAT_INT:
     if(left->type != right->type)
     {
       sym->type = DAT_NIL;
@@ -504,7 +511,7 @@ void Reduce_Greater_Equal(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* r
     sym->b = (left->i32 >= right->i32);
     sym->type = DAT_BOOL;
     return;
-  case CRY_DOUBLE:
+  case DAT_DOUBLE:
     if(left->type == DAT_NIL || right->type == DAT_NIL)
       sym->type = DAT_NIL;
     else
@@ -515,6 +522,35 @@ void Reduce_Greater_Equal(Crystal_Data* sym, Crystal_Data* left, Crystal_Data* r
       sym->b = (l >= r);
       sym->type = DAT_BOOL;
     }
+    return;
+  default:
+    sym->type = DAT_NIL;
+    return;
+  }
+}
+
+void Reduce_Not(Crystal_Data* sym, Crystal_Data* targ)
+{
+  switch (targ->type)
+  {
+  case DAT_NIL:
+    sym->type = DAT_NIL;
+    return;
+  case DAT_BOOL:
+    sym->b = !targ->b;
+    sym->type = DAT_BOOL;
+    return;
+  case DAT_INT:
+    sym->b = !targ->i32;
+    sym->type = DAT_BOOL;
+    return;
+  case DAT_DOUBLE:
+    sym->b = !targ->d;
+    sym->type = DAT_BOOL;
+    return;
+  case DAT_STRING:
+    sym->b = targ->str.empty();
+    sym->type = DAT_BOOL;
     return;
   default:
     sym->type = DAT_NIL;
