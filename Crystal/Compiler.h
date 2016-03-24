@@ -61,6 +61,7 @@ public:
   void Read_Binary(const char* exe_name);
   void Write_Binary(const char* exe_name);
   int Execute(Crystal_Symbol* ret, std::vector<Crystal_Symbol> *args);
+  int Execute(Crystal_Symbol* ret, std::vector<Crystal_Symbol> *args, const char* entry_point);
 
   //System calls
   void Print(unsigned var);

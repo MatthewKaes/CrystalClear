@@ -15,7 +15,7 @@ public:
   void Set_Functions(const std::unordered_map<std::string, PackageLinks>* values);
   void Set_Internal(const std::unordered_map<std::string, std::vector<unsigned>>* values);
   BYTE* Link(BYTE* code, unsigned code_length);
-  BYTE* Entry();
+  BYTE* Function(std::string func_name);
 
   void Write(std::string output, BYTE* code, unsigned code_length);
   void Write_Header(FILE* output);
@@ -44,7 +44,6 @@ private:
   BYTE* executable;
   BYTE* read_only_memory;
   unsigned code_size;
-  unsigned entry_point;
 };
 
 #endif

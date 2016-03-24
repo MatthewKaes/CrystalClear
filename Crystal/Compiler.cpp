@@ -169,9 +169,20 @@ void Crystal_Compiler::Write_Binary(const char* exe_name)
 
 int Crystal_Compiler::Execute(Crystal_Symbol* ret, std::vector<Crystal_Symbol>* args)
 {
+  return Execute(ret, args, "main");
+}
+
+int Crystal_Compiler::Execute(Crystal_Symbol* ret, std::vector<Crystal_Symbol>* args, const char* entry_point)
+{
   // Grab the entry point and run it.
   CryProg entry;
-  entry.load = linker.Entry();
+  entry.load = linker.Function(entry_point);
+
+  if (entry.load == NULL)
+  {
+    ret->type = CRY_NIL;
+    return 0;
+  }
 
   // Load arguments for "main"
   for (int i = static_cast<int>(args->size()) - 1; i >= 0; i--)
