@@ -101,6 +101,7 @@ void Crystal_Interpreter::Populate_BIC()
   Late_Binding("init");
 
   REGISTER_CLASS(File);
+  REGISTER_METHOD(init, Crystal_Null_Init, 1);
   REGISTER_ATTRIBUTE(filename);
   REGISTER_ATTRIBUTE(object);
 }

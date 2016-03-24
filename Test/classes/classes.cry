@@ -13,6 +13,10 @@ def main()
   f = File
   f.print()
   
+  b = Box(10, 30)
+  b.print()
+  input
+  
   # Box constructor.
   Box(10, 30).print()
   Box(100, 20).area().print()
@@ -81,8 +85,8 @@ class Cube
   
   # Get the area of the cube
   def area()
-	info(val = @2d.area() * @depth)
-	return val
+	  info(val = @2d.area() * @depth)
+	  return val
   end
 end
 
@@ -96,16 +100,16 @@ class Box
   @height
   
   def init(width, height)
-	@width = width
-	@height = height
+	  @width = width
+	  @height = height
   end
   
   def info()
-	print(type(this))
+	  print(type(this))
   end
 
   # Get the area of the box
   def area()
-	return @width * @height
+	  return @width * @height
   end
 end

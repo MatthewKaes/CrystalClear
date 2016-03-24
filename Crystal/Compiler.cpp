@@ -345,13 +345,14 @@ void Crystal_Compiler::Make_Class(unsigned var, unsigned ID, unsigned args)
   Machine->Pop(sizeof(int));
 
   // Call Init function
-  Machine->Push(0);
+  Machine->Push((int) late_bindings["init"]);
   
   // Seperate calling for base and refrence objects
   if(states[var].Only(CRY_REFERENCE))
     Machine->Runtime("Late_Func_Binding_Ref");
   else
     Machine->Runtime("Late_Func_Binding");
+  Machine->Pop(sizeof(int));
 
   // Init functions can't return.
   unsigned label = Machine->Reserve_Label();

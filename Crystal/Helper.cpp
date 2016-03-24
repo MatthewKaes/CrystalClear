@@ -405,7 +405,7 @@ void* Late_Func_Binding(int id, Crystal_Symbol* symd)
 {
   if (symd->type == CRY_POINTER)
   {
-    if (symd->type > CRY_SYMS)
+    if (symd->sym->type == CRY_CLASS_OBJ)
       return symd->sym->klass->lookup[id].function;
     else
       return Class_Listing[symd->sym->type]->lookup[id].function;
@@ -418,7 +418,7 @@ void* Late_Func_Binding(int id, Crystal_Symbol* symd)
 
 void* Late_Func_Binding_Ref(int id, Crystal_Symbol* symd)
 {
-  if (symd->type > CRY_SYMS)
+  if (symd->sym->type == CRY_CLASS_OBJ)
     return symd->sym->klass->lookup[id].function;
   else
     return Class_Listing[symd->sym->type]->lookup[id].function;
